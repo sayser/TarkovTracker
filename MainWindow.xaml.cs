@@ -374,8 +374,9 @@ namespace TarkovTracker
             DrawMapMarkersForCurrentMap();
             RedrawLastMarker();
 
-            if (_lastGameY != null)
-                AutoSwitchFloorLayers(_lastGameY.Value);
+            // Disabled for now because it hides too many SVG layers on maps like Factory.
+            // if (_lastGameY != null)
+            //     AutoSwitchFloorLayers(_lastGameY.Value);
 
             StatusText.Text = _currentMapConfig == null
                 ? $"Loaded map: {mapFileName}. No config found."
@@ -1422,7 +1423,8 @@ initialize();
             StatusText.Text = $"Parsed: X={gameX:0.00}, Y={gameY:0.00}, Z={gameZ:0.00}, Direction={direction:0.00}°";
 
             DrawPlayerMarkerFromGameCoordinates(gameX, gameZ, direction);
-            AutoSwitchFloorLayers(gameY);
+            // Disabled for now because it hides too many SVG layers on maps like Factory.
+            // AutoSwitchFloorLayers(gameY);
         }
 
         private void AutoSwitchFloorLayers(double gameY)
