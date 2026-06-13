@@ -1,0 +1,274 @@
+﻿<Window x:Class="TarkovTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="SayserTarkovTracker"
+        Icon="app.ico"
+        Height="850"
+        Width="1400"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E1E">
+
+    <DockPanel>
+
+        <Border DockPanel.Dock="Top" Background="#2D2D30" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Map:" Foreground="White" FontSize="16"
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                <ComboBox x:Name="MapComboBox"
+                          Width="220"
+                          Height="30"
+                          Foreground="Black"
+                          Background="White"
+                          SelectionChanged="MapComboBox_SelectionChanged"
+                          Margin="0,0,12,0"/>
+                <Button Content="Set Screenshot Folder"
+                        Height="30"
+                        Padding="12,0"
+                        Margin="0,0,12,0"
+                        Click="SetScreenshotFolder_Click"/>
+
+                <Button Content="Open Screenshot Folder"
+                        Height="30"
+                        Padding="12,0"
+                        Margin="0,0,12,0"
+                        Click="OpenScreenshotFolder_Click"/>
+
+                <Button Content="Read Latest Screenshot"
+                        Height="30"
+                        Padding="12,0"
+                        Margin="0,0,12,0"
+                        Click="ReadLatestScreenshot_Click"/>
+
+                <Button Content="Reset View"
+                        Height="30"
+                        Padding="12,0"
+                        Click="ResetView_Click"/>
+            </StackPanel>
+        </Border>
+
+        <Border DockPanel.Dock="Bottom" Background="#252526" Padding="10">
+            <TextBlock x:Name="StatusText"
+                       Foreground="#DCDCDC"
+                       FontSize="14"
+                       Text="Ready."/>
+        </Border>
+
+        <Grid Background="#1E1E1E">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="390"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Margin="10"
+                    Background="#252526"
+                    BorderBrush="#3E3E42"
+                    BorderThickness="1">
+                <wv2:WebView2 x:Name="MapWebView"/>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Margin="0,10,10,10"
+                    Background="#252526"
+                    BorderBrush="#3E3E42"
+                    BorderThickness="1"
+                    Padding="15">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <TextBlock Text="Screenshot Data"
+                                   Foreground="White"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,20"/>
+
+                        <TextBlock Text="Map:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="CurrentMapText"
+                                   Text="None"
+                                   Foreground="White"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Game X:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="GameXText" Text="-" Foreground="White"
+                                   FontSize="22" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Game Y:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="GameYText" Text="-" Foreground="White"
+                                   FontSize="22" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Game Z:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="GameZText" Text="-" Foreground="White"
+                                   FontSize="22" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Direction:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="DirectionText" Text="-" Foreground="White"
+                                   FontSize="22" FontWeight="Bold" Margin="0,0,0,18"/>
+
+                        <Separator Background="#3E3E42" Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Selected Marker"
+                                   Foreground="White"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="SelectedMarkerNameText"
+                                   Text="None"
+                                   Foreground="White"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,6"/>
+
+                        <TextBlock x:Name="SelectedMarkerDetailsText"
+                                   Text="Click a marker on the map."
+                                   Foreground="#DCDCDC"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,18"/>
+
+                        <Separator Background="#3E3E42" Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Markers"
+                                   Foreground="White"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,10"/>
+
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,8">
+                            <CheckBox x:Name="ShowLabelsCheckBox"
+                                      IsChecked="True"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <TextBlock Text="Aa" Foreground="#d8d8d8" FontWeight="Bold" FontSize="14" Margin="6,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Place Names" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                            <CheckBox x:Name="ShowPmcExtractsCheckBox"
+                                      IsChecked="True"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Ellipse Width="11" Height="11" Fill="#00c853" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="PMC Extracts" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                            <CheckBox x:Name="ShowScavExtractsCheckBox"
+                                      IsChecked="True"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Ellipse Width="11" Height="11" Fill="#ffd600" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="Scav Extracts" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                            <CheckBox x:Name="ShowSharedExtractsCheckBox"
+                                      IsChecked="True"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Ellipse Width="11" Height="11" Fill="#40c4ff" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="Shared Extracts" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,8">
+                            <CheckBox x:Name="ShowTransitsCheckBox"
+                                      IsChecked="True"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Rectangle Width="12" Height="12" Fill="#b000ff" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="Transits" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                            <CheckBox x:Name="ShowPmcSpawnsCheckBox"
+                                      IsChecked="False"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Ellipse Width="10" Height="10" Fill="#2979ff" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="PMC Spawns" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                            <CheckBox x:Name="ShowScavSpawnsCheckBox"
+                                      IsChecked="False"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Ellipse Width="10" Height="10" Fill="#ff9800" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="Scav Spawns" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,12">
+                            <CheckBox x:Name="ShowBossSpawnsCheckBox"
+                                      IsChecked="False"
+                                      Checked="MarkerFilter_Changed"
+                                      Unchecked="MarkerFilter_Changed"/>
+                            <Ellipse Width="13" Height="13" Fill="#ff1744" Stroke="White" StrokeThickness="1" Margin="6,0,6,0"/>
+                            <TextBlock Text="Boss Spawn Zones" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <Separator Background="#3E3E42" Margin="0,0,0,18"/>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="Layers"
+                                       Foreground="White"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+
+                            <Button Grid.Column="1"
+                                    Content="All"
+                                    Width="45"
+                                    Height="24"
+                                    Margin="0,0,6,0"
+                                    Click="ShowAllLayers_Click"/>
+
+                            <Button Grid.Column="2"
+                                    Content="None"
+                                    Width="55"
+                                    Height="24"
+                                    Click="HideAllLayers_Click"/>
+                        </Grid>
+
+                        <StackPanel x:Name="LayersPanel"/>
+
+                        <Separator Background="#3E3E42" Margin="0,18,0,18"/>
+
+                        <TextBlock Text="Last Screenshot:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="LastScreenshotText"
+                                   Text="None"
+                                   Foreground="White"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,18"/>
+
+                        <Separator Background="#3E3E42" Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Status:" Foreground="#AAAAAA" FontSize="13"/>
+                        <TextBlock x:Name="ParserStatusText"
+                                   Text="Waiting"
+                                   Foreground="#7CFC00"
+                                   FontSize="16"
+                                   TextWrapping="Wrap"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+            </Border>
+        </Grid>
+
+    </DockPanel>
+</Window>
