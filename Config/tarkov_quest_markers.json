@@ -1,0 +1,3124 @@
+{
+  "customs": [
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the fifth special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 147.915,
+      "y": 1.40623569,
+      "z": -67.8009949
+    },
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": -182.220016,
+      "y": 1.03,
+      "z": -135.74
+    },
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the fourth special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 103.038994,
+      "y": 1.621,
+      "z": -65.1150055
+    },
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 115.594,
+      "y": 1.62499976,
+      "z": -38.222
+    },
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the seventh special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 64.919,
+      "y": 1.408,
+      "z": -47.947998
+    },
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the sixth special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 66.613,
+      "y": 9.001699,
+      "z": -60.795
+    },
+    {
+      "quest": "Abandoned Cargo",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third special TerraGroup cargo with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 60.2319946,
+      "y": 4.722,
+      "z": -65.862
+    },
+    {
+      "quest": "Against the Conscience - Part 1 [PVP ZONE]",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find out what happened to the champion",
+      "questItem": "",
+      "x": 182.769989,
+      "y": 3.4139998,
+      "z": 163.85
+    },
+    {
+      "quest": "Against the Conscience - Part 1 [PVP ZONE]",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the old champion's room on Customs",
+      "questItem": "",
+      "x": 179.937988,
+      "y": 3.98100019,
+      "z": 164.798
+    },
+    {
+      "quest": "BP Depot",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first fuel tank with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 429.8568,
+      "y": 2.73618078,
+      "z": 16.2298985
+    },
+    {
+      "quest": "BP Depot",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the fourth fuel tank with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": -334.933167,
+      "y": 2.220181,
+      "z": -163.460114
+    },
+    {
+      "quest": "BP Depot",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second fuel tank with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 101.446808,
+      "y": 3.060181,
+      "z": -14.1001005
+    },
+    {
+      "quest": "BP Depot",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third fuel tank with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 334.956818,
+      "y": 3.040181,
+      "z": -189.970108
+    },
+    {
+      "quest": "Between Two Fires [PVP ZONE]",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Return to the old champion's hideout on Customs",
+      "questItem": "",
+      "x": 179.937988,
+      "y": 3.98100019,
+      "z": 164.798
+    },
+    {
+      "quest": "Big Customer",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the transport with the chemicals on Customs",
+      "questItem": "",
+      "x": 480.773834,
+      "y": 3.292181,
+      "z": -76.6871
+    },
+    {
+      "quest": "Big Customer",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the vehicle with an MS2000 Marker",
+      "questItem": "",
+      "x": 480.773834,
+      "y": 3.292181,
+      "z": -76.6871
+    },
+    {
+      "quest": "Bullshit",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the false flash drive in the trash next to stairs on the 3rd floor of the dorm on Customs",
+      "questItem": "Flash drive with fake info",
+      "x": 180.981,
+      "y": 6.32400036,
+      "z": 162.104
+    },
+    {
+      "quest": "Chemical - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the sleeping place of the former Deputy Chief of Security on Customs",
+      "questItem": "",
+      "x": 487.887817,
+      "y": 6.10518074,
+      "z": -139.845108
+    },
+    {
+      "quest": "Chemical - Part 4",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the transport with the chemicals on Customs",
+      "questItem": "",
+      "x": 480.773834,
+      "y": 3.292181,
+      "z": -76.6871
+    },
+    {
+      "quest": "Chemical - Part 4",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the vehicle with an MS2000 Marker",
+      "questItem": "",
+      "x": 480.773834,
+      "y": 3.292181,
+      "z": -76.6871
+    },
+    {
+      "quest": "Every Hunter Knows This",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good tripwire installation spot on Customs",
+      "questItem": "",
+      "x": 171.123383,
+      "y": 0.77,
+      "z": 159.917984
+    },
+    {
+      "quest": "Farming - Part 3",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the warehouse of seized goods on Customs",
+      "questItem": "",
+      "x": -212.569992,
+      "y": 1.16200089,
+      "z": -109.05
+    },
+    {
+      "quest": "Golden Swag",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the lighter in the bunkhouse at the trailer park on Customs",
+      "questItem": "Golden Zibbo lighter",
+      "x": -193.0472,
+      "y": 1.9431808,
+      "z": -206.8981
+    },
+    {
+      "quest": "Hobby Club",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the checkpoint with seized cargo",
+      "questItem": "",
+      "x": 584.279968,
+      "y": 0.940000057,
+      "z": 5.01999664
+    },
+    {
+      "quest": "Hobby Club",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the AK-50 barrel at the specified spot on Customs",
+      "questItem": "AK-50 barrel",
+      "x": 500.635742,
+      "y": 17.861,
+      "z": 91.8714447
+    },
+    {
+      "quest": "Hobby Club",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the AK-50 dust cover at the specified spot on Customs",
+      "questItem": "AK-50 dust cover",
+      "x": 500.635742,
+      "y": 17.861,
+      "z": 91.8714447
+    },
+    {
+      "quest": "Hobby Club",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the AK-50 handguard at the specified spot on Customs",
+      "questItem": "AK-50 handguard with gas block",
+      "x": 500.635742,
+      "y": 17.861,
+      "z": 91.8714447
+    },
+    {
+      "quest": "Operation Aquarius - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the water stockpile hidden inside one of the dorm rooms on Customs",
+      "questItem": "",
+      "x": 232.2398,
+      "y": 3.39018083,
+      "z": 138.876892
+    },
+    {
+      "quest": "Out of Curiosity",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the transport with the chemicals on Customs",
+      "questItem": "",
+      "x": 480.773834,
+      "y": 3.292181,
+      "z": -76.6871
+    },
+    {
+      "quest": "Out of Curiosity",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the vehicle with an MS2000 Marker",
+      "questItem": "",
+      "x": 480.773834,
+      "y": 3.292181,
+      "z": -76.6871
+    },
+    {
+      "quest": "Pharmacist",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find a way inside the two-story dorm room 114 on Customs",
+      "questItem": "",
+      "x": 235.477814,
+      "y": 0.429180861,
+      "z": 160.07489
+    },
+    {
+      "quest": "Pharmacist",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the paramedic’s car on Customs",
+      "questItem": "",
+      "x": 579.3668,
+      "y": 0.129180908,
+      "z": -1.81910133
+    },
+    {
+      "quest": "Shaking Up the Teller",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Gain access to dorm room 214 on Customs",
+      "questItem": "",
+      "x": 176.421814,
+      "y": 3.330181,
+      "z": 184.246887
+    },
+    {
+      "quest": "Surprise Gift [PVP ZONE]",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Return to the old champion's hideout on Customs",
+      "questItem": "",
+      "x": 179.937988,
+      "y": 3.98100019,
+      "z": 164.798
+    },
+    {
+      "quest": "The Cult - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the ritual spot with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 184.138,
+      "y": 7.245,
+      "z": 183.42
+    },
+    {
+      "quest": "The Extortionist",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the messenger's body on Customs",
+      "questItem": "",
+      "x": 27.4918118,
+      "y": 1.493181,
+      "z": -110.1951
+    },
+    {
+      "quest": "The Extortionist",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the place where the messenger hid the cargo on Customs",
+      "questItem": "",
+      "x": 368.893829,
+      "y": 1.60018086,
+      "z": -49.8851
+    },
+    {
+      "quest": "Thirsty - Delivery",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the specified stash spot on Customs",
+      "questItem": "",
+      "x": 11.7129974,
+      "y": -0.719,
+      "z": 35.593998
+    },
+    {
+      "quest": "Tigr Safari",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first Tigr vehicle with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 505.029968,
+      "y": 1.24,
+      "z": -11.2900009
+    },
+    {
+      "quest": "Tigr Safari",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second Tigr vehicle with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 565.76,
+      "y": -0.00999999,
+      "z": -24.1699982
+    },
+    {
+      "quest": "Tigr Safari",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third Tigr vehicle with an MS2000 Marker on Customs",
+      "questItem": "",
+      "x": 17.86,
+      "y": 0.3499999,
+      "z": 0.3600006
+    },
+    {
+      "quest": "Work Smarter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the secret exfil on Customs",
+      "questItem": "",
+      "x": -41.5100021,
+      "y": -12.633,
+      "z": 122.67
+    },
+    {
+      "quest": "Work Smarter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the secret exfil on Customs",
+      "questItem": "",
+      "x": 463.18,
+      "y": -1.46,
+      "z": -112.36
+    }
+  ],
+  "factory": [
+    {
+      "quest": "Bad Rep Evidence",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Gain access to the locked room in the office hallway on the third floor on Factory",
+      "questItem": "",
+      "x": 30.131813,
+      "y": 8.718182,
+      "z": 38.8869
+    },
+    {
+      "quest": "Black Swan",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first heat exchanger with an MS2000 Marker on Factory",
+      "questItem": "",
+      "x": -16.994,
+      "y": -1.596,
+      "z": 34.808
+    },
+    {
+      "quest": "Black Swan",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second heat exchanger with an MS2000 Marker on Factory",
+      "questItem": "",
+      "x": 34.428,
+      "y": -1.476,
+      "z": -4.445
+    },
+    {
+      "quest": "Black Swan",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third heat exchanger with an MS2000 Marker on Factory",
+      "questItem": "",
+      "x": 45.615,
+      "y": -1.596,
+      "z": -36.126
+    },
+    {
+      "quest": "Delivery From the Past",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the package in the break room on the 2nd floor near Gate 3 on Factory",
+      "questItem": "Secure Folder 0022",
+      "x": 41.7418137,
+      "y": 5.448181,
+      "z": 40.8179
+    },
+    {
+      "quest": "Every Hunter Knows This",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good tripwire installation spot on Factory",
+      "questItem": "",
+      "x": 25.35,
+      "y": 8.76,
+      "z": 39.25
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the eighth forklift on Factory",
+      "questItem": "",
+      "x": -15.77,
+      "y": 2.259,
+      "z": 32.58
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the eleventh forklift on Factory",
+      "questItem": "",
+      "x": 18.3,
+      "y": 1.49,
+      "z": -15.19
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fifth forklift on Factory",
+      "questItem": "",
+      "x": 22.58,
+      "y": 1.163,
+      "z": -23.83
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first forklift on Factory",
+      "questItem": "",
+      "x": 62.68,
+      "y": 1.043,
+      "z": 23.4
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fourth forklift on Factory",
+      "questItem": "",
+      "x": -31.57,
+      "y": 2.33,
+      "z": 57.84
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the ninth forklift on Factory",
+      "questItem": "",
+      "x": 13.63,
+      "y": 1.163,
+      "z": -30.07
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second forklift on Factory",
+      "questItem": "",
+      "x": 71.02,
+      "y": 1.163,
+      "z": -40.93
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the seventh forklift on Factory",
+      "questItem": "",
+      "x": 12.37,
+      "y": 1.163,
+      "z": 30.42
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the sixth forklift on Factory",
+      "questItem": "",
+      "x": 21.868,
+      "y": 1.163,
+      "z": -30.777
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the tenth forklift on Factory",
+      "questItem": "",
+      "x": 53.37,
+      "y": 1.48,
+      "z": -22.46
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third forklift on Factory",
+      "questItem": "",
+      "x": 64.97,
+      "y": 1.163,
+      "z": -47.28
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the twelfth forklift on Factory",
+      "questItem": "",
+      "x": 58.323,
+      "y": 1.73,
+      "z": 58.976
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first Factory extraction",
+      "questItem": "",
+      "x": 66.665,
+      "y": -1.676,
+      "z": -28.878
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fourth Factory extraction",
+      "questItem": "",
+      "x": -18.4,
+      "y": 1.16133332,
+      "z": -49.022
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second Factory extraction",
+      "questItem": "",
+      "x": -53.107,
+      "y": 2.292,
+      "z": 58.188
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third Factory extraction",
+      "questItem": "",
+      "x": 59.698,
+      "y": 1.163,
+      "z": 56.98
+    },
+    {
+      "quest": "Secrets of Polikhim",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the package at the laboratory storage room on Factory",
+      "questItem": "Case with precision tools",
+      "x": 27.89,
+      "y": 1.15,
+      "z": -32.8899155
+    }
+  ],
+  "groundzero": [
+    {
+      "quest": "First in Line",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Emercom station on Ground Zero",
+      "questItem": "",
+      "x": 156.2,
+      "y": 25.52,
+      "z": -83.59
+    },
+    {
+      "quest": "Luxurious Life",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the liquor store on Ground Zero",
+      "questItem": "",
+      "x": 117.06,
+      "y": 24.228,
+      "z": 26.86
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the courtyard park by TerraGroup HQ on Ground Zero",
+      "questItem": "",
+      "x": -15.4,
+      "y": 23.79,
+      "z": 68.9
+    },
+    {
+      "quest": "New Day, New Paths",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the passage leading to Streets of Tarkov on Ground Zero (In one raid)",
+      "questItem": "",
+      "x": 222.829117,
+      "y": 15.993,
+      "z": 65.72
+    },
+    {
+      "quest": "New Day, New Paths",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the intersection of Mira Ave and the overpass on Ground Zero (In one raid)",
+      "questItem": "",
+      "x": 172.43,
+      "y": 17.31,
+      "z": 64.7
+    },
+    {
+      "quest": "Rough Tarkov",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Claymore mine on Ground Zero",
+      "questItem": "",
+      "x": 60.3543625,
+      "y": 23.7417164,
+      "z": 170.889557
+    },
+    {
+      "quest": "Saving the Mole",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Access the lab scientist's office on Ground Zero",
+      "questItem": "",
+      "x": -13.48,
+      "y": 31.01,
+      "z": 51.33
+    },
+    {
+      "quest": "Saving the Mole",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the USEC group at the parking lot of the TerraGroup complex",
+      "questItem": "",
+      "x": -21.01,
+      "y": 24.228,
+      "z": -25.1
+    },
+    {
+      "quest": "Saving the Mole",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the lab scientist in the TerraGroup complex",
+      "questItem": "",
+      "x": -60.45,
+      "y": 25.62,
+      "z": 27.42
+    },
+    {
+      "quest": "Shady Contractor",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Knossos LLC senior manager's car on Ground Zero",
+      "questItem": "",
+      "x": 55.26,
+      "y": 23.79,
+      "z": 252.75
+    },
+    {
+      "quest": "Shooting Cans",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the AGS grenade launcher on Ground Zero",
+      "questItem": "",
+      "x": 101.043,
+      "y": 34.16,
+      "z": 276.36
+    },
+    {
+      "quest": "Shooting Cans",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Utyos machine gun on Ground Zero",
+      "questItem": "",
+      "x": 56.603,
+      "y": 32.336,
+      "z": 130.605
+    }
+  ],
+  "groundzero21": [
+    {
+      "quest": "First in Line",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Emercom station on Ground Zero",
+      "questItem": "",
+      "x": 156.2,
+      "y": 25.52,
+      "z": -83.59
+    },
+    {
+      "quest": "Luxurious Life",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the liquor store on Ground Zero",
+      "questItem": "",
+      "x": 117.06,
+      "y": 24.228,
+      "z": 26.86
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the courtyard park by TerraGroup HQ on Ground Zero",
+      "questItem": "",
+      "x": -15.4,
+      "y": 23.79,
+      "z": 68.9
+    },
+    {
+      "quest": "New Day, New Paths",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the passage leading to Streets of Tarkov on Ground Zero (In one raid)",
+      "questItem": "",
+      "x": 222.829117,
+      "y": 15.993,
+      "z": 65.72
+    },
+    {
+      "quest": "New Day, New Paths",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the intersection of Mira Ave and the overpass on Ground Zero (In one raid)",
+      "questItem": "",
+      "x": 172.43,
+      "y": 17.31,
+      "z": 64.7
+    },
+    {
+      "quest": "Rough Tarkov",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Claymore mine on Ground Zero",
+      "questItem": "",
+      "x": 60.3543625,
+      "y": 23.7417164,
+      "z": 170.889557
+    },
+    {
+      "quest": "Saving the Mole",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Access the lab scientist's office on Ground Zero",
+      "questItem": "",
+      "x": -13.48,
+      "y": 31.01,
+      "z": 51.33
+    },
+    {
+      "quest": "Saving the Mole",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the USEC group at the parking lot of the TerraGroup complex",
+      "questItem": "",
+      "x": -21.01,
+      "y": 24.228,
+      "z": -25.1
+    },
+    {
+      "quest": "Saving the Mole",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the lab scientist in the TerraGroup complex",
+      "questItem": "",
+      "x": -60.45,
+      "y": 25.62,
+      "z": 27.42
+    },
+    {
+      "quest": "Shady Contractor",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Knossos LLC senior manager's car on Ground Zero",
+      "questItem": "",
+      "x": 55.26,
+      "y": 23.79,
+      "z": 252.75
+    },
+    {
+      "quest": "Shooting Cans",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the AGS grenade launcher on Ground Zero",
+      "questItem": "",
+      "x": 101.043,
+      "y": 34.16,
+      "z": 276.36
+    },
+    {
+      "quest": "Shooting Cans",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the Utyos machine gun on Ground Zero",
+      "questItem": "",
+      "x": 56.603,
+      "y": 32.336,
+      "z": 130.605
+    }
+  ],
+  "interchange": [
+    {
+      "quest": "Big Sale",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the AVOKADO store on Interchange",
+      "questItem": "",
+      "x": -33.16,
+      "y": 28.631,
+      "z": 25.81
+    },
+    {
+      "quest": "Big Sale",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the DINO CLOTHES store on Interchange",
+      "questItem": "",
+      "x": 94.39,
+      "y": 28.16,
+      "z": -120.64
+    },
+    {
+      "quest": "Big Sale",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the KOSTIN store on Interchange",
+      "questItem": "",
+      "x": -24.67,
+      "y": 28.62,
+      "z": -103.52
+    },
+    {
+      "quest": "Big Sale",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the TOP BRAND store on Interchange",
+      "questItem": "",
+      "x": 94.2,
+      "y": 28.2,
+      "z": 10.22
+    },
+    {
+      "quest": "Big Sale",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the tRend store on Interchange",
+      "questItem": "",
+      "x": 64.17,
+      "y": 28.07,
+      "z": -155.4
+    },
+    {
+      "quest": "Minibus",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first yellow minibus with an MS2000 Marker on Interchange",
+      "questItem": "",
+      "x": 109.867981,
+      "y": 22.33,
+      "z": 288.768
+    },
+    {
+      "quest": "Minibus",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second yellow minibus with an MS2000 Marker on Interchange",
+      "questItem": "",
+      "x": 17.5570374,
+      "y": 22.834,
+      "z": -25.4960022
+    },
+    {
+      "quest": "Minibus",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third yellow minibus with an MS2000 Marker on Interchange",
+      "questItem": "",
+      "x": -49.76779,
+      "y": 22.854,
+      "z": 59.03575
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the children's playground on Interchange",
+      "questItem": "",
+      "x": 42.5,
+      "y": 29.9,
+      "z": -216.4
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the kart track on Interchange",
+      "questItem": "",
+      "x": 159.9,
+      "y": 23.4,
+      "z": -246.7
+    },
+    {
+      "quest": "The Blood of War - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first fuel tank with an MS2000 Marker on Interchange",
+      "questItem": "",
+      "x": -208.36,
+      "y": 22.84,
+      "z": -74.42
+    },
+    {
+      "quest": "The Blood of War - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second fuel tank with an MS2000 Marker on Interchange",
+      "questItem": "",
+      "x": 274.29,
+      "y": 22.85,
+      "z": 14.53
+    },
+    {
+      "quest": "The Blood of War - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third fuel tank with an MS2000 Marker on Interchange",
+      "questItem": "",
+      "x": -172.62,
+      "y": 22.807,
+      "z": -359.48
+    }
+  ],
+  "lighthouse": [
+    {
+      "quest": "Ask for Directions",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first section of the cliff path with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -143.55304,
+      "y": 29.8679886,
+      "z": -6.61932373
+    },
+    {
+      "quest": "Ask for Directions",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the fourth section of the cliff path with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -185.20697,
+      "y": 23.3648987,
+      "z": -177.929321
+    },
+    {
+      "quest": "Ask for Directions",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second section of the cliff path with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -167.8174,
+      "y": 30.8948975,
+      "z": -52.0292969
+    },
+    {
+      "quest": "Ask for Directions",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third section of the cliff path with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -181.27739,
+      "y": 34.9349,
+      "z": -119.039307
+    },
+    {
+      "quest": "Broadcast - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the hidden recording studio on Lighthouse",
+      "questItem": "",
+      "x": 32.5486145,
+      "y": 6.414898,
+      "z": -640.290344
+    },
+    {
+      "quest": "Cargo X - Part 4",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the TerraGroup cargo with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": 136.8986,
+      "y": 0.790897369,
+      "z": 47.88867
+    },
+    {
+      "quest": "Drug Trafficking",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the hidden drug lab on Lighthouse",
+      "questItem": "",
+      "x": -119.217392,
+      "y": 13.0148983,
+      "z": -841.129333
+    },
+    {
+      "quest": "Easy Job - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the helicopter at the water treatment plant on Lighthouse",
+      "questItem": "",
+      "x": -95.9473953,
+      "y": 2.4048996,
+      "z": -553.3493
+    },
+    {
+      "quest": "Easy Job - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the helicopter with an MS2000 Marker",
+      "questItem": "",
+      "x": -96.48739,
+      "y": 2.374897,
+      "z": -552.589355
+    },
+    {
+      "quest": "Energy Crisis",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Find and mark the first tanker truck with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -73.70739,
+      "y": 11.6148987,
+      "z": -875.5493
+    },
+    {
+      "quest": "Energy Crisis",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Find and mark the group of fuel tanks with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -116.5974,
+      "y": 11.6748981,
+      "z": -921.8493
+    },
+    {
+      "quest": "Energy Crisis",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Find and mark the second tanker truck with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -158.4574,
+      "y": 6.044899,
+      "z": -608.019348
+    },
+    {
+      "quest": "Energy Crisis",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Find and mark the third tanker truck with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": 29.0826111,
+      "y": 5.99489975,
+      "z": -423.3593
+    },
+    {
+      "quest": "Getting Acquainted",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Visit the Lighthouse building",
+      "questItem": "",
+      "x": 442.2326,
+      "y": 24.1148987,
+      "z": 460.690674
+    },
+    {
+      "quest": "Knock-Knock",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Check if the radio transmitter works near the Lighthouse peninsula",
+      "questItem": "",
+      "x": 119.3026,
+      "y": 2.1548996,
+      "z": 520.7606
+    },
+    {
+      "quest": "Lost Contact",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find the lost group in the chalet area on Lighthouse",
+      "questItem": "",
+      "x": -70.35739,
+      "y": 26.779995,
+      "z": 132.230652
+    },
+    {
+      "quest": "Make Amends",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Visit the Lighthouse building",
+      "questItem": "",
+      "x": 442.2326,
+      "y": 24.1148987,
+      "z": 460.690674
+    },
+    {
+      "quest": "Missing Cargo",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the crashed helicopter on Lighthouse",
+      "questItem": "",
+      "x": -126.697388,
+      "y": 22.4348984,
+      "z": 301.52063
+    },
+    {
+      "quest": "Network Provider - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Set up the radio repeater at a high elevation overlooking the peninsula on Lighthouse",
+      "questItem": "",
+      "x": 71.11261,
+      "y": 10.1648979,
+      "z": 392.52063
+    },
+    {
+      "quest": "Network Provider - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Set up the radio repeater inside the MI-8 helicopter at the water treatment plant on Lighthouse",
+      "questItem": "",
+      "x": -94.61739,
+      "y": 1.94389725,
+      "z": -550.689331
+    },
+    {
+      "quest": "Network Provider - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Set up the radio repeater inside the abandoned USEC cottage on Lighthouse",
+      "questItem": "",
+      "x": -116.486389,
+      "y": 40.3649,
+      "z": 88.86865
+    },
+    {
+      "quest": "Network Provider - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Set up the radio repeater on the roof of the sunken building at the shore on Lighthouse",
+      "questItem": "",
+      "x": 127.572617,
+      "y": 6.994898,
+      "z": 293.000732
+    },
+    {
+      "quest": "Reconnaissance",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Recon the roof of the first water treatment plant facility on Lighthouse",
+      "questItem": "",
+      "x": 53.232605,
+      "y": 15.3948975,
+      "z": -623.5593
+    },
+    {
+      "quest": "Reconnaissance",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Recon the roof of the second water treatment plant facility on Lighthouse",
+      "questItem": "",
+      "x": -97.73739,
+      "y": 15.3948975,
+      "z": -753.8093
+    },
+    {
+      "quest": "Reconnaissance",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Recon the roof of the third water treatment plant facility on Lighthouse",
+      "questItem": "",
+      "x": -196.6474,
+      "y": 15.3948975,
+      "z": -666.8093
+    },
+    {
+      "quest": "Revision - Lighthouse",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first BRDM with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": 13.1366119,
+      "y": 2.78689957,
+      "z": -503.2343
+    },
+    {
+      "quest": "Revision - Lighthouse",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first Stryker with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": 66.08261,
+      "y": 2.76489639,
+      "z": 516.5807
+    },
+    {
+      "quest": "Revision - Lighthouse",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second BRDM with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -65.23739,
+      "y": 3.35789871,
+      "z": -691.4793
+    },
+    {
+      "quest": "Revision - Lighthouse",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second Stryker with an MS2000 Marker on Lighthouse",
+      "questItem": "",
+      "x": -41.467392,
+      "y": 10.1948986,
+      "z": 16.4906616
+    },
+    {
+      "quest": "The Hermit",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the hideout of Jaeger's friend on Lighthouse",
+      "questItem": "",
+      "x": -246.5874,
+      "y": 0.9148979,
+      "z": -328.259338
+    },
+    {
+      "quest": "Top Secret",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the radar station commandant's office on Lighthouse",
+      "questItem": "",
+      "x": 353.1126,
+      "y": 17.0239,
+      "z": 547.821655
+    }
+  ],
+  "nightfactory": [
+    {
+      "quest": "Bad Rep Evidence",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Gain access to the locked room in the office hallway on the third floor on Factory",
+      "questItem": "",
+      "x": 30.131813,
+      "y": 8.718182,
+      "z": 38.8869
+    },
+    {
+      "quest": "Black Swan",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first heat exchanger with an MS2000 Marker on Factory",
+      "questItem": "",
+      "x": -16.994,
+      "y": -1.596,
+      "z": 34.808
+    },
+    {
+      "quest": "Black Swan",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second heat exchanger with an MS2000 Marker on Factory",
+      "questItem": "",
+      "x": 34.428,
+      "y": -1.476,
+      "z": -4.445
+    },
+    {
+      "quest": "Black Swan",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third heat exchanger with an MS2000 Marker on Factory",
+      "questItem": "",
+      "x": 45.615,
+      "y": -1.596,
+      "z": -36.126
+    },
+    {
+      "quest": "Delivery From the Past",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the package in the break room on the 2nd floor near Gate 3 on Factory",
+      "questItem": "Secure Folder 0022",
+      "x": 41.7418137,
+      "y": 5.448181,
+      "z": 40.8179
+    },
+    {
+      "quest": "Every Hunter Knows This",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good tripwire installation spot on Factory",
+      "questItem": "",
+      "x": 25.35,
+      "y": 8.76,
+      "z": 39.25
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the eighth forklift on Factory",
+      "questItem": "",
+      "x": -15.77,
+      "y": 2.259,
+      "z": 32.58
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the eleventh forklift on Factory",
+      "questItem": "",
+      "x": 18.3,
+      "y": 1.49,
+      "z": -15.19
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fifth forklift on Factory",
+      "questItem": "",
+      "x": 22.58,
+      "y": 1.163,
+      "z": -23.83
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first forklift on Factory",
+      "questItem": "",
+      "x": 62.68,
+      "y": 1.043,
+      "z": 23.4
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fourth forklift on Factory",
+      "questItem": "",
+      "x": -31.57,
+      "y": 2.33,
+      "z": 57.84
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the ninth forklift on Factory",
+      "questItem": "",
+      "x": 13.63,
+      "y": 1.163,
+      "z": -30.07
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second forklift on Factory",
+      "questItem": "",
+      "x": 71.02,
+      "y": 1.163,
+      "z": -40.93
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the seventh forklift on Factory",
+      "questItem": "",
+      "x": 12.37,
+      "y": 1.163,
+      "z": 30.42
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the sixth forklift on Factory",
+      "questItem": "",
+      "x": 21.868,
+      "y": 1.163,
+      "z": -30.777
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the tenth forklift on Factory",
+      "questItem": "",
+      "x": 53.37,
+      "y": 1.48,
+      "z": -22.46
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third forklift on Factory",
+      "questItem": "",
+      "x": 64.97,
+      "y": 1.163,
+      "z": -47.28
+    },
+    {
+      "quest": "Forklift Certified",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the twelfth forklift on Factory",
+      "questItem": "",
+      "x": 58.323,
+      "y": 1.73,
+      "z": 58.976
+    },
+    {
+      "quest": "Health Care Privacy - Part 5",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the drop spot on night-time Factory",
+      "questItem": "",
+      "x": 24.609,
+      "y": 9.17,
+      "z": 39.078
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first Factory extraction",
+      "questItem": "",
+      "x": 66.665,
+      "y": -1.676,
+      "z": -28.878
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fourth Factory extraction",
+      "questItem": "",
+      "x": -18.4,
+      "y": 1.16133332,
+      "z": -49.022
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second Factory extraction",
+      "questItem": "",
+      "x": -53.107,
+      "y": 2.292,
+      "z": 58.188
+    },
+    {
+      "quest": "Scout",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third Factory extraction",
+      "questItem": "",
+      "x": 59.698,
+      "y": 1.163,
+      "z": 56.98
+    },
+    {
+      "quest": "Secrets of Polikhim",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the package at the laboratory storage room on Factory",
+      "questItem": "Case with precision tools",
+      "x": 27.89,
+      "y": 1.15,
+      "z": -32.8899155
+    }
+  ],
+  "reserve": [
+    {
+      "quest": "A Fuel Matter",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the first group of fuel tanks with an MS2000 Marker on Reserve",
+      "questItem": "",
+      "x": 11.94989,
+      "y": -9.889221,
+      "z": 73.80191
+    },
+    {
+      "quest": "A Fuel Matter",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the second group of fuel tanks with an MS2000 Marker on Reserve",
+      "questItem": "",
+      "x": 170.0299,
+      "y": -9.309227,
+      "z": -97.85809
+    },
+    {
+      "quest": "Back Door",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find the unpowered secret exit on Reserve",
+      "questItem": "",
+      "x": -119.750107,
+      "y": -29.3112259,
+      "z": 171.7919
+    },
+    {
+      "quest": "Hobby Club",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate Glukhar's workshop on Reserve",
+      "questItem": "",
+      "x": 45.46988,
+      "y": -2.78922272,
+      "z": -117.468094
+    },
+    {
+      "quest": "Inventory Check",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Check the duty room in the eastern barracks (Black Pawn) on Reserve",
+      "questItem": "",
+      "x": -164.964111,
+      "y": -4.221222,
+      "z": 34.52591
+    },
+    {
+      "quest": "Inventory Check",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Check the first arsenal in the eastern barracks (Black Pawn) on Reserve",
+      "questItem": "",
+      "x": -167.376114,
+      "y": -1.28522491,
+      "z": 31.3559113
+    },
+    {
+      "quest": "Inventory Check",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Check the first arsenal in the southern barracks (White Pawn) on Reserve",
+      "questItem": "",
+      "x": -125.5401,
+      "y": -1.28522491,
+      "z": 95.6819153
+    },
+    {
+      "quest": "Inventory Check",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Check the second arsenal in the eastern barracks (Black Pawn) on Reserve",
+      "questItem": "",
+      "x": -167.376114,
+      "y": -7.0462265,
+      "z": 31.3559113
+    },
+    {
+      "quest": "Inventory Check",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Check the second arsenal in the southern barracks (White Pawn) on Reserve",
+      "questItem": "",
+      "x": -125.518112,
+      "y": -7.0462265,
+      "z": 95.67992
+    },
+    {
+      "quest": "Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the food storage location on Reserve",
+      "questItem": "",
+      "x": 78.77,
+      "y": -12.2860031,
+      "z": -117.1
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the T-90 tank on Reserve",
+      "questItem": "",
+      "x": -160.6201,
+      "y": -4.3192215,
+      "z": -117.588089
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the first BMP-2 on Reserve",
+      "questItem": "",
+      "x": -100.4001,
+      "y": -4.3192215,
+      "z": -155.6881
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the first LAV III on Reserve",
+      "questItem": "",
+      "x": 42.0299072,
+      "y": 0.280776978,
+      "z": -195.2381
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the fourth BMP-2 on Reserve",
+      "questItem": "",
+      "x": 53.829895,
+      "y": -4.139221,
+      "z": 122.031921
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the second BMP-2 on Reserve",
+      "questItem": "",
+      "x": 79.00989,
+      "y": -4.62922668,
+      "z": -31.5480881
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the second LAV III on Reserve",
+      "questItem": "",
+      "x": -107.222275,
+      "y": -5.6922226,
+      "z": -67.3433
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and inspect the third BMP-2 on Reserve",
+      "questItem": "",
+      "x": 103.3819,
+      "y": -4.62922668,
+      "z": 63.8699036
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the first BMP-2 with an MS2000 Marker",
+      "questItem": "",
+      "x": -100.580109,
+      "y": -3.719223,
+      "z": -155.878082
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the first LAV III with an MS2000 Marker",
+      "questItem": "",
+      "x": 42.12439,
+      "y": 0.8737793,
+      "z": -195.23909
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the fourth BMP-2 with an MS2000 Marker",
+      "questItem": "",
+      "x": 53.6199036,
+      "y": -3.997223,
+      "z": 122.661896
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the second BMP-2 with an MS2000 Marker",
+      "questItem": "",
+      "x": 79.02789,
+      "y": -5.43922424,
+      "z": -31.7870865
+    },
+    {
+      "quest": "Revision - Reserve",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the third BMP-2 with an MS2000 Marker",
+      "questItem": "",
+      "x": 101.727905,
+      "y": -5.592224,
+      "z": 64.4449158
+    },
+    {
+      "quest": "Snatch",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the forged intelligence under the BMP-2 in place of the original",
+      "questItem": "Forged Lightkeeper intelligence",
+      "x": 101.727905,
+      "y": -5.592224,
+      "z": 64.4449158
+    },
+    {
+      "quest": "The Bunker - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the control room in the underground bunker on Reserve",
+      "questItem": "",
+      "x": -116.753113,
+      "y": -13.1592255,
+      "z": 31.6869049
+    },
+    {
+      "quest": "The Bunker - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the underground bunker on Reserve",
+      "questItem": "",
+      "x": -115.030106,
+      "y": -11.8592224,
+      "z": 33.8819122
+    },
+    {
+      "quest": "The Bunker - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate one of the two hermetic doors leading to barracks #1 (Black Pawn) on Reserve",
+      "questItem": "",
+      "x": -149.41011,
+      "y": -9.329224,
+      "z": 50.0019073
+    },
+    {
+      "quest": "The Bunker - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate one of the two hermetic doors leading to barracks #2 (White Pawn) on Reserve",
+      "questItem": "",
+      "x": -107.0101,
+      "y": -9.388222,
+      "z": 77.49191
+    },
+    {
+      "quest": "The Bunker - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate one of the two hermetic doors leading to the academy building (Black Bishop) on Reserve",
+      "questItem": "",
+      "x": -144.2501,
+      "y": -9.983223,
+      "z": 6.19191
+    },
+    {
+      "quest": "The Bunker - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the hermetic door leading to the building of the air control center (King) on Reserve",
+      "questItem": "",
+      "x": -73.0011139,
+      "y": -9.653221,
+      "z": 29.9939117
+    },
+    {
+      "quest": "The Bunker - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the hermetic door leading to the hospital (White Bishop) on Reserve",
+      "questItem": "",
+      "x": -90.30911,
+      "y": -13.41922,
+      "z": -5.14808655
+    },
+    {
+      "quest": "The Price of Independence",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the letter on the third floor of the military headquarters on Reserve",
+      "questItem": "Incriminating letter",
+      "x": -127.21611,
+      "y": 0.6957779,
+      "z": -20.3590851
+    }
+  ],
+  "shoreline": [
+    {
+      "quest": "Anesthesia",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the first trading post with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -263.983032,
+      "y": -3.95800018,
+      "z": -85.25296
+    },
+    {
+      "quest": "Anesthesia",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the second trading post with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": 96.72998,
+      "y": -47.19,
+      "z": 97.10004
+    },
+    {
+      "quest": "Anesthesia",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the third trading post with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -306.199951,
+      "y": -60.86,
+      "z": 494.099976
+    },
+    {
+      "quest": "Cargo X - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the room with reservoirs in the Health Resort on Shoreline",
+      "questItem": "",
+      "x": -336.974976,
+      "y": -2.729,
+      "z": -88.08501
+    },
+    {
+      "quest": "Cargo X - Part 3",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the TerraGroup cargo hidden inside the Health Resort on Shoreline",
+      "questItem": "",
+      "x": -149.874023,
+      "y": -6.08,
+      "z": -77.004
+    },
+    {
+      "quest": "Chemistry Closet",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate Sanitar's office in the health resort",
+      "questItem": "",
+      "x": -322.833,
+      "y": -2.75299835,
+      "z": -77.53696
+    },
+    {
+      "quest": "Colleagues - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the group that was sent to the Health Resort on Shoreline",
+      "questItem": "",
+      "x": -253.170044,
+      "y": -4.06999969,
+      "z": -56.8599548
+    },
+    {
+      "quest": "Colleagues - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the group that was sent to the cottages on Shoreline",
+      "questItem": "",
+      "x": 94.20996,
+      "y": -47.5,
+      "z": 61.97003
+    },
+    {
+      "quest": "Colleagues - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the group that was sent to the pier on Shoreline",
+      "questItem": "",
+      "x": -311.900024,
+      "y": -60.9,
+      "z": 489.700073
+    },
+    {
+      "quest": "Courtesy Visit",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the chairman's house in the abandoned village on Shoreline",
+      "questItem": "",
+      "x": 405.939941,
+      "y": -51.93,
+      "z": -44.5
+    },
+    {
+      "quest": "Courtesy Visit",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fisherman's house in the abandoned village on Shoreline",
+      "questItem": "",
+      "x": 382.939941,
+      "y": -51.93,
+      "z": -125.899994
+    },
+    {
+      "quest": "Courtesy Visit",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the priest's house in the abandoned village on Shoreline",
+      "questItem": "",
+      "x": 287.1399,
+      "y": -49.2,
+      "z": -46.3200073
+    },
+    {
+      "quest": "Eagle Eye",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first UAV crash site on Shoreline",
+      "questItem": "",
+      "x": -553.0862,
+      "y": -29.35,
+      "z": -127.678192
+    },
+    {
+      "quest": "Eagle Eye",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second UAV crash site on Shoreline",
+      "questItem": "",
+      "x": 81.4337158,
+      "y": -31.8154,
+      "z": -166.845
+    },
+    {
+      "quest": "Fishing Gear",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the boat hidden next to the breakwater on Shoreline",
+      "questItem": "",
+      "x": -182.040039,
+      "y": -63.725,
+      "z": 459.849976
+    },
+    {
+      "quest": "Health Care Privacy - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first ambulance with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": 312.699951,
+      "y": -59.18,
+      "z": 314.5
+    },
+    {
+      "quest": "Health Care Privacy - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second ambulance with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": 354.919922,
+      "y": -58.63,
+      "z": 306.12
+    },
+    {
+      "quest": "Health Care Privacy - Part 1",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third ambulance with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -258.074951,
+      "y": -3.958,
+      "z": -85.66
+    },
+    {
+      "quest": "Hidden Layer",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find a way inside the Knossos LLC facility",
+      "questItem": "",
+      "x": -196,
+      "y": -6.5,
+      "z": -77
+    },
+    {
+      "quest": "Hidden Layer",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good lead related to Knossos LLC",
+      "questItem": "",
+      "x": -196.5,
+      "y": -6,
+      "z": -81
+    },
+    {
+      "quest": "Humanitarian Supplies",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first UN truck with an MS2000 Marker",
+      "questItem": "",
+      "x": -234.48999,
+      "y": -3.47,
+      "z": -164.42
+    },
+    {
+      "quest": "Humanitarian Supplies",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second UN truck with an MS2000 Marker",
+      "questItem": "",
+      "x": -596.26,
+      "y": -58.53,
+      "z": 475.530029
+    },
+    {
+      "quest": "Humanitarian Supplies",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first truck that was holding the lost UN cargo on Shoreline",
+      "questItem": "",
+      "x": -234.48999,
+      "y": -3.47,
+      "z": -164.42
+    },
+    {
+      "quest": "Humanitarian Supplies",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second truck that was holding the lost UN cargo on Shoreline",
+      "questItem": "",
+      "x": -596.26,
+      "y": -58.53,
+      "z": 475.530029
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the children's playground by the Health Resort on Shoreline",
+      "questItem": "",
+      "x": -351.329956,
+      "y": -1.17,
+      "z": -134
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the coast-side construction site on Shoreline",
+      "questItem": "",
+      "x": -625.819946,
+      "y": -54.72,
+      "z": 482.169983
+    },
+    {
+      "quest": "No Swiping",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the smugglers' base on Shoreline",
+      "questItem": "",
+      "x": -645,
+      "y": -20.3,
+      "z": -200.7
+    },
+    {
+      "quest": "Nostalgia",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate Jaeger's Health Resort room with a view of the bay on Shoreline",
+      "questItem": "",
+      "x": -229.060059,
+      "y": 3.285,
+      "z": -88.8569946
+    },
+    {
+      "quest": "Nothing Fishy About This",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate Ragman's SUV on Shoreline",
+      "questItem": "",
+      "x": 227.163086,
+      "y": -54.911,
+      "z": -159.882
+    },
+    {
+      "quest": "Scrap Metal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first T-90 tank with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -153.079956,
+      "y": -17.05,
+      "z": -280.18
+    },
+    {
+      "quest": "Scrap Metal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second T-90 tank with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": 378.74,
+      "y": -54.375,
+      "z": 166.859985
+    },
+    {
+      "quest": "Scrap Metal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third T-90 tank with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -349.680054,
+      "y": -39.864,
+      "z": 185.87
+    },
+    {
+      "quest": "Signal - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first signal source on Shoreline",
+      "questItem": "",
+      "x": -230.400024,
+      "y": 8.35,
+      "z": -93.6199951
+    },
+    {
+      "quest": "Signal - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second signal source on Shoreline",
+      "questItem": "",
+      "x": -483.310059,
+      "y": -25.762,
+      "z": 253.659973
+    },
+    {
+      "quest": "Signal - Part 3",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Place the Signal jammer on the first specified place on Shoreline",
+      "questItem": "",
+      "x": -483.810059,
+      "y": -24.47,
+      "z": 248.830017
+    },
+    {
+      "quest": "Signal - Part 3",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Place the Signal jammer on the second specified place on Shoreline",
+      "questItem": "",
+      "x": -230.550049,
+      "y": 8.32,
+      "z": -92.39
+    },
+    {
+      "quest": "Signal - Part 3",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Place the Signal jammer on the third specified place on Shoreline",
+      "questItem": "",
+      "x": -708.72,
+      "y": -26.21,
+      "z": 90.59
+    },
+    {
+      "quest": "Spa Tour - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the helicopter at the Health Resort with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -250.5,
+      "y": -5.14096546,
+      "z": -48.28
+    },
+    {
+      "quest": "Spa Tour - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the safe passage to the helicopter with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -280.550049,
+      "y": -4.78,
+      "z": -41.3099976
+    },
+    {
+      "quest": "Spa Tour - Part 4",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the generators in the east wing of the Health Resort on Shoreline",
+      "questItem": "",
+      "x": -336.545044,
+      "y": 0.145,
+      "z": -76.42799
+    },
+    {
+      "quest": "Spa Tour - Part 4",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the generators in the west wing of the Health Resort on Shoreline",
+      "questItem": "",
+      "x": -171.162964,
+      "y": 0.14,
+      "z": -75.51401
+    },
+    {
+      "quest": "The Cult - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the missing informant on Shoreline",
+      "questItem": "",
+      "x": 287.0691,
+      "y": -49.353,
+      "z": -42.3269958
+    },
+    {
+      "quest": "The Cult - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the ritual spot with an MS2000 Marker on Shoreline",
+      "questItem": "",
+      "x": -336.644043,
+      "y": 3.545,
+      "z": -88.728
+    },
+    {
+      "quest": "Thirsty - Echo",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate any information about Thirsty on Shoreline",
+      "questItem": "",
+      "x": -200.310059,
+      "y": -6.15,
+      "z": -76.36099
+    },
+    {
+      "quest": "Wet Job - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fishermen's dwelling on Shoreline",
+      "questItem": "",
+      "x": 235.560059,
+      "y": -64.464,
+      "z": 442.02002
+    },
+    {
+      "quest": "Wet Job - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the fishing table with an MS2000 Marker",
+      "questItem": "",
+      "x": 235.560059,
+      "y": -64.464,
+      "z": 442.02002
+    },
+    {
+      "quest": "Wet Job - Part 3",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate Artyom’s car on Shoreline",
+      "questItem": "",
+      "x": 72.9100342,
+      "y": -59.6730728,
+      "z": 348.72998
+    }
+  ],
+  "streetsoftarkov": [
+    {
+      "quest": "Audiophile",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the musician gathering spot on Streets of Tarkov",
+      "questItem": "",
+      "x": 42.982,
+      "y": 11.7533989,
+      "z": 151.462
+    },
+    {
+      "quest": "Ballet Lover",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the balletmeister's apartment on Streets of Tarkov",
+      "questItem": "",
+      "x": 47.6250038,
+      "y": 12.658,
+      "z": 153.123
+    },
+    {
+      "quest": "Broadcast - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the place of bloody broadcast inside the grocery store on Streets of Tarkov",
+      "questItem": "",
+      "x": 157.362,
+      "y": 5.098,
+      "z": 314.252
+    },
+    {
+      "quest": "Broadcast - Part 3",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the place of bloody broadcast inside the old house on Streets of Tarkov",
+      "questItem": "",
+      "x": -204.667,
+      "y": 3.264,
+      "z": 242.994
+    },
+    {
+      "quest": "Broadcast - Part 4",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the cultist meeting spot on Streets of Tarkov",
+      "questItem": "",
+      "x": -130.801,
+      "y": 9.489,
+      "z": 269.741
+    },
+    {
+      "quest": "Broadcast - Part 5",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the ritual spot on Chekannaya st. on Streets of Tarkov",
+      "questItem": "",
+      "x": 188.391,
+      "y": 0.7589998,
+      "z": 226.506
+    },
+    {
+      "quest": "Debtor",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find the debtor on Streets of Tarkov",
+      "questItem": "",
+      "x": -80.26001,
+      "y": 5.98,
+      "z": 50.5
+    },
+    {
+      "quest": "Developer's Secrets - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the IT firm office on Streets of Tarkov",
+      "questItem": "",
+      "x": 164.36,
+      "y": 1.722,
+      "z": 148.11
+    },
+    {
+      "quest": "Developer's Secrets - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Unravel the secret of the firm's success",
+      "questItem": "",
+      "x": 164.247,
+      "y": 1.722,
+      "z": 167.288
+    },
+    {
+      "quest": "Developer's Secrets - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Unravel the secret of the IT firm's employees' high morale on Streets of Tarkov",
+      "questItem": "",
+      "x": -211.759,
+      "y": 4.199,
+      "z": 297.287
+    },
+    {
+      "quest": "Glory to CPSU - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the apartment of Prapor's friend on Streets of Tarkov",
+      "questItem": "",
+      "x": 131.432,
+      "y": 7.587,
+      "z": 232.371
+    },
+    {
+      "quest": "Glory to CPSU - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the place of work of Prapor's friend on Streets of Tarkov",
+      "questItem": "",
+      "x": 246.254,
+      "y": -0.328000069,
+      "z": 52.416
+    },
+    {
+      "quest": "Green Corridor",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Determine the ambush spot",
+      "questItem": "",
+      "x": 62.1799965,
+      "y": 7.11,
+      "z": 272.84
+    },
+    {
+      "quest": "Green Corridor",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the cargo convoy on Streets of Tarkov",
+      "questItem": "",
+      "x": 15.6499977,
+      "y": 3.39000034,
+      "z": 226.62
+    },
+    {
+      "quest": "House Arrest - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate where the missing group was held captive on Streets of Tarkov",
+      "questItem": "",
+      "x": 127.09,
+      "y": 10.636,
+      "z": 232.57
+    },
+    {
+      "quest": "House Arrest - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find out what happened to the warden",
+      "questItem": "",
+      "x": 106.772,
+      "y": 4.653,
+      "z": 222.482
+    },
+    {
+      "quest": "House Arrest - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the improvised jail warden's apartment on Streets of Tarkov",
+      "questItem": "",
+      "x": 107.935,
+      "y": 7.569,
+      "z": 232.193
+    },
+    {
+      "quest": "Information Source",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first Patrol-A armored vehicle with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": -69.39,
+      "y": 3.52,
+      "z": 358.460022
+    },
+    {
+      "quest": "Information Source",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second Patrol-A armored vehicle with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": 172.48,
+      "y": 4.79,
+      "z": 416.94
+    },
+    {
+      "quest": "Missing Informant",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the informant's backup hideout on Streets of Tarkov",
+      "questItem": "",
+      "x": -130.397,
+      "y": 3.20100021,
+      "z": 396.473022
+    },
+    {
+      "quest": "Needle in a Haystack",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Investigate the children's playground by Concordia on Streets of Tarkov",
+      "questItem": "",
+      "x": 215.640015,
+      "y": 8.23,
+      "z": 360.7
+    },
+    {
+      "quest": "Pets Won't Need It - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and scout the vet clinic on Streets of Tarkov",
+      "questItem": "",
+      "x": 224.87,
+      "y": 4.818,
+      "z": 172.806
+    },
+    {
+      "quest": "Pets Won't Need It - Part 1",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and scout the x-ray technician's room on Streets of Tarkov",
+      "questItem": "",
+      "x": 182.993,
+      "y": 2.749,
+      "z": 101.998
+    },
+    {
+      "quest": "Pets Won't Need It - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first pharmacy on Primorsky Ave on Streets of Tarkov",
+      "questItem": "",
+      "x": 39.054,
+      "y": 3.655,
+      "z": 162.4094
+    },
+    {
+      "quest": "Pets Won't Need It - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second pharmacy on Primorsky Ave on Streets of Tarkov",
+      "questItem": "",
+      "x": -44.62,
+      "y": 4.189,
+      "z": 336.07
+    },
+    {
+      "quest": "Pets Won't Need It - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third pharmacy at Cardinal apartment complex on Streets of Tarkov",
+      "questItem": "",
+      "x": 89.26,
+      "y": 5.07,
+      "z": -275.352
+    },
+    {
+      "quest": "Properties All Around",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the real estate fund on Streets of Tarkov",
+      "questItem": "",
+      "x": -58.32,
+      "y": 3.58,
+      "z": 457.86
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the ATM at the expo on Streets of Tarkov",
+      "questItem": "",
+      "x": 236.969,
+      "y": -1.127,
+      "z": -93.822
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the ATM on Razvedchikov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": 279.032,
+      "y": 4.334,
+      "z": 369.676
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fifth group of ATMs on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -53.575,
+      "y": 1.579,
+      "z": -69.353
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first ATM on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": 83.017,
+      "y": 1.222,
+      "z": -30.5000038
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first ATM on Nizhnaya Sadovaya Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -50.893,
+      "y": 3.654,
+      "z": 453.87
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first ATM on Primorsky Ave on Streets of Tarkov",
+      "questItem": "",
+      "x": 54.476,
+      "y": 3.799,
+      "z": 234.936
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the first group of ATMs on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": 97.422,
+      "y": 1.232,
+      "z": -22.249
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fourth ATM on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -166.477,
+      "y": 1.625,
+      "z": -3.377
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the fourth group of ATMs on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -35.198,
+      "y": 1.575,
+      "z": -69.976
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the group of ATMs on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -160.188,
+      "y": 1.6,
+      "z": -47.807
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second ATM on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -148.57,
+      "y": 6.081,
+      "z": -62.751
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second ATM on Nizhnaya Sadovaya Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -58.149,
+      "y": 3.654,
+      "z": 453.87
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the second ATM on Primorsky Ave on Streets of Tarkov",
+      "questItem": "",
+      "x": 0.446,
+      "y": -2.73879981,
+      "z": -18.789
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third ATM on Klimov Street on Streets of Tarkov",
+      "questItem": "",
+      "x": -113.874,
+      "y": 1.609,
+      "z": -12.51
+    },
+    {
+      "quest": "Pyramid Scheme",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the third ATM on Primorsky Ave on Streets of Tarkov",
+      "questItem": "",
+      "x": 8.286,
+      "y": -2.76,
+      "z": 5.15
+    },
+    {
+      "quest": "Revision - Streets of Tarkov",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the Stryker with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": 146.31,
+      "y": 4.7,
+      "z": 408.405029
+    },
+    {
+      "quest": "Revision - Streets of Tarkov",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first LAV III with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": -139.43,
+      "y": 3.55700016,
+      "z": 438.81
+    },
+    {
+      "quest": "Revision - Streets of Tarkov",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second LAV III with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": 2.18999863,
+      "y": 0.8999996,
+      "z": 34.04
+    },
+    {
+      "quest": "Road Closed",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Determine the ambush spot",
+      "questItem": "",
+      "x": 62.1799965,
+      "y": 7.11,
+      "z": 272.84
+    },
+    {
+      "quest": "Road Closed",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the cargo convoy on Streets of Tarkov",
+      "questItem": "",
+      "x": 15.6499977,
+      "y": 3.39000034,
+      "z": 226.62
+    },
+    {
+      "quest": "Route Deviation",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the City Center BTR stop with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": -13.1059952,
+      "y": 2.36,
+      "z": 217.207916
+    },
+    {
+      "quest": "Route Deviation",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the Collapsed Crane BTR stop with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": 195.527344,
+      "y": 3.20990276,
+      "z": 256.3192
+    },
+    {
+      "quest": "Route Deviation",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the Old Scav Checkpoint BTR stop with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": 120.758,
+      "y": -2.436,
+      "z": 26.16
+    },
+    {
+      "quest": "Route Deviation",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the Pinewood Hotel BTR stop with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": -131.704086,
+      "y": 0.630023,
+      "z": 64.95194
+    },
+    {
+      "quest": "Route Deviation",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the Rodina Cinema BTR stop with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": -136.84,
+      "y": 1.92,
+      "z": 399.3
+    },
+    {
+      "quest": "Route Deviation",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the Tram BTR stop with an MS2000 Marker on Streets of Tarkov",
+      "questItem": "",
+      "x": -232.094,
+      "y": 2.453,
+      "z": 236.69
+    },
+    {
+      "quest": "Spotter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good sniping position at Primorsky overlooking the movie theater",
+      "questItem": "",
+      "x": 36.983,
+      "y": 11.0750008,
+      "z": 88.167
+    },
+    {
+      "quest": "Spotter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good sniping position at Primorsky overlooking the movie theater",
+      "questItem": "",
+      "x": 37.867,
+      "y": 12.664,
+      "z": 155.779
+    },
+    {
+      "quest": "Spotter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good sniping position in Concordia overlooking the construction site",
+      "questItem": "",
+      "x": 214.79,
+      "y": 10.32,
+      "z": 398.14
+    },
+    {
+      "quest": "Spotter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good sniping position in Concordia overlooking the construction site",
+      "questItem": "",
+      "x": 219.391,
+      "y": 10.32,
+      "z": 397.479
+    },
+    {
+      "quest": "Spotter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate a good sniping position in Concordia overlooking the construction site",
+      "questItem": "",
+      "x": 224.982,
+      "y": 10.339,
+      "z": 396.674
+    },
+    {
+      "quest": "The Delicious Sausage",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the Goshan store in Concordia",
+      "questItem": "",
+      "x": 275.646973,
+      "y": 4.303,
+      "z": 380.834045
+    },
+    {
+      "quest": "The Delicious Sausage",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the Shestyorochka store at Nikitskaya street",
+      "questItem": "",
+      "x": -204.310013,
+      "y": 4.3,
+      "z": 181.22
+    },
+    {
+      "quest": "The Delicious Sausage",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the Sparja store at Primorsky ave",
+      "questItem": "",
+      "x": 153.686,
+      "y": 4.68,
+      "z": 299.044
+    },
+    {
+      "quest": "The Delicious Sausage",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the Sparja store in Pinewood hotel",
+      "questItem": "",
+      "x": -77.17,
+      "y": 2.33,
+      "z": 158.91
+    },
+    {
+      "quest": "The Door",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the cause of the signal jamming on Streets of Tarkov",
+      "questItem": "",
+      "x": 184.423,
+      "y": 6.759,
+      "z": 55.58
+    },
+    {
+      "quest": "Trouble in the Big City",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the transport holding the cargo on Streets of Tarkov",
+      "questItem": "",
+      "x": 15.6499977,
+      "y": 3.39000034,
+      "z": 226.62
+    },
+    {
+      "quest": "Trouble in the Big City",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the cargo area with an MS2000 Marker",
+      "questItem": "",
+      "x": 10.4939995,
+      "y": 4.752,
+      "z": 217.564
+    },
+    {
+      "quest": "Urban Medicine",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the chemical laboratory on Streets of Tarkov",
+      "questItem": "",
+      "x": 92.96399,
+      "y": 3.587,
+      "z": 320.384033
+    },
+    {
+      "quest": "Watching You",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the surveillance spot on Streets of Tarkov",
+      "questItem": "",
+      "x": -67.752,
+      "y": 5.947,
+      "z": 65.883
+    }
+  ],
+  "thelab": [
+    {
+      "quest": "Beneath The Streets",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the passage leading to Streets of Tarkov in The Lab (In one raid)",
+      "questItem": "",
+      "x": -169.079956,
+      "y": 0.91,
+      "z": -420.878052
+    },
+    {
+      "quest": "Beneath The Streets",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the control room in The Lab (In one raid)",
+      "questItem": "",
+      "x": -170.7431,
+      "y": 4.75,
+      "z": -283.03
+    },
+    {
+      "quest": "Beneath The Streets",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the hazard dome in The Lab (In one raid)",
+      "questItem": "",
+      "x": -172.2812,
+      "y": 1.01,
+      "z": -371.2509
+    },
+    {
+      "quest": "Beneath The Streets",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Scout the server room in The Lab (In one raid)",
+      "questItem": "",
+      "x": -125.55,
+      "y": 2.54,
+      "z": -305.090973
+    },
+    {
+      "quest": "Following the Bread Crumbs",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Search the human experiment room in The Lab",
+      "questItem": "",
+      "x": -131.53511,
+      "y": 1.0027318,
+      "z": -357.84436
+    },
+    {
+      "quest": "Following the Bread Crumbs",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Search the weapon testing area in The Lab",
+      "questItem": "",
+      "x": -182.867111,
+      "y": 1.29073191,
+      "z": -312.875366
+    },
+    {
+      "quest": "TerraGroup Employee",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find Sanitar's workplace in The Lab",
+      "questItem": "",
+      "x": -131.949112,
+      "y": 5.40873146,
+      "z": -336.865356
+    }
+  ],
+  "thelabyrinth": [
+    {
+      "quest": "Hypotheses Testing",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the lab area with the prototype weapon inside The Labyrinth",
+      "questItem": "",
+      "x": -8.43,
+      "y": 0,
+      "z": 30
+    },
+    {
+      "quest": "Offensive Reconnaissance",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find out what is behind the Health Resort bunker door on Shoreline",
+      "questItem": "",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "quest": "This Tape Sucks",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the torture room inside The Labyrinth",
+      "questItem": "",
+      "x": 17,
+      "y": 0,
+      "z": 6.5
+    },
+    {
+      "quest": "Work Smarter",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the secret exfil on Customs",
+      "questItem": "",
+      "x": 19.443,
+      "y": 1.07,
+      "z": 0.495
+    }
+  ],
+  "woods": [
+    {
+      "quest": "Another Shipping Delay",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the missing courier crew on Woods",
+      "questItem": "",
+      "x": -39.0599976,
+      "y": 19.884,
+      "z": -250.38
+    },
+    {
+      "quest": "Assessment - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first bunker with an MS2000 marker on Woods",
+      "questItem": "",
+      "x": 222.160034,
+      "y": 21.382,
+      "z": -706.6
+    },
+    {
+      "quest": "Assessment - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the fourth bunker with an MS2000 marker on Woods",
+      "questItem": "",
+      "x": 446.337036,
+      "y": -13.139,
+      "z": 69.18402
+    },
+    {
+      "quest": "Assessment - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second bunker with an MS2000 marker on Woods",
+      "questItem": "",
+      "x": -156.091,
+      "y": 52.27,
+      "z": -273.31897
+    },
+    {
+      "quest": "Assessment - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third bunker with an MS2000 marker on Woods",
+      "questItem": "",
+      "x": -157.601013,
+      "y": 47.173,
+      "z": -233.202026
+    },
+    {
+      "quest": "Fair Price - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the stash spot",
+      "questItem": "",
+      "x": -542.37,
+      "y": 18.38,
+      "z": -203.87
+    },
+    {
+      "quest": "Health Care Privacy - Part 3",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the van of the Health Resort medical services director on Woods",
+      "questItem": "",
+      "x": -97.1500244,
+      "y": -13.19,
+      "z": 219.76001
+    },
+    {
+      "quest": "Hindsight 20/20",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the bunker under the mountain on Woods",
+      "questItem": "",
+      "x": -282.789978,
+      "y": 12.88,
+      "z": -414.77002
+    },
+    {
+      "quest": "Ice Cream Cones",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the locked bunker on Woods",
+      "questItem": "",
+      "x": 443.010376,
+      "y": -14.9854012,
+      "z": 67.66608
+    },
+    {
+      "quest": "Introduction",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Find Jaeger's camp at the specified spot on Woods",
+      "questItem": "",
+      "x": -256,
+      "y": 9.58,
+      "z": 9.700012
+    },
+    {
+      "quest": "One Less Loose End",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the journal at the old sawmill on Woods",
+      "questItem": "Lab journal",
+      "x": -510.893,
+      "y": 17.147,
+      "z": -178.234985
+    },
+    {
+      "quest": "Order From Outside",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the device at the specified location on Woods",
+      "questItem": "KOSA UAV electronic jamming device",
+      "x": -55.0050049,
+      "y": 8.82,
+      "z": -498.353027
+    },
+    {
+      "quest": "Rough Tarkov",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the heavily mined area on Woods",
+      "questItem": "",
+      "x": 341.599976,
+      "y": 22.907,
+      "z": -492.300049
+    },
+    {
+      "quest": "Search Mission",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate Prapor's missing convoy on Woods",
+      "questItem": "",
+      "x": 195.560059,
+      "y": 12.21,
+      "z": -595.819946
+    },
+    {
+      "quest": "Search Mission",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the temporary USEC camp on Woods",
+      "questItem": "",
+      "x": 283.050049,
+      "y": 24.04,
+      "z": -439.39
+    },
+    {
+      "quest": "Shipping Delay - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and scout the garages at the depot on Woods",
+      "questItem": "",
+      "x": -684.24,
+      "y": 8.094838,
+      "z": 105.580017
+    },
+    {
+      "quest": "Shipping Delay - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and scout the office at the depot on Woods",
+      "questItem": "",
+      "x": -615.69,
+      "y": 8.094838,
+      "z": 128.68
+    },
+    {
+      "quest": "Shipping Delay - Part 2",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate and scout the warehouses at the depot on Woods",
+      "questItem": "",
+      "x": -617.2,
+      "y": 8.094838,
+      "z": 154.150024
+    },
+    {
+      "quest": "Simple Side Job",
+      "objectiveType": "TaskObjectiveQuestItem",
+      "description": "Stash the cargo at the Scav house on Woods",
+      "questItem": "Lightkeeper's case",
+      "x": 412.89,
+      "y": -13.04,
+      "z": 240.049988
+    },
+    {
+      "quest": "Steady Signal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the fifth weather station with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": -447.077,
+      "y": 2.061,
+      "z": 249
+    },
+    {
+      "quest": "Steady Signal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the first weather station with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": 412.208984,
+      "y": 13.708,
+      "z": -608.531
+    },
+    {
+      "quest": "Steady Signal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the fourth weather station with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": 247.27002,
+      "y": -9.067,
+      "z": 291.49
+    },
+    {
+      "quest": "Steady Signal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the second weather station with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": -209.221985,
+      "y": 77.521,
+      "z": -279.781
+    },
+    {
+      "quest": "Steady Signal",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Mark the third weather station with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": -97.25,
+      "y": 13.993,
+      "z": -542.050049
+    },
+    {
+      "quest": "The Blood of War - Part 3",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first fuel stash with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": 356.449951,
+      "y": 0.35,
+      "z": -85.8800049
+    },
+    {
+      "quest": "The Blood of War - Part 3",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second fuel stash with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": -325.042,
+      "y": 15.319,
+      "z": 23.9849854
+    },
+    {
+      "quest": "The Blood of War - Part 3",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the third fuel stash with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": -200.406982,
+      "y": 31.302,
+      "z": -210.924011
+    },
+    {
+      "quest": "The Cult - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the first ritual spot with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": 195.977051,
+      "y": 1.032,
+      "z": -7.24200439
+    },
+    {
+      "quest": "The Cult - Part 2",
+      "objectiveType": "TaskObjectiveMark",
+      "description": "Locate and mark the second ritual spot with an MS2000 Marker on Woods",
+      "questItem": "",
+      "x": -88.70001,
+      "y": 12.55,
+      "z": -717.61
+    },
+    {
+      "quest": "Thirsty - Delivery",
+      "objectiveType": "TaskObjectiveBasic",
+      "description": "Locate the specified stash spot on Woods",
+      "questItem": "",
+      "x": 227.698975,
+      "y": 21.056,
+      "z": -706.560059
+    }
+  ]
+}

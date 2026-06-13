@@ -14,6 +14,7 @@
     <None Remove="Config\maps.json" />
     <None Remove="Config\tarkov_extracts_raw.json" />
     <None Remove="Config\tarkov_labels_raw.json" />
+    <None Remove="Config\tarkov_quest_markers.json" />
     <None Remove="Config\tarkov_spawns_raw.json" />
     <None Remove="Config\tarkov_transits_raw.json" />
     <None Remove="Maps\Customs.svg" />
@@ -37,6 +38,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\tarkov_labels_raw.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\tarkov_quest_markers.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\tarkov_spawns_raw.json">

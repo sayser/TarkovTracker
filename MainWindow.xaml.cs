@@ -23,6 +23,7 @@ namespace TarkovTracker
         private readonly string _transitsFile;
         private readonly string _spawnsFile;
         private readonly string _labelsFile;
+        private readonly string _questMarkersFile;
         private string _screenshotFolder;
         private readonly string _userSettingsFile;
 
@@ -31,6 +32,7 @@ namespace TarkovTracker
         private readonly Dictionary<string, List<TransitInfo>> _transitsByMapName = new();
         private readonly Dictionary<string, List<SpawnInfo>> _spawnsByMapName = new();
         private readonly Dictionary<string, List<MapLabel>> _labelsByMapName = new();
+        private readonly Dictionary<string, List<QuestMarker>> _questMarkersByMapName = new();
 
         private MapConfig? _currentMapConfig;
         private string? _currentMapDisplayName;
@@ -56,6 +58,7 @@ namespace TarkovTracker
             _transitsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_transits_raw.json");
             _spawnsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_spawns_raw.json");
             _labelsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_labels_raw.json");
+            _questMarkersFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_quest_markers.json");
             _userSettingsFile = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "SayserTarkovTracker",
@@ -76,6 +79,7 @@ namespace TarkovTracker
             LoadTransits();
             LoadSpawns();
             LoadLabels();
+            LoadQuestMarkers();
             LoadMapsDropdown();
             StartScreenshotMonitoring();
         }
@@ -281,6 +285,40 @@ namespace TarkovTracker
             }
         }
 
+        private void LoadQuestMarkers()
+        {
+            _questMarkersByMapName.Clear();
+
+            if (!File.Exists(_questMarkersFile))
+            {
+                StatusText.Text = $"Quest markers file not found: {_questMarkersFile}";
+                return;
+            }
+
+            var data = JsonSerializer.Deserialize<Dictionary<string, List<QuestMarker>>>(
+                File.ReadAllText(_questMarkersFile),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (data == null)
+                return;
+
+            foreach (var mapEntry in data)
+            {
+                string mapKey = NormalizeMapName(mapEntry.Key);
+
+                if (!_questMarkersByMapName.ContainsKey(mapKey))
+                    _questMarkersByMapName[mapKey] = new List<QuestMarker>();
+
+                foreach (var questMarker in mapEntry.Value ?? new List<QuestMarker>())
+                {
+                    if (string.IsNullOrWhiteSpace(questMarker.Quest) || questMarker.X == null || questMarker.Z == null)
+                        continue;
+
+                    _questMarkersByMapName[mapKey].Add(questMarker);
+                }
+            }
+        }
+
         private void LoadMapsDropdown()
         {
             MapComboBox.Items.Clear();
@@ -307,7 +345,7 @@ namespace TarkovTracker
             }
 
             StatusText.Text =
-                $"{svgFiles.Count} maps loaded. Extract maps: {_extractsByMapName.Count}. Transit maps: {_transitsByMapName.Count}. Spawn maps: {_spawnsByMapName.Count}. Label maps: {_labelsByMapName.Count}.";
+                $"{svgFiles.Count} maps loaded. Extract maps: {_extractsByMapName.Count}. Transit maps: {_transitsByMapName.Count}. Spawn maps: {_spawnsByMapName.Count}. Label maps: {_labelsByMapName.Count}. Quest maps: {_questMarkersByMapName.Count}.";
         }
 
         private async void MapComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -537,6 +575,18 @@ html, body {{
     border-radius: 50%;
 }}
 
+.quest-objective .markerDot {{
+    background: #e040fb;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    transform: translate(-50%, -50%) rotate(45deg);
+}}
+
+.quest-objective .markerLabel {{
+    color: #f3c4ff;
+}}
+
 .map-label .markerDot {{
     display: none;
 }}
@@ -751,6 +801,12 @@ function setLabelVisibility(visible) {{
     }});
 }}
 
+function setQuestVisibility(visible) {{
+    document.querySelectorAll('.mapMarker[data-marker-type=""quest""]').forEach(function(marker) {{
+        marker.style.display = visible ? 'block' : 'none';
+    }});
+}}
+
 function setLayerVisibility(id, visible) {{
     let el = document.getElementById(id);
     if (!el) return;
@@ -902,6 +958,7 @@ initialize();
             await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-scav', {(ShowScavSpawnsCheckBox.IsChecked == true ? "true" : "false")});");
             await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-boss', {(ShowBossSpawnsCheckBox.IsChecked == true ? "true" : "false")});");
             await MapWebView.ExecuteScriptAsync($"setLabelVisibility({(ShowLabelsCheckBox.IsChecked == true ? "true" : "false")});");
+            await MapWebView.ExecuteScriptAsync($"setQuestVisibility({(ShowQuestMarkersCheckBox.IsChecked == true ? "true" : "false")});");
         }
 
         private async void ResetView_Click(object sender, RoutedEventArgs e)
@@ -998,6 +1055,36 @@ initialize();
                         markers.Add(BuildSpawnMarker(spawn, converted, "spawn-pmc", "PMC Spawn", "spawn-pmc"));
                     else if (isScav)
                         markers.Add(BuildSpawnMarker(spawn, converted, "spawn-scav", "Scav Spawn", "spawn-scav"));
+                }
+            }
+
+
+            if (_questMarkersByMapName.TryGetValue(normalizedName, out var questMarkers))
+            {
+                foreach (var questMarker in questMarkers)
+                {
+                    if (questMarker.X == null || questMarker.Z == null)
+                        continue;
+
+                    var converted = ConvertGameToNormalizedMap(questMarker.X.Value, questMarker.Z.Value);
+                    string description = string.IsNullOrWhiteSpace(questMarker.Description)
+                        ? "Quest objective"
+                        : questMarker.Description;
+
+                    markers.Add(new WebMapMarker
+                    {
+                        Name = questMarker.Quest,
+                        MarkerType = "quest",
+                        Faction = "",
+                        CssClass = "quest-objective",
+                        Tooltip = $"{questMarker.Quest}\n{description}",
+                        ZoneName = questMarker.Quest,
+                        Categories = "Quest Objective",
+                        Conditions = description,
+                        Position = $"X={questMarker.X.Value:0.##}, Y={(questMarker.Y ?? 0):0.##}, Z={questMarker.Z.Value:0.##}",
+                        NormalizedX = converted.normalizedX,
+                        NormalizedY = converted.normalizedY
+                    });
                 }
             }
 
@@ -1617,6 +1704,24 @@ initialize();
 
         [JsonPropertyName("position")]
         public MapPosition? Position { get; set; }
+    }
+
+    public class QuestMarker
+    {
+        [JsonPropertyName("quest")]
+        public string Quest { get; set; } = "";
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = "";
+
+        [JsonPropertyName("x")]
+        public double? X { get; set; }
+
+        [JsonPropertyName("y")]
+        public double? Y { get; set; }
+
+        [JsonPropertyName("z")]
+        public double? Z { get; set; }
     }
 
     public class MapLabel
