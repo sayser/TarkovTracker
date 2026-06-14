@@ -26,6 +26,11 @@ namespace TarkovTracker
         private readonly string _questMarkersFile;
         private string _screenshotFolder;
         private readonly string _userSettingsFile;
+        private OverlayWindow? _overlayWindow;
+        private string? _currentMapPath;
+        private string? _currentMapHtml;
+        private string? _lastMapMarkersJson;
+        private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _lastPlayerMarker;
 
         private readonly Dictionary<string, MapConfig> _mapConfigs = new();
         private readonly Dictionary<string, List<ExtractInfo>> _extractsByMapName = new();
@@ -359,6 +364,7 @@ namespace TarkovTracker
                 return;
 
             string mapFileName = Path.GetFileNameWithoutExtension(mapPath);
+            _currentMapPath = mapPath;
 
             CurrentMapText.Text = mapFileName;
             _mapConfigs.TryGetValue(mapFileName, out _currentMapConfig);
@@ -373,6 +379,7 @@ namespace TarkovTracker
 
             DrawMapMarkersForCurrentMap();
             RedrawLastMarker();
+            _ = SyncOverlayToCurrentMapAsync();
 
             // Disabled for now because it hides too many SVG layers on maps like Factory.
             // if (_lastGameY != null)
@@ -389,6 +396,8 @@ namespace TarkovTracker
 
             string svg = File.ReadAllText(mapPath);
             string html = BuildMapHtml(svg);
+            _currentMapPath = mapPath;
+            _currentMapHtml = html;
 
             await MapWebView.EnsureCoreWebView2Async();
 
@@ -913,14 +922,17 @@ initialize();
 
         private async System.Threading.Tasks.Task SetSvgLayerVisibility(string layerId, bool visible)
         {
-            if (!_webViewReady)
-                return;
-
             string idJson = JsonSerializer.Serialize(layerId);
             string visibleJson = visible ? "true" : "false";
 
-            await MapWebView.ExecuteScriptAsync(
-                $"setLayerVisibility({idJson}, {visibleJson});");
+            if (_webViewReady)
+            {
+                await MapWebView.ExecuteScriptAsync(
+                    $"setLayerVisibility({idJson}, {visibleJson});");
+            }
+
+            if (_overlayWindow != null)
+                await _overlayWindow.SetLayerVisibilityAsync(layerId, visible);
         }
 
         private void ShowAllLayers_Click(object sender, RoutedEventArgs e)
@@ -948,18 +960,42 @@ initialize();
 
         private async System.Threading.Tasks.Task ApplyMarkerVisibility()
         {
-            if (!_webViewReady)
-                return;
+            bool showPmcExtracts = ShowPmcExtractsCheckBox?.IsChecked == true;
+            bool showScavExtracts = ShowScavExtractsCheckBox?.IsChecked == true;
+            bool showSharedExtracts = ShowSharedExtractsCheckBox?.IsChecked == true;
+            bool showTransits = ShowTransitsCheckBox?.IsChecked == true;
+            bool showPmcSpawns = ShowPmcSpawnsCheckBox?.IsChecked == true;
+            bool showScavSpawns = ShowScavSpawnsCheckBox?.IsChecked == true;
+            bool showBossSpawns = ShowBossSpawnsCheckBox?.IsChecked == true;
+            bool showLabels = ShowLabelsCheckBox?.IsChecked == true;
+            bool showQuestMarkers = ShowQuestMarkersCheckBox?.IsChecked == true;
 
-            await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('pmc', {(ShowPmcExtractsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('scav', {(ShowScavExtractsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('shared', {(ShowSharedExtractsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setTransitVisibility({(ShowTransitsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-pmc', {(ShowPmcSpawnsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-scav', {(ShowScavSpawnsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-boss', {(ShowBossSpawnsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setLabelVisibility({(ShowLabelsCheckBox.IsChecked == true ? "true" : "false")});");
-            await MapWebView.ExecuteScriptAsync($"setQuestVisibility({(ShowQuestMarkersCheckBox.IsChecked == true ? "true" : "false")});");
+            if (_webViewReady)
+            {
+                await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('pmc', {(showPmcExtracts ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('scav', {(showScavExtracts ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('shared', {(showSharedExtracts ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setTransitVisibility({(showTransits ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-pmc', {(showPmcSpawns ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-scav', {(showScavSpawns ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-boss', {(showBossSpawns ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setLabelVisibility({(showLabels ? "true" : "false")});");
+                await MapWebView.ExecuteScriptAsync($"setQuestVisibility({(showQuestMarkers ? "true" : "false")});");
+            }
+
+            if (_overlayWindow != null)
+            {
+                await _overlayWindow.ApplyMarkerVisibilityAsync(
+                    showPmcExtracts,
+                    showScavExtracts,
+                    showSharedExtracts,
+                    showTransits,
+                    showPmcSpawns,
+                    showScavSpawns,
+                    showBossSpawns,
+                    showLabels,
+                    showQuestMarkers);
+            }
         }
 
         private async void ResetView_Click(object sender, RoutedEventArgs e)
@@ -1116,9 +1152,13 @@ initialize();
             }
 
             string json = JsonSerializer.Serialize(markers);
+            _lastMapMarkersJson = json;
 
             _ = MapWebView.ExecuteScriptAsync($"addMapMarkers({json});");
             _ = ApplyMarkerVisibility();
+
+            if (_overlayWindow != null)
+                _ = _overlayWindow.SetMapMarkersAsync(json);
 
             ParserStatusText.Text = $"Loaded {markers.Count} map markers";
             ParserStatusText.Foreground = Brushes.LawnGreen;
@@ -1519,13 +1559,18 @@ initialize();
 
         private async void SetPlayerMarkerInWebView(double normalizedX, double normalizedY, double directionDegrees)
         {
-            if (!_webViewReady)
-                return;
+            _lastPlayerMarker = (normalizedX, normalizedY, directionDegrees);
 
-            await MapWebView.ExecuteScriptAsync(
-                $"setPlayerMarkerNormalized({normalizedX.ToString(CultureInfo.InvariantCulture)}, " +
-                $"{normalizedY.ToString(CultureInfo.InvariantCulture)}, " +
-                $"{directionDegrees.ToString(CultureInfo.InvariantCulture)});");
+            if (_webViewReady)
+            {
+                await MapWebView.ExecuteScriptAsync(
+                    $"setPlayerMarkerNormalized({normalizedX.ToString(CultureInfo.InvariantCulture)}, " +
+                    $"{normalizedY.ToString(CultureInfo.InvariantCulture)}, " +
+                    $"{directionDegrees.ToString(CultureInfo.InvariantCulture)});");
+            }
+
+            if (_overlayWindow != null)
+                await _overlayWindow.SetPlayerMarkerAsync(normalizedX, normalizedY, directionDegrees);
         }
 
         private void RedrawLastMarker()
@@ -1552,6 +1597,81 @@ initialize();
                 FileName = _screenshotFolder,
                 UseShellExecute = true
             });
+        }
+
+        private async void OpenOverlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_overlayWindow == null)
+            {
+                _overlayWindow = new OverlayWindow();
+                _overlayWindow.Closed += (_, _) => _overlayWindow = null;
+                _overlayWindow.Show();
+            }
+            else
+            {
+                _overlayWindow.Activate();
+            }
+
+            await SyncOverlayToCurrentMapAsync();
+        }
+
+        private async System.Threading.Tasks.Task SyncOverlayToCurrentMapAsync()
+        {
+            if (_overlayWindow == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(_currentMapHtml))
+                return;
+
+            await _overlayWindow.LoadMapHtmlAsync(_currentMapHtml);
+
+            if (!string.IsNullOrWhiteSpace(_lastMapMarkersJson))
+                await _overlayWindow.SetMapMarkersAsync(_lastMapMarkersJson);
+
+            if (_lastPlayerMarker != null)
+            {
+                await _overlayWindow.SetPlayerMarkerAsync(
+                    _lastPlayerMarker.Value.NormalizedX,
+                    _lastPlayerMarker.Value.NormalizedY,
+                    _lastPlayerMarker.Value.DirectionDegrees);
+            }
+
+            await SyncOverlayLayersAndFiltersAsync();
+        }
+
+        private async System.Threading.Tasks.Task SyncOverlayLayersAndFiltersAsync()
+        {
+            if (_overlayWindow == null)
+                return;
+
+            foreach (var child in LayersPanel.Children)
+            {
+                if (child is not CheckBox checkBox)
+                    continue;
+
+                string layerId = checkBox.Content?.ToString() ?? "";
+
+                if (!string.IsNullOrWhiteSpace(layerId))
+                    await _overlayWindow.SetLayerVisibilityAsync(layerId, checkBox.IsChecked == true);
+            }
+
+            await _overlayWindow.ApplyMarkerVisibilityAsync(
+                ShowPmcExtractsCheckBox.IsChecked == true,
+                ShowScavExtractsCheckBox.IsChecked == true,
+                ShowSharedExtractsCheckBox.IsChecked == true,
+                ShowTransitsCheckBox.IsChecked == true,
+                ShowPmcSpawnsCheckBox.IsChecked == true,
+                ShowScavSpawnsCheckBox.IsChecked == true,
+                ShowBossSpawnsCheckBox.IsChecked == true,
+                ShowLabelsCheckBox.IsChecked == true,
+                ShowQuestMarkersCheckBox.IsChecked == true);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _overlayWindow?.Close();
+            _overlayWindow = null;
+            base.OnClosed(e);
         }
     }
 
