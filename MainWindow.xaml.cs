@@ -1567,7 +1567,7 @@ initialize();
             // Factory/Night Factory SVG orientation is opposite for player-facing direction,
             // so correct only those maps before drawing the marker in the main window and overlay.
             if (mapName == "factory" || mapName == "nightfactory")
-                direction += 180;
+                direction += 90;
 
             while (direction > 180) direction -= 360;
             while (direction < -180) direction += 360;
