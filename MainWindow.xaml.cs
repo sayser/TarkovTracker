@@ -515,13 +515,24 @@ html, body {{
 }}
 
 #playerMarkerInner {{
-    width: 0;
-    height: 0;
-    border-left: 13px solid transparent;
-    border-right: 13px solid transparent;
-    border-bottom: 30px solid red;
-    filter: drop-shadow(0 0 2px white);
+    position: relative;
+    width: 30px;
+    height: 36px;
+    background: #ff1744;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px black);
     transform: translate(-50%, -50%);
+}}
+
+#playerMarkerInner::after {{
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 1px;
+    width: 12px;
+    height: 15px;
+    background: #b000ff;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }}
 
 .mapMarker {{
@@ -1446,6 +1457,7 @@ initialize();
             double qw = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture);
 
             double direction = GetYawFromQuaternion(qx, qy, qz, qw);
+            direction = ApplyMapDirectionOffset(direction);
 
             _lastGameX = gameX;
             _lastGameY = gameY;
@@ -1545,6 +1557,22 @@ initialize();
 
             double yawRadians = Math.Atan2(sinyCosp, cosyCosp);
             return yawRadians * (180.0 / Math.PI);
+        }
+
+        private double ApplyMapDirectionOffset(double direction)
+        {
+            string mapName = NormalizeMapName(_currentMapDisplayName ?? CurrentMapText.Text);
+
+            // Customs and the other maps tested use the raw screenshot direction correctly.
+            // Factory/Night Factory SVG orientation is opposite for player-facing direction,
+            // so correct only those maps before drawing the marker in the main window and overlay.
+            if (mapName == "factory" || mapName == "nightfactory")
+                direction += 180;
+
+            while (direction > 180) direction -= 360;
+            while (direction < -180) direction += 360;
+
+            return direction;
         }
 
         private void DrawPlayerMarkerFromGameCoordinates(double gameX, double gameZ, double directionDegrees)
