@@ -16,6 +16,7 @@ namespace TarkovTracker
         private bool _mapAssetHostMapped = false;
         private string? _mapsFolder;
         private string? _pendingMarkersJson;
+        private string? _pendingRaidExfilHighlightsJson;
         private string? _pendingMapLevelStateJson;
         private string? _pendingMarkerFiltersJson;
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _pendingPlayerMarker;
@@ -83,6 +84,9 @@ namespace TarkovTracker
 
             if (!string.IsNullOrWhiteSpace(_pendingMarkersJson))
                 await SetMapMarkersAsync(_pendingMarkersJson);
+
+            if (!string.IsNullOrWhiteSpace(_pendingRaidExfilHighlightsJson))
+                await ApplyRaidExfilHighlightsAsync(_pendingRaidExfilHighlightsJson);
 
             if (!string.IsNullOrWhiteSpace(_pendingMapLevelStateJson))
                 await ApplyMapLevelStateAsync(_pendingMapLevelStateJson);
@@ -173,6 +177,22 @@ namespace TarkovTracker
 
             if (!string.IsNullOrWhiteSpace(_pendingMarkerFiltersJson))
                 await ApplyMarkerFiltersAsync(_pendingMarkerFiltersJson);
+
+            if (!string.IsNullOrWhiteSpace(_pendingRaidExfilHighlightsJson))
+                await ApplyRaidExfilHighlightsAsync(_pendingRaidExfilHighlightsJson);
+        }
+
+        public async Task ApplyRaidExfilHighlightsAsync(string payloadJson)
+        {
+            if (string.IsNullOrWhiteSpace(payloadJson))
+                return;
+
+            _pendingRaidExfilHighlightsJson = payloadJson;
+
+            if (!_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync($"setRaidExfilHighlights({payloadJson});");
         }
 
         public async Task SetPlayerMarkerAsync(double normalizedX, double normalizedY, double directionDegrees)

@@ -22,13 +22,17 @@ namespace TarkovTracker
         internal const string BaseLayerToggleTag = "__base_layer_toggle__";
 
         private readonly MapDataService _mapData = new();
+        private readonly ScreenshotExfilParser _screenshotExfilParser = new();
         private readonly string _mapsFolder;
         private readonly string _userSettingsFile;
         private OverlayWindow? _overlayWindow;
         private string? _currentMapPath;
         private string? _currentMapHtml;
         private string? _lastMapMarkersJson;
+        private string? _lastRaidExfilHighlightsJson;
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _lastPlayerMarker;
+
+        private readonly RaidExfilHighlightState _raidExfilHighlights = new();
 
         private string _screenshotFolder;
         private MapConfig? _currentMapConfig;
@@ -46,6 +50,9 @@ namespace TarkovTracker
         private bool _suppressMapLevelRefresh = false;
         private bool _webMessageHooked = false;
         private bool _mapWebViewHostMapped = false;
+        private bool _suppressGameResolutionRefresh = false;
+
+        private UserAppSettings _userSettings = new();
 
         public MainWindow()
         {
@@ -58,6 +65,7 @@ namespace TarkovTracker
                 "settings.json");
 
             _screenshotFolder = LoadSavedScreenshotFolder();
+            _userSettings = LoadUserSettings();
 
             if (string.IsNullOrWhiteSpace(_screenshotFolder))
             {
@@ -66,6 +74,8 @@ namespace TarkovTracker
                     "Escape from Tarkov",
                     "Screenshots");
             }
+
+            InitializeGameResolutionComboBox();
 
             _mapData.LoadAll();
             if (!string.IsNullOrWhiteSpace(_mapData.LastStatusMessage))
@@ -77,36 +87,84 @@ namespace TarkovTracker
 
         private string LoadSavedScreenshotFolder()
         {
+            return LoadUserSettings().ScreenshotFolder;
+        }
+
+        private UserAppSettings LoadUserSettings()
+        {
             try
             {
                 if (!File.Exists(_userSettingsFile))
-                    return "";
+                    return new UserAppSettings();
 
                 var settings = JsonSerializer.Deserialize<UserAppSettings>(
                     File.ReadAllText(_userSettingsFile),
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                return settings?.ScreenshotFolder ?? "";
+                return settings ?? new UserAppSettings();
             }
             catch
             {
-                return "";
+                return new UserAppSettings();
             }
         }
 
-        private void SaveScreenshotFolder(string folder)
+        private void SaveUserSettings()
         {
             string dir = Path.GetDirectoryName(_userSettingsFile)!;
             Directory.CreateDirectory(dir);
 
-            var settings = new UserAppSettings
-            {
-                ScreenshotFolder = folder
-            };
-
             File.WriteAllText(
                 _userSettingsFile,
-                JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
+                JsonSerializer.Serialize(_userSettings, new JsonSerializerOptions { WriteIndented = true }));
+        }
+
+        private void InitializeGameResolutionComboBox()
+        {
+            _suppressGameResolutionRefresh = true;
+
+            string preset = string.IsNullOrWhiteSpace(_userSettings.GameResolutionPreset)
+                ? "auto"
+                : _userSettings.GameResolutionPreset;
+
+            bool matched = false;
+            foreach (var item in GameResolutionComboBox.Items.OfType<ComboBoxItem>())
+            {
+                if (string.Equals(item.Tag as string, preset, StringComparison.OrdinalIgnoreCase))
+                {
+                    GameResolutionComboBox.SelectedItem = item;
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched)
+                GameResolutionComboBox.SelectedIndex = 0;
+
+            _suppressGameResolutionRefresh = false;
+        }
+
+        private void GameResolutionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_suppressGameResolutionRefresh)
+                return;
+
+            if (GameResolutionComboBox.SelectedItem is not ComboBoxItem item)
+                return;
+
+            _userSettings.GameResolutionPreset = item.Tag as string ?? "auto";
+            SaveUserSettings();
+        }
+
+        private (int width, int height) GetConfiguredGameResolution()
+        {
+            return ScreenshotResolutionHelper.ParsePreset(_userSettings.GameResolutionPreset);
+        }
+
+        private void SaveScreenshotFolder(string folder)
+        {
+            _userSettings.ScreenshotFolder = folder;
+            SaveUserSettings();
         }
 
         private void SetParserStatus(string message, bool isError = false)
@@ -201,6 +259,8 @@ namespace TarkovTracker
                 !string.IsNullOrWhiteSpace(_currentMapConfig?.Locale?.En)
                     ? _currentMapConfig.Locale.En
                     : mapFileName;
+
+            ClearRaidExfilHighlights();
 
             await LoadSvgMapInWebView(mapPath);
             LoadLayersPanel(mapPath);
@@ -875,6 +935,7 @@ namespace TarkovTracker
 
             _ = MapWebView.ExecuteScriptAsync($"addMapMarkers({json});");
             _ = ApplyMarkerVisibility();
+            _ = ApplyRaidExfilHighlightsAsync();
 
             if (_overlayWindow != null)
                 _ = _overlayWindow.SetMapMarkersAsync(json);
@@ -952,9 +1013,9 @@ namespace TarkovTracker
         private double GetLabelFontSize(double size)
         {
             if (size <= 0)
-                return 14;
+                return 8;
 
-            return Math.Max(11, Math.Min(26, size / 5.0));
+            return Math.Max(7, Math.Min(13, size / 8.0));
         }
 
         private string GetExtractConditions(ExtractInfo extract)
@@ -1251,7 +1312,7 @@ namespace TarkovTracker
 
                 _lastProcessedTime = file.CreationTime;
 
-                ParseScreenshotFilename(file.Name);
+                await ProcessScreenshotAsync(file.FullName);
             });
         }
 
@@ -1277,12 +1338,124 @@ namespace TarkovTracker
                 }
 
                 _lastProcessedTime = newestFile.CreationTime;
-                ParseScreenshotFilename(newestFile.Name);
+                _ = ProcessScreenshotAsync(newestFile.FullName);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private async System.Threading.Tasks.Task ProcessScreenshotAsync(string filePath)
+        {
+            ParseScreenshotFilename(Path.GetFileName(filePath));
+
+            try
+            {
+                (int configuredWidth, int configuredHeight) = GetConfiguredGameResolution();
+                ScreenshotExfilParseResult parseResult = await _screenshotExfilParser.ParseAsync(
+                    filePath,
+                    configuredWidth,
+                    configuredHeight);
+
+                UpdateDetectedResolutionUi(parseResult, configuredWidth, configuredHeight);
+
+                if (!parseResult.PanelDetected)
+                    return;
+
+                if (_currentMapConfig == null || string.IsNullOrWhiteSpace(_currentMapDisplayName))
+                {
+                    SetParserStatus("EXFIL PANEL FOUND - SELECT MAP", isError: true);
+                    return;
+                }
+
+                string normalizedMapName = MapDataService.NormalizeMapName(_currentMapDisplayName);
+                RaidExfilMatchResult matchResult = RaidExfilMatcher.Match(
+                    normalizedMapName,
+                    parseResult.ExfilNames,
+                    parseResult.TransitNames,
+                    _mapData,
+                    parseResult.RawOcrText);
+
+                if (matchResult.ExtractNames.Count == 0 && matchResult.TransitNames.Count == 0)
+                {
+                    SetParserStatus("EXFIL PANEL FOUND - NO MATCHES", isError: true);
+                    UpdateRaidExfilUi();
+                    return;
+                }
+
+                _raidExfilHighlights.Activate(matchResult.ExtractNames, matchResult.TransitNames);
+                UpdateRaidExfilUi();
+                await ApplyRaidExfilHighlightsAsync();
+
+                SetParserStatus(
+                    $"RAID EXFILS: {matchResult.ExtractNames.Count} EXT / {matchResult.TransitNames.Count} TRANSIT");
+            }
+            catch (Exception ex)
+            {
+                SetParserStatus($"EXFIL SCAN FAILED: {ex.Message}", isError: true);
+            }
+        }
+
+        private void UpdateDetectedResolutionUi(
+            ScreenshotExfilParseResult parseResult,
+            int configuredWidth,
+            int configuredHeight)
+        {
+            if (parseResult.ImageWidth <= 0 || parseResult.ImageHeight <= 0)
+            {
+                DetectedResolutionText.Text = "—";
+                return;
+            }
+
+            string detected = $"{parseResult.ImageWidth} x {parseResult.ImageHeight}";
+            if (!string.IsNullOrWhiteSpace(parseResult.ResolutionProfile))
+                detected += $" ({parseResult.ResolutionProfile})";
+
+            if (configuredWidth > 0 && configuredHeight > 0)
+                detected += $" | TUNING {configuredWidth}x{configuredHeight}";
+
+            DetectedResolutionText.Text = detected;
+        }
+
+        private void ClearRaidExfilHighlights()
+        {
+            _raidExfilHighlights.Clear();
+            UpdateRaidExfilUi();
+            _ = ApplyRaidExfilHighlightsAsync();
+        }
+
+        private void UpdateRaidExfilUi()
+        {
+            if (!_raidExfilHighlights.Active)
+            {
+                RaidExfilStatusText.Text = "NONE DETECTED";
+                RaidExfilStatusText.Foreground = (Brush)FindResource("TacticalTextMutedBrush");
+                RaidExfilExtractsText.Text = "—";
+                RaidExfilTransitsText.Text = "—";
+                return;
+            }
+
+            RaidExfilStatusText.Text = "ACTIVE FOR THIS MAP";
+            RaidExfilStatusText.Foreground = (Brush)FindResource("TacticalTerminalGreenBrush");
+            RaidExfilExtractsText.Text = _raidExfilHighlights.ExtractNames.Count == 0
+                ? "—"
+                : string.Join(Environment.NewLine, _raidExfilHighlights.ExtractNames);
+            RaidExfilTransitsText.Text = _raidExfilHighlights.TransitNames.Count == 0
+                ? "—"
+                : string.Join(Environment.NewLine, _raidExfilHighlights.TransitNames);
+        }
+
+        private async System.Threading.Tasks.Task ApplyRaidExfilHighlightsAsync()
+        {
+            string payloadJson = JsonSerializer.Serialize(_raidExfilHighlights.ToPayload());
+            _lastRaidExfilHighlightsJson = payloadJson;
+
+            if (_webViewReady)
+                await MapWebView.ExecuteScriptAsync($"setRaidExfilHighlights({payloadJson});");
+
+            if (_overlayWindow != null)
+                await _overlayWindow.ApplyRaidExfilHighlightsAsync(payloadJson);
         }
 
         private void ParseScreenshotFilename(string filename)
@@ -1438,6 +1611,9 @@ namespace TarkovTracker
             if (!string.IsNullOrWhiteSpace(_lastMapMarkersJson))
                 await _overlayWindow.SetMapMarkersAsync(_lastMapMarkersJson);
 
+            if (!string.IsNullOrWhiteSpace(_lastRaidExfilHighlightsJson))
+                await _overlayWindow.ApplyRaidExfilHighlightsAsync(_lastRaidExfilHighlightsJson);
+
             if (_lastPlayerMarker != null)
             {
                 await _overlayWindow.SetPlayerMarkerAsync(
@@ -1461,6 +1637,7 @@ namespace TarkovTracker
             }
 
             await _overlayWindow.ApplyMarkerFiltersAsync(JsonSerializer.Serialize(BuildMarkerFilterState()));
+            await ApplyRaidExfilHighlightsAsync();
         }
 
         protected override void OnClosed(EventArgs e)

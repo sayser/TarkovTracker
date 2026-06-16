@@ -101,6 +101,7 @@ function addMapMarkers(markers) {
 
         marker.className = 'mapMarker ' + m.cssClass;
         marker.dataset.markerType = m.markerType;
+        marker.dataset.markerName = m.name || '';
         marker.dataset.faction = m.faction || '';
         marker.dataset.questCategory = m.questCategory || '';
 
@@ -133,7 +134,7 @@ function addMapMarkers(markers) {
             label.textContent = m.name;
 
             if (m.markerType === 'label') {
-                label.style.fontSize = (m.labelSize || 14) + 'px';
+                label.style.fontSize = (m.labelSize || 8) + 'px';
                 label.style.transform = 'translate(-50%, -50%) rotate(' + (m.labelRotation || 0) + 'deg)';
             }
 
@@ -161,6 +162,7 @@ function addMapMarkers(markers) {
     }
 
     updateMapMarkerVisuals();
+    refreshRaidExfilHighlights();
 }
 
 function updateMapMarkerVisuals() {
@@ -247,6 +249,57 @@ function applyMarkerFilters(filters) {
     setHazardVisibility(!!filters.hazards);
     setSwitchVisibility(!!filters.switches);
     setBtrStopVisibility(!!filters.btrStops);
+    refreshRaidExfilHighlights();
+}
+
+let raidExfilState = {
+    active: false,
+    extractNames: [],
+    transitNames: []
+};
+
+function normalizeRaidName(name) {
+    return (name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function setRaidExfilHighlights(state) {
+    if (!state) {
+        raidExfilState = { active: false, extractNames: [], transitNames: [] };
+    } else {
+        raidExfilState = {
+            active: state.active === true,
+            extractNames: state.extractNames || [],
+            transitNames: state.transitNames || []
+        };
+    }
+
+    refreshRaidExfilHighlights();
+}
+
+function refreshRaidExfilHighlights() {
+    let extractSet = new Set((raidExfilState.extractNames || []).map(normalizeRaidName));
+    let transitSet = new Set((raidExfilState.transitNames || []).map(normalizeRaidName));
+    let active = raidExfilState.active === true;
+
+    document.querySelectorAll('.mapMarker').forEach(function(marker) {
+        marker.classList.remove('raid-available', 'raid-dimmed');
+
+        if (!active)
+            return;
+
+        let markerType = marker.dataset.markerType;
+        let markerName = normalizeRaidName(marker.dataset.markerName);
+
+        if (markerType === 'extract' && extractSet.has(markerName)) {
+            marker.classList.add('raid-available');
+            marker.style.display = 'block';
+        } else if (markerType === 'transit' && transitSet.has(markerName)) {
+            marker.classList.add('raid-available');
+            marker.style.display = 'block';
+        } else if (markerType === 'extract' || markerType === 'transit') {
+            marker.classList.add('raid-dimmed');
+        }
+    });
 }
 
 let mapLevelState = {

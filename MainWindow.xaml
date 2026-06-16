@@ -43,7 +43,7 @@
                                    Foreground="{StaticResource TacticalTextPrimaryBrush}"
                                    FontSize="13"
                                    FontWeight="Bold"/>
-                        <TextBlock Text="TACTICAL MAP INTERFACE v1.0"
+                        <TextBlock Text="TACTICAL MAP INTERFACE v2.2"
                                    Foreground="{StaticResource TacticalTextMutedBrush}"
                                    FontSize="9"
                                    FontWeight="SemiBold"/>
@@ -200,11 +200,59 @@
                                        FontSize="14"
                                        Margin="0,0,0,8"/>
 
+                            <TextBlock Text="GAME RESOLUTION" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="GameResolutionComboBox"
+                                      Style="{StaticResource TacticalComboBox}"
+                                      Margin="0,0,0,8"
+                                      SelectionChanged="GameResolutionComboBox_SelectionChanged">
+                                <ComboBoxItem Content="Auto (from screenshot)" Tag="auto"/>
+                                <ComboBoxItem Content="1920 x 1080" Tag="1920x1080"/>
+                                <ComboBoxItem Content="2560 x 1440" Tag="2560x1440"/>
+                                <ComboBoxItem Content="3840 x 2160" Tag="3840x2160"/>
+                                <ComboBoxItem Content="2560 x 1080 (Ultrawide)" Tag="2560x1080"/>
+                                <ComboBoxItem Content="3440 x 1440 (Ultrawide)" Tag="3440x1440"/>
+                            </ComboBox>
+
+                            <TextBlock Text="DETECTED RES" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="DetectedResolutionText"
+                                       Text="—"
+                                       FontFamily="{StaticResource TacticalMonoFont}"
+                                       Foreground="{StaticResource TacticalTextPrimaryBrush}"
+                                       FontSize="11"
+                                       Margin="0,0,0,8"/>
+
                             <TextBlock Text="CAPTURED" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
                             <TextBlock x:Name="LastScreenshotText"
                                        Text="NONE"
                                        FontFamily="{StaticResource TacticalMonoFont}"
                                        Foreground="{StaticResource TacticalTextPrimaryBrush}"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Raid exfil highlights -->
+                    <Border Style="{StaticResource TacticalPanel}">
+                        <StackPanel>
+                            <TextBlock Text="RAID EXFILS" Style="{StaticResource TacticalSectionHeader}"/>
+                            <TextBlock x:Name="RaidExfilStatusText"
+                                       Text="NONE DETECTED"
+                                       Foreground="{StaticResource TacticalTextMutedBrush}"
+                                       FontSize="11"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="EXFILS" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="RaidExfilExtractsText"
+                                       Text="—"
+                                       FontFamily="{StaticResource TacticalMonoFont}"
+                                       Foreground="{StaticResource TacticalTerminalGreenBrush}"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="TRANSITS" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="RaidExfilTransitsText"
+                                       Text="—"
+                                       FontFamily="{StaticResource TacticalMonoFont}"
+                                       Foreground="{StaticResource TacticalAmberBrightBrush}"
                                        FontSize="11"
                                        TextWrapping="Wrap"/>
                         </StackPanel>

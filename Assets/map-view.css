@@ -53,23 +53,31 @@ html, body {
 
 #playerMarkerInner {
     position: relative;
-    width: 30px;
-    height: 36px;
-    background: #ff1744;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px black);
+    width: 18px;
+    height: 22px;
     transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95))
+            drop-shadow(0 0 4px rgba(0, 0, 0, 0.85));
+}
+
+#playerMarkerInner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #ff5252 0%, #c62828 100%);
+    clip-path: polygon(50% 0%, 100% 100%, 50% 68%, 0% 100%);
 }
 
 #playerMarkerInner::after {
     content: '';
     position: absolute;
-    left: 9px;
-    top: 1px;
-    width: 12px;
-    height: 15px;
-    background: #b000ff;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    left: 50%;
+    top: 2px;
+    width: 6px;
+    height: 9px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, #80deea 0%, #00acc1 100%);
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
 }
 
 .mapMarker {
@@ -163,15 +171,17 @@ html, body {
     left: 0;
     top: 0;
     background: transparent;
-    color: #d8d8d8;
+    color: #b8b8b8;
     font-family: Arial, sans-serif;
-    font-weight: bold;
+    font-size: 8px;
+    font-weight: 600;
     padding: 0;
     border-radius: 0;
+    letter-spacing: 0.02em;
     text-shadow:
-        1px 1px 2px black,
-        -1px -1px 2px black,
-        0 0 4px black;
+        1px 1px 1px rgba(0, 0, 0, 0.95),
+        -1px -1px 1px rgba(0, 0, 0, 0.95),
+        0 0 3px rgba(0, 0, 0, 0.85);
     transform-origin: center center;
 }
 
@@ -215,5 +225,40 @@ html, body {
     fill: rgba(255, 87, 34, 0.22);
     stroke: rgba(255, 87, 34, 0.85);
     stroke-width: 2;
+}
+
+@keyframes raidExfilPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px #00e599) drop-shadow(0 0 18px #00e599);
+    }
+    50% {
+        filter: drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 18px #00ff88) drop-shadow(0 0 28px #00ff88);
+    }
+}
+
+.mapMarker.raid-available {
+    z-index: 9500;
+    opacity: 1 !important;
+}
+
+.mapMarker.raid-available .markerDot {
+    animation: raidExfilPulse 1.6s ease-in-out infinite;
+    transform: translate(-50%, -50%) scale(1.18);
+}
+
+.mapMarker.raid-available .markerLabel {
+    color: #00ff88;
+    background: rgba(0, 70, 35, 0.9);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.75);
+}
+
+.mapMarker.raid-dimmed {
+    opacity: 0.28;
+}
+
+.mapMarker.transit.raid-available .markerLabel {
+    color: #ffd54f;
+    background: rgba(90, 60, 0, 0.9);
+    box-shadow: 0 0 10px rgba(255, 213, 79, 0.75);
 }
 
