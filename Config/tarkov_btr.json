@@ -1,0 +1,24 @@
+{
+  "woods": {
+    "stops": [
+      { "name": "USEC Checkpoint", "x": 240.12, "y": -2.088, "z": -65.14 },
+      { "name": "Sawmill", "x": -2.15, "y": 8.128, "z": -139.15 },
+      { "name": "Scav Bunker", "x": 178.1, "y": 23.95, "z": -718.51 },
+      { "name": "Sunken Village", "x": -175.84, "y": 12.32, "z": -667.2 },
+      { "name": "Old Sawmill", "x": -495.36, "y": 21.834, "z": -262.64 },
+      { "name": "Train Depot", "x": -633.21, "y": 8.19, "z": 141.54 },
+      { "name": "Junction", "x": -94.28, "y": 26.15, "z": -389.26 },
+      { "name": "Emercom Base", "x": -138.877, "y": -6.755, "z": 243.119 }
+    ]
+  },
+  "streetsoftarkov": {
+    "stops": [
+      { "name": "Rodina Cinema", "x": -146.502, "y": 2.122, "z": 402.771 },
+      { "name": "Tram", "x": -225.285, "y": 2.135, "z": 236.344 },
+      { "name": "Pinewood Hotel", "x": -125.01, "y": 0.737, "z": 72.014 },
+      { "name": "Old Scav Checkpoint", "x": 126.23, "y": -2.559, "z": 35.47 },
+      { "name": "Collapsed Crane", "x": 207.25, "y": 3.2, "z": 248.83 },
+      { "name": "City Center", "x": -4.03, "y": 2.189, "z": 202.88 }
+    ]
+  }
+}

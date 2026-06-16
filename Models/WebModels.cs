@@ -67,6 +67,9 @@ public class WebMapMarker
     [JsonPropertyName("normalizedY")]
     public double NormalizedY { get; set; }
 
+    [JsonPropertyName("hideLabel")]
+    public bool HideLabel { get; set; }
+
     [JsonPropertyName("outline")]
     public List<WebMapOutlinePoint>? Outline { get; set; }
 }

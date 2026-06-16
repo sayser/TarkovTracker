@@ -206,6 +206,7 @@ namespace TarkovTracker
             LoadLayersPanel(mapPath);
             await ApplyMapLevelStateAsync();
 
+            UpdateBtrControlsVisibility();
             DrawMapMarkersForCurrentMap();
             RedrawLastMarker();
             _ = SyncOverlayToCurrentMapAsync();
@@ -463,6 +464,8 @@ namespace TarkovTracker
 
         private MarkerFilterState BuildMarkerFilterState()
         {
+            bool supportsBtr = CurrentMapSupportsBtr();
+
             return new MarkerFilterState
             {
                 PmcExtracts = ShowPmcExtractsCheckBox?.IsChecked == true,
@@ -476,8 +479,34 @@ namespace TarkovTracker
                 QuestItems = ShowQuestItemsCheckBox?.IsChecked == true,
                 QuestObjectives = ShowQuestObjectivesCheckBox?.IsChecked == true,
                 Hazards = ShowHazardsCheckBox?.IsChecked == true,
-                Switches = ShowSwitchesCheckBox?.IsChecked == true
+                Switches = ShowSwitchesCheckBox?.IsChecked == true,
+                BtrStops = supportsBtr && ShowBtrStopsCheckBox?.IsChecked == true
             };
+        }
+
+        private bool CurrentMapSupportsBtr()
+        {
+            if (_currentMapConfig == null || string.IsNullOrWhiteSpace(_currentMapDisplayName))
+                return false;
+
+            return MapDataService.MapSupportsBtr(MapDataService.NormalizeMapName(_currentMapDisplayName));
+        }
+
+        private void UpdateBtrControlsVisibility()
+        {
+            bool supportsBtr = CurrentMapSupportsBtr();
+            var visibility = supportsBtr ? Visibility.Visible : Visibility.Collapsed;
+
+            _suppressMarkerFilterRefresh = true;
+
+            ShowBtrStopsCheckBox.Visibility = visibility;
+
+            if (!supportsBtr)
+            {
+                ShowBtrStopsCheckBox.IsChecked = false;
+            }
+
+            _suppressMarkerFilterRefresh = false;
         }
 
         private void ShowAllLayers_Click(object sender, RoutedEventArgs e)
@@ -526,6 +555,33 @@ namespace TarkovTracker
             ShowPmcSpawnsCheckBox.IsChecked = true;
             ShowScavSpawnsCheckBox.IsChecked = true;
             ShowBossSpawnsCheckBox.IsChecked = true;
+
+            if (CurrentMapSupportsBtr())
+            {
+                ShowBtrStopsCheckBox.IsChecked = true;
+            }
+
+            _suppressMarkerFilterRefresh = false;
+            _ = ApplyMarkerVisibility();
+        }
+
+        private void HideAllMarkers_Click(object sender, RoutedEventArgs e)
+        {
+            _suppressMarkerFilterRefresh = true;
+
+            ShowLabelsCheckBox.IsChecked = false;
+            ShowQuestItemsCheckBox.IsChecked = false;
+            ShowQuestObjectivesCheckBox.IsChecked = false;
+            ShowPmcExtractsCheckBox.IsChecked = false;
+            ShowScavExtractsCheckBox.IsChecked = false;
+            ShowSharedExtractsCheckBox.IsChecked = false;
+            ShowTransitsCheckBox.IsChecked = false;
+            ShowHazardsCheckBox.IsChecked = false;
+            ShowSwitchesCheckBox.IsChecked = false;
+            ShowPmcSpawnsCheckBox.IsChecked = false;
+            ShowScavSpawnsCheckBox.IsChecked = false;
+            ShowBossSpawnsCheckBox.IsChecked = false;
+            ShowBtrStopsCheckBox.IsChecked = false;
 
             _suppressMarkerFilterRefresh = false;
             _ = ApplyMarkerVisibility();
@@ -722,6 +778,7 @@ namespace TarkovTracker
                 {
                     var converted = ConvertGameToNormalizedMap(hazard.Position!.X, hazard.Position.Z);
                     string hazardName = string.IsNullOrWhiteSpace(hazard.Name) ? "Hazard" : hazard.Name;
+                    bool hideLabel = IsLandmineHazard(hazardName, hazard.HazardType);
 
                     markers.Add(new WebMapMarker
                     {
@@ -735,7 +792,8 @@ namespace TarkovTracker
                         Conditions = "",
                         Position = $"X={hazard.Position.X:0.##}, Y={hazard.Position.Y:0.##}, Z={hazard.Position.Z:0.##}",
                         NormalizedX = converted.normalizedX,
-                        NormalizedY = converted.normalizedY
+                        NormalizedY = converted.normalizedY,
+                        HideLabel = hideLabel
                     });
                 }
             }
@@ -789,6 +847,29 @@ namespace TarkovTracker
                 }
             }
 
+            if (_mapData.BtrByMapName.TryGetValue(normalizedName, out var btrConfig))
+            {
+                foreach (var stop in btrConfig.Stops)
+                {
+                    var converted = ConvertGameToNormalizedMap(stop.X, stop.Z);
+
+                    markers.Add(new WebMapMarker
+                    {
+                        Name = stop.Name,
+                        MarkerType = "btr-stop",
+                        Faction = "",
+                        CssClass = "btr-stop",
+                        Tooltip = $"BTR Stop: {stop.Name}",
+                        ZoneName = "",
+                        Categories = "BTR Stop",
+                        Conditions = "",
+                        Position = $"X={stop.X:0.##}, Y={stop.Y:0.##}, Z={stop.Z:0.##}",
+                        NormalizedX = converted.normalizedX,
+                        NormalizedY = converted.normalizedY
+                    });
+                }
+            }
+
             string json = JsonSerializer.Serialize(markers);
             _lastMapMarkersJson = json;
 
@@ -799,6 +880,14 @@ namespace TarkovTracker
                 _ = _overlayWindow.SetMapMarkersAsync(json);
 
             SetParserStatus($"LOADED {markers.Count} MARKERS");
+        }
+
+        private static bool IsLandmineHazard(string hazardName, string? hazardType)
+        {
+            if (string.Equals(hazardType, "minefield", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return string.Equals(hazardName, "Landmine", StringComparison.OrdinalIgnoreCase);
         }
 
         private List<WebMapOutlinePoint>? BuildNormalizedOutline(List<MapOutlinePoint>? outline)

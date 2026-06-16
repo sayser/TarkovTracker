@@ -234,14 +234,21 @@
                         <StackPanel>
                             <Grid Margin="0,0,0,10">
                                 <TextBlock Text="MARKERS" Style="{StaticResource TacticalSectionHeader}" Margin="0"/>
-                                <Button Content="SHOW ALL"
-                                        Style="{StaticResource TacticalSmallButton}"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Top"
-                                        Click="ShowAllMarkers_Click"/>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top">
+                                    <Button Content="SHOW ALL"
+                                            Style="{StaticResource TacticalSmallButton}"
+                                            Margin="0,0,6,0"
+                                            Click="ShowAllMarkers_Click"/>
+                                    <Button Content="HIDE ALL"
+                                            Style="{StaticResource TacticalSmallButton}"
+                                            Margin="0"
+                                            Click="HideAllMarkers_Click"/>
+                                </StackPanel>
                             </Grid>
 
-                            <UniformGrid Columns="4" Rows="3">
+                            <UniformGrid Columns="4" Rows="4">
 
                                 <CheckBox x:Name="ShowLabelsCheckBox"
                                           Style="{StaticResource TacticalMarkerTile}"
@@ -386,6 +393,19 @@
                                         <Image Width="24" Height="24"
                                                Source="pack://siteoforigin:,,,/Maps/interactive/spawn_boss.png"/>
                                         <TextBlock Text="Boss" FontSize="8" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </CheckBox>
+
+                                <CheckBox x:Name="ShowBtrStopsCheckBox"
+                                          Style="{StaticResource TacticalMarkerTile}"
+                                          Visibility="Collapsed"
+                                          IsChecked="False"
+                                          Checked="MarkerFilter_Changed"
+                                          Unchecked="MarkerFilter_Changed">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <Image Width="24" Height="24"
+                                               Source="pack://siteoforigin:,,,/Maps/interactive/btr_stop.png"/>
+                                        <TextBlock Text="BTR Stops" FontSize="8" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                     </StackPanel>
                                 </CheckBox>
 

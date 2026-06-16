@@ -19,6 +19,7 @@ public class MapDataService
     public Dictionary<string, List<QuestMarker>> QuestMarkersByMapName { get; } = new();
     public Dictionary<string, List<HazardInfo>> HazardsByMapName { get; } = new();
     public Dictionary<string, List<MapSwitchInfo>> SwitchesByMapName { get; } = new();
+    public Dictionary<string, BtrMapConfig> BtrByMapName { get; } = new();
     public Dictionary<string, MapLevelsConfig> MapLevelsByKey { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     public string? LastStatusMessage { get; private set; }
@@ -40,7 +41,11 @@ public class MapDataService
         LoadQuestMarkers();
         LoadHazards();
         LoadSwitches();
+        LoadBtr();
     }
+
+    public static bool MapSupportsBtr(string normalizedMapName) =>
+        normalizedMapName is "woods" or "streetsoftarkov";
 
     public static string NormalizeMapName(string name)
     {
@@ -401,6 +406,30 @@ public class MapDataService
                 continue;
 
             SwitchesByMapName[NormalizeMapName(map.Name)] = map.Switches ?? new List<MapSwitchInfo>();
+        }
+    }
+
+    private void LoadBtr()
+    {
+        BtrByMapName.Clear();
+        string filePath = ConfigPath("tarkov_btr.json");
+
+        if (!File.Exists(filePath))
+            return;
+
+        var data = JsonSerializer.Deserialize<Dictionary<string, BtrMapConfig>>(
+            File.ReadAllText(filePath),
+            JsonOptions);
+
+        if (data == null)
+            return;
+
+        foreach (var mapEntry in data)
+        {
+            if (mapEntry.Value == null)
+                continue;
+
+            BtrByMapName[NormalizeMapName(mapEntry.Key)] = mapEntry.Value;
         }
     }
 }

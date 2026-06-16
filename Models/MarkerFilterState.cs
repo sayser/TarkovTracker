@@ -39,4 +39,7 @@ public class MarkerFilterState
 
     [JsonPropertyName("switches")]
     public bool Switches { get; set; }
+
+    [JsonPropertyName("btrStops")]
+    public bool BtrStops { get; set; }
 }

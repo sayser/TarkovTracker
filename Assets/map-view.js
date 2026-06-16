@@ -125,7 +125,8 @@ function addMapMarkers(markers) {
         if (
             m.markerType !== 'spawn-pmc' &&
             m.markerType !== 'spawn-scav' &&
-            m.markerType !== 'spawn-boss'
+            m.markerType !== 'spawn-boss' &&
+            !m.hideLabel
         ) {
             let label = document.createElement('div');
             label.className = 'markerLabel';
@@ -224,6 +225,12 @@ function setSwitchVisibility(visible) {
     });
 }
 
+function setBtrStopVisibility(visible) {
+    document.querySelectorAll('.mapMarker[data-marker-type="btr-stop"]').forEach(function(marker) {
+        marker.style.display = visible ? 'block' : 'none';
+    });
+}
+
 function applyMarkerFilters(filters) {
     if (!filters) return;
 
@@ -239,6 +246,7 @@ function applyMarkerFilters(filters) {
     setQuestCategoryVisibility('objective', !!filters.questObjectives);
     setHazardVisibility(!!filters.hazards);
     setSwitchVisibility(!!filters.switches);
+    setBtrStopVisibility(!!filters.btrStops);
 }
 
 let mapLevelState = {
