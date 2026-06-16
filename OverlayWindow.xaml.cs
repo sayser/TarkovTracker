@@ -1,11 +1,11 @@
-﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Core;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text.Json;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 
 namespace TarkovTracker
@@ -13,9 +13,11 @@ namespace TarkovTracker
     public partial class OverlayWindow : Window
     {
         private bool _webViewReady = false;
+        private bool _mapAssetHostMapped = false;
+        private string? _mapsFolder;
         private string? _pendingMarkersJson;
-        private readonly Dictionary<string, bool> _pendingLayerVisibility = new();
-        private OverlayMarkerVisibility _pendingMarkerVisibility = new();
+        private string? _pendingMapLevelStateJson;
+        private string? _pendingMarkerFiltersJson;
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _pendingPlayerMarker;
         private double _overlayOpacity = 0.80;
 
@@ -29,11 +31,34 @@ namespace TarkovTracker
             };
         }
 
+        public void ConfigureMapAssetHost(string mapsFolder)
+        {
+            if (string.IsNullOrWhiteSpace(mapsFolder))
+                return;
+
+            _mapsFolder = mapsFolder;
+        }
+
+        private async Task EnsureMapAssetHostMappingAsync()
+        {
+            await OverlayMapView.EnsureCoreWebView2Async();
+
+            if (_mapAssetHostMapped || string.IsNullOrWhiteSpace(_mapsFolder))
+                return;
+
+            OverlayMapView.CoreWebView2.SetVirtualHostNameToFolderMapping(
+                MainWindow.MapAssetHostName,
+                _mapsFolder,
+                CoreWebView2HostResourceAccessKind.Allow);
+
+            _mapAssetHostMapped = true;
+        }
+
         public async Task LoadMapHtmlAsync(string html)
         {
             _webViewReady = false;
 
-            await OverlayMapView.EnsureCoreWebView2Async();
+            await EnsureMapAssetHostMappingAsync();
 
             // Make the WebView itself transparent.
             OverlayMapView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
@@ -59,10 +84,11 @@ namespace TarkovTracker
             if (!string.IsNullOrWhiteSpace(_pendingMarkersJson))
                 await SetMapMarkersAsync(_pendingMarkersJson);
 
-            foreach (var layer in _pendingLayerVisibility)
-                await SetLayerVisibilityAsync(layer.Key, layer.Value);
+            if (!string.IsNullOrWhiteSpace(_pendingMapLevelStateJson))
+                await ApplyMapLevelStateAsync(_pendingMapLevelStateJson);
 
-            await ApplyMarkerVisibilityAsync(_pendingMarkerVisibility);
+            if (!string.IsNullOrWhiteSpace(_pendingMarkerFiltersJson))
+                await ApplyMarkerFiltersAsync(_pendingMarkerFiltersJson);
 
             if (_pendingPlayerMarker != null)
             {
@@ -125,7 +151,9 @@ namespace TarkovTracker
 
         private async Task ApplyOverlayOpacityAsync()
         {
-            OverlayRootBorder.Background = new SolidColorBrush(Color.FromArgb(35, 30, 30, 30));
+            double panelOpacity = Math.Max(0.45, Math.Min(0.92, _overlayOpacity * 0.85 + 0.15));
+            OverlayRootBorder.Background = new SolidColorBrush(Color.FromArgb(
+                (byte)(panelOpacity * 255), 0x1A, 0x1D, 0x18));
 
             if (!_webViewReady)
                 return;
@@ -142,7 +170,9 @@ namespace TarkovTracker
                 return;
 
             await OverlayMapView.ExecuteScriptAsync($"addMapMarkers({markersJson});");
-            await ApplyMarkerVisibilityAsync(_pendingMarkerVisibility);
+
+            if (!string.IsNullOrWhiteSpace(_pendingMarkerFiltersJson))
+                await ApplyMarkerFiltersAsync(_pendingMarkerFiltersJson);
         }
 
         public async Task SetPlayerMarkerAsync(double normalizedX, double normalizedY, double directionDegrees)
@@ -158,63 +188,30 @@ namespace TarkovTracker
                 $"{directionDegrees.ToString(CultureInfo.InvariantCulture)});");
         }
 
-        public async Task SetLayerVisibilityAsync(string layerId, bool visible)
+        public async Task ApplyMapLevelStateAsync(string stateJson)
         {
-            if (string.IsNullOrWhiteSpace(layerId))
+            if (string.IsNullOrWhiteSpace(stateJson))
                 return;
 
-            _pendingLayerVisibility[layerId] = visible;
+            _pendingMapLevelStateJson = stateJson;
 
             if (!_webViewReady)
                 return;
 
-            string idJson = JsonSerializer.Serialize(layerId);
-            string visibleJson = visible ? "true" : "false";
-
-            await OverlayMapView.ExecuteScriptAsync($"setLayerVisibility({idJson}, {visibleJson});");
+            await OverlayMapView.ExecuteScriptAsync($"applyMapLevelState({stateJson});");
         }
 
-        public async Task ApplyMarkerVisibilityAsync(
-            bool pmcExtracts,
-            bool scavExtracts,
-            bool sharedExtracts,
-            bool transits,
-            bool pmcSpawns,
-            bool scavSpawns,
-            bool bossSpawns,
-            bool labels,
-            bool questMarkers)
+        public async Task ApplyMarkerFiltersAsync(string filtersJson)
         {
-            _pendingMarkerVisibility = new OverlayMarkerVisibility
-            {
-                PmcExtracts = pmcExtracts,
-                ScavExtracts = scavExtracts,
-                SharedExtracts = sharedExtracts,
-                Transits = transits,
-                PmcSpawns = pmcSpawns,
-                ScavSpawns = scavSpawns,
-                BossSpawns = bossSpawns,
-                Labels = labels,
-                QuestMarkers = questMarkers
-            };
+            if (string.IsNullOrWhiteSpace(filtersJson))
+                return;
 
-            await ApplyMarkerVisibilityAsync(_pendingMarkerVisibility);
-        }
+            _pendingMarkerFiltersJson = filtersJson;
 
-        private async Task ApplyMarkerVisibilityAsync(OverlayMarkerVisibility visibility)
-        {
             if (!_webViewReady)
                 return;
 
-            await OverlayMapView.ExecuteScriptAsync($"setExtractFactionVisibility('pmc', {(visibility.PmcExtracts ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setExtractFactionVisibility('scav', {(visibility.ScavExtracts ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setExtractFactionVisibility('shared', {(visibility.SharedExtracts ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setTransitVisibility({(visibility.Transits ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setSpawnVisibility('spawn-pmc', {(visibility.PmcSpawns ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setSpawnVisibility('spawn-scav', {(visibility.ScavSpawns ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setSpawnVisibility('spawn-boss', {(visibility.BossSpawns ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setLabelVisibility({(visibility.Labels ? "true" : "false")});");
-            await OverlayMapView.ExecuteScriptAsync($"setQuestVisibility({(visibility.QuestMarkers ? "true" : "false")});");
+            await OverlayMapView.ExecuteScriptAsync($"applyMarkerFilters({filtersJson});");
         }
 
         public async Task ResetViewAsync()
@@ -241,18 +238,39 @@ namespace TarkovTracker
             if (e.LeftButton == MouseButtonState.Pressed)
                 DragMove();
         }
-    }
 
-    public class OverlayMarkerVisibility
-    {
-        public bool PmcExtracts { get; set; } = true;
-        public bool ScavExtracts { get; set; } = true;
-        public bool SharedExtracts { get; set; } = true;
-        public bool Transits { get; set; } = true;
-        public bool PmcSpawns { get; set; } = false;
-        public bool ScavSpawns { get; set; } = false;
-        public bool BossSpawns { get; set; } = false;
-        public bool Labels { get; set; } = true;
-        public bool QuestMarkers { get; set; } = false;
+        private void ResizeEdge_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed)
+                return;
+
+            if (sender is not FrameworkElement { Tag: string directionName })
+                return;
+
+            if (Enum.TryParse(directionName, out ResizeDirection direction))
+                ResizeWindow(direction);
+        }
+
+        private void ResizeWindow(ResizeDirection direction)
+        {
+            SendMessage(new WindowInteropHelper(this).Handle, WM_SYSCOMMAND, (IntPtr)direction, IntPtr.Zero);
+        }
+
+        private enum ResizeDirection
+        {
+            Left = 61441,
+            Right = 61442,
+            Top = 61443,
+            TopLeft = 61444,
+            TopRight = 61445,
+            Bottom = 61446,
+            BottomLeft = 61447,
+            BottomRight = 61448
+        }
+
+        private const uint WM_SYSCOMMAND = 0x0112;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
     }
 }

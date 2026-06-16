@@ -1,361 +1,369 @@
-{
-  "data": {
-    "maps": [
-      {
-        "name": "Factory",
-        "transits": [
-          {
-            "description": "Transit to Woods",
-            "conditions": null,
-            "position": {
-              "x": 23.7,
-              "y": 0.84,
-              "z": 61.61
-            }
-          },
-          {
-            "description": "Transit to Customs",
-            "conditions": null,
-            "position": {
-              "x": 18.51,
-              "y": -0.423,
-              "z": -48.33
-            }
-          },
-          {
-            "description": "Transit to The Lab",
-            "conditions": "TerraGroup Labs access keycard required (1)",
-            "position": {
-              "x": -26.539,
-              "y": -4.085,
-              "z": -42.013
-            }
-          }
-        ]
-      },
-      {
-        "name": "Customs",
-        "transits": [
-          {
-            "description": "Transit to Reserve",
-            "conditions": null,
-            "position": {
-              "x": 651.7,
-              "y": 1.99,
-              "z": 124.6
-            }
-          },
-          {
-            "description": "Transit to Factory",
-            "conditions": null,
-            "position": {
-              "x": 354.31,
-              "y": 2.31,
-              "z": -190.1
-            }
-          },
-          {
-            "description": "Transit to Interchange",
-            "conditions": null,
-            "position": {
-              "x": -335.24,
-              "y": 2.11,
-              "z": -205.68
-            }
-          },
-          {
-            "description": "Transit to Shoreline",
-            "conditions": null,
-            "position": {
-              "x": 23.67,
-              "y": -1.3999995,
-              "z": 139.53
-            }
-          }
-        ]
-      },
-      {
-        "name": "Woods",
-        "transits": [
-          {
-            "description": "Transit to Factory",
-            "conditions": null,
-            "position": {
-              "x": -362.45,
-              "y": 0.821269155,
-              "z": 360.7704
-            }
-          },
-          {
-            "description": "Transit to Reserve",
-            "conditions": null,
-            "position": {
-              "x": 246.06,
-              "y": -10.22,
-              "z": 369.9
-            }
-          },
-          {
-            "description": "Transit to Lighthouse",
-            "conditions": null,
-            "position": {
-              "x": 494.34,
-              "y": -16.77,
-              "z": 345.37
-            }
-          },
-          {
-            "description": "Transit to Customs",
-            "conditions": null,
-            "position": {
-              "x": -153.05,
-              "y": 1.07,
-              "z": 402.13
-            }
-          }
-        ]
-      },
-      {
-        "name": "Lighthouse",
-        "transits": [
-          {
-            "description": "Transit to Shoreline",
-            "conditions": null,
-            "position": {
-              "x": -338.6,
-              "y": 17.5,
-              "z": -168.9
-            }
-          },
-          {
-            "description": "Transit to Reserve",
-            "conditions": null,
-            "position": {
-              "x": -294.6,
-              "y": 15.2591143,
-              "z": -780.1
-            }
-          },
-          {
-            "description": "Transit to Woods",
-            "conditions": null,
-            "position": {
-              "x": 106.3,
-              "y": 6.74,
-              "z": -958.1
-            }
-          }
-        ]
-      },
-      {
-        "name": "Shoreline",
-        "transits": [
-          {
-            "description": "Transit to Lighthouse",
-            "conditions": null,
-            "position": {
-              "x": 417.2,
-              "y": -56.1,
-              "z": -217.5
-            }
-          },
-          {
-            "description": "Transit to Terminal",
-            "conditions": "Access is available from 21:00 to 6:00",
-            "position": {
-              "x": -965.82,
-              "y": -57.52,
-              "z": 364.49
-            }
-          },
-          {
-            "description": "Transit to Labyrinth?",
-            "conditions": "Probably requires Labrys access keycard (1)",
-            "position": {
-              "x": -197.958,
-              "y": -9.867,
-              "z": -81.085
-            }
-          }
-        ]
-      },
-      {
-        "name": "Reserve",
-        "transits": [
-          {
-            "description": "Transit to Customs",
-            "conditions": null,
-            "position": {
-              "x": -196.729477,
-              "y": -4.544204,
-              "z": -117.808853
-            }
-          },
-          {
-            "description": "Transit to Woods",
-            "conditions": null,
-            "position": {
-              "x": 216.860535,
-              "y": -6.344204,
-              "z": -201.048859
-            }
-          },
-          {
-            "description": "Transit to Lighthouse",
-            "conditions": null,
-            "position": {
-              "x": 238.800537,
-              "y": -6.25420427,
-              "z": -128.048859
-            }
-          }
-        ]
-      },
-      {
-        "name": "Interchange",
-        "transits": [
-          {
-            "description": "Transit to Customs",
-            "conditions": null,
-            "position": {
-              "x": 274.3,
-              "y": 23.2799988,
-              "z": 395.93
-            }
-          },
-          {
-            "description": "Transit to Streets of Tarkov",
-            "conditions": null,
-            "position": {
-              "x": 263.1,
-              "y": 24.1,
-              "z": -444.4
-            }
-          }
-        ]
-      },
-      {
-        "name": "Streets of Tarkov",
-        "transits": [
-          {
-            "description": "Transit to Ground Zero",
-            "conditions": null,
-            "position": {
-              "x": -260.05,
-              "y": 2.18500137,
-              "z": 103.645729
-            }
-          },
-          {
-            "description": "Transit to Interchange",
-            "conditions": null,
-            "position": {
-              "x": 286.670776,
-              "y": 3.39350128,
-              "z": 505.539978
-            }
-          },
-          {
-            "description": "Transit to The Lab",
-            "conditions": "TerraGroup Labs access keycard required (1)",
-            "position": {
-              "x": 206.955,
-              "y": -8.382,
-              "z": 82.194
-            }
-          }
-        ]
-      },
-      {
-        "name": "Night Factory",
-        "transits": [
-          {
-            "description": "Transit to Woods",
-            "conditions": null,
-            "position": {
-              "x": 23.7,
-              "y": 0.84,
-              "z": 61.61
-            }
-          },
-          {
-            "description": "Transit to Customs",
-            "conditions": null,
-            "position": {
-              "x": 18.51,
-              "y": -0.423,
-              "z": -48.33
-            }
-          },
-          {
-            "description": "Transit to The Lab",
-            "conditions": "TerraGroup Labs access keycard required (1)",
-            "position": {
-              "x": -26.539,
-              "y": -4.085,
-              "z": -42.013
-            }
-          }
-        ]
-      },
-      {
-        "name": "The Lab",
-        "transits": [
-          {
-            "description": "Transit to Streets of Tarkov",
-            "conditions": null,
-            "position": {
-              "x": -169.079956,
-              "y": 1.32,
-              "z": -420.878052
-            }
-          }
-        ]
-      },
-      {
-        "name": "Ground Zero",
-        "transits": [
-          {
-            "description": "Transit to Streets of Tarkov",
-            "conditions": null,
-            "position": {
-              "x": 222.829117,
-              "y": 15.993,
-              "z": 65.72
-            }
-          }
-        ]
-      },
-      {
-        "name": "Ground Zero 21+",
-        "transits": [
-          {
-            "description": "Transit to Streets of Tarkov",
-            "conditions": null,
-            "position": {
-              "x": 222.829117,
-              "y": 15.993,
-              "z": 65.72
-            }
-          }
-        ]
-      },
-      {
-        "name": "The Labyrinth",
-        "transits": []
-      },
-      {
-        "name": "Ground Zero Tutorial",
-        "transits": []
-      },
-      {
-        "name": "Terminal",
-        "transits": []
-      },
-      {
-        "name": "Icebreaker",
-        "transits": []
-      }
-    ]
-  }
+﻿{
+    "data":  {
+                 "maps":  [
+                              {
+                                  "name":  "Factory",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Woods",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  23.7,
+                                                                        "y":  0.84,
+                                                                        "z":  61.61
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Customs",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  18.51,
+                                                                        "y":  -0.423,
+                                                                        "z":  -48.33
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to The Lab",
+                                                       "conditions":  "TerraGroup Labs access keycard required (1)",
+                                                       "position":  {
+                                                                        "x":  -26.539,
+                                                                        "y":  -4.085,
+                                                                        "z":  -42.013
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Customs",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Reserve",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  651.7,
+                                                                        "y":  1.99,
+                                                                        "z":  124.6
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Factory",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  354.31,
+                                                                        "y":  2.31,
+                                                                        "z":  -190.1
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Interchange",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -335.24,
+                                                                        "y":  2.11,
+                                                                        "z":  -205.68
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Shoreline",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  23.67,
+                                                                        "y":  -1.3999995,
+                                                                        "z":  139.53
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Woods",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Factory",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -362.45,
+                                                                        "y":  0.821269155,
+                                                                        "z":  360.7704
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Reserve",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  246.06,
+                                                                        "y":  -10.22,
+                                                                        "z":  369.9
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Lighthouse",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  494.34,
+                                                                        "y":  -16.77,
+                                                                        "z":  345.37
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Customs",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -153.05,
+                                                                        "y":  1.07,
+                                                                        "z":  402.13
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Lighthouse",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Shoreline",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -338.6,
+                                                                        "y":  17.5,
+                                                                        "z":  -168.9
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Reserve",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -294.6,
+                                                                        "y":  15.2591143,
+                                                                        "z":  -780.1
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Woods",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  106.3,
+                                                                        "y":  6.74,
+                                                                        "z":  -958.1
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Shoreline",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Lighthouse",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  417.2,
+                                                                        "y":  -56.1,
+                                                                        "z":  -217.5
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Terminal",
+                                                       "conditions":  "Access is available from 21:00 to 6:00",
+                                                       "position":  {
+                                                                        "x":  -965.82,
+                                                                        "y":  -57.52,
+                                                                        "z":  364.49
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Labyrinth?",
+                                                       "conditions":  "Probably requires Labrys access keycard (1)",
+                                                       "position":  {
+                                                                        "x":  -197.958,
+                                                                        "y":  -9.867,
+                                                                        "z":  -81.085
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Reserve",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Customs",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -196.729477,
+                                                                        "y":  -4.544204,
+                                                                        "z":  -117.808853
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Woods",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  216.860535,
+                                                                        "y":  -6.344204,
+                                                                        "z":  -201.048859
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Lighthouse",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  238.800537,
+                                                                        "y":  -6.25420427,
+                                                                        "z":  -128.048859
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Interchange",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Customs",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  274.3,
+                                                                        "y":  23.2799988,
+                                                                        "z":  395.93
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Streets of Tarkov",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  263.1,
+                                                                        "y":  24.1,
+                                                                        "z":  -444.4
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Streets of Tarkov",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Ground Zero",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -260.05,
+                                                                        "y":  2.18500137,
+                                                                        "z":  103.645729
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Interchange",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  286.670776,
+                                                                        "y":  3.39350128,
+                                                                        "z":  505.539978
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to The Lab",
+                                                       "conditions":  "TerraGroup Labs access keycard required (1)",
+                                                       "position":  {
+                                                                        "x":  206.955,
+                                                                        "y":  -8.382,
+                                                                        "z":  82.194
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Night Factory",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Woods",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  23.7,
+                                                                        "y":  0.84,
+                                                                        "z":  61.61
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to Customs",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  18.51,
+                                                                        "y":  -0.423,
+                                                                        "z":  -48.33
+                                                                    }
+                                                   },
+                                                   {
+                                                       "description":  "Transit to The Lab",
+                                                       "conditions":  "TerraGroup Labs access keycard required (1)",
+                                                       "position":  {
+                                                                        "x":  -26.539,
+                                                                        "y":  -4.085,
+                                                                        "z":  -42.013
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "The Lab",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Streets of Tarkov",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  -169.079956,
+                                                                        "y":  1.32,
+                                                                        "z":  -420.878052
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Ground Zero",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Streets of Tarkov",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  222.829117,
+                                                                        "y":  15.993,
+                                                                        "z":  65.72
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "Ground Zero 21+",
+                                  "transits":  [
+                                                   {
+                                                       "description":  "Transit to Streets of Tarkov",
+                                                       "conditions":  null,
+                                                       "position":  {
+                                                                        "x":  222.829117,
+                                                                        "y":  15.993,
+                                                                        "z":  65.72
+                                                                    }
+                                                   }
+                                               ]
+                              },
+                              {
+                                  "name":  "The Labyrinth",
+                                  "transits":  [
+
+                                               ]
+                              },
+                              {
+                                  "name":  "Ground Zero Tutorial",
+                                  "transits":  [
+
+                                               ]
+                              },
+                              {
+                                  "name":  "Terminal",
+                                  "transits":  [
+
+                                               ]
+                              },
+                              {
+                                  "name":  "Icebreaker",
+                                  "transits":  [
+
+                                               ]
+                              }
+                          ]
+             }
 }

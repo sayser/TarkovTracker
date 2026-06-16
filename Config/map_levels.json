@@ -1,0 +1,80 @@
+﻿{
+  "streetsoftarkov": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": [
+      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false },
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false },
+      { "name": "4th Floor", "svgLayer": "Fourth_Floor", "defaultVisible": false },
+      { "name": "5th Floor", "svgLayer": "Fifth_Floor", "defaultVisible": false }
+    ]
+  },
+  "groundzero": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": [
+      { "name": "Garage", "svgLayer": "Underground_Level", "defaultVisible": false },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false },
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false }
+    ]
+  },
+  "customs": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": [
+      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false },
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false }
+    ]
+  },
+  "factory": {
+    "defaultSvgLayer": "Ground_Floor",
+    "levels": [
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false },
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false },
+      { "name": "Tunnels", "svgLayer": "Basement", "defaultVisible": false }
+    ]
+  },
+  "interchange": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": [
+      { "name": "2nd Floor", "svgLayer": "First_Floor", "defaultVisible": true },
+      { "name": "3rd Floor", "svgLayer": "Second_Floor", "defaultVisible": false }
+    ]
+  },
+  "lab": {
+    "defaultSvgLayer": "First_Level",
+    "levels": [
+      { "name": "Second Level", "svgLayer": "Second_Level", "defaultVisible": false },
+      { "name": "Technical", "svgLayer": "Technical_Level", "defaultVisible": false }
+    ]
+  },
+  "labyrinth": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": []
+  },
+  "lighthouse": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": []
+  },
+  "reserve": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": [
+      { "name": "Bunkers", "svgLayer": "Bunkers", "defaultVisible": false }
+    ]
+  },
+  "shoreline": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": [
+      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false },
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false }
+    ]
+  },
+  "terminal": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": []
+  },
+  "woods": {
+    "defaultSvgLayer": "Ground_Level",
+    "levels": []
+  }
+}

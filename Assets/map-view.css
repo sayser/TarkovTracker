@@ -1,0 +1,209 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #252526;
+}
+
+#stage {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background: #252526;
+    cursor: grab;
+}
+
+#content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+
+#content svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#content svg.off-level g.base-layer {
+    opacity: 0.2;
+}
+
+#content svg .overlay-layer.hidden-layer {
+    display: none;
+}
+
+#content svg g.base-layer.force-hidden {
+    display: none;
+}
+
+#playerMarker {
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: 9999;
+    transform-origin: 0 0;
+    display: none;
+    pointer-events: none;
+}
+
+#playerMarkerInner {
+    position: relative;
+    width: 30px;
+    height: 36px;
+    background: #ff1744;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px black);
+    transform: translate(-50%, -50%);
+}
+
+#playerMarkerInner::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 1px;
+    width: 12px;
+    height: 15px;
+    background: #b000ff;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.mapMarker {
+    position: absolute;
+    z-index: 9000;
+    transform-origin: 0 0;
+    cursor: pointer;
+}
+
+.markerDot {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    transform: translate(-50%, -50%);
+    image-rendering: auto;
+}
+
+.markerDot.markerItemIcon {
+    width: 32px;
+    height: 32px;
+}
+
+.markerLabel {
+    position: absolute;
+    left: 16px;
+    top: -9px;
+    white-space: nowrap;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background: rgba(0,0,0,0.65);
+    padding: 2px 5px;
+    border-radius: 3px;
+    text-shadow: 1px 1px 2px black;
+}
+
+.extract-pmc .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/extract_pmc.png');
+}
+
+.extract-scav .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/extract_scav.png');
+}
+
+.extract-shared .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/extract_shared.png');
+}
+
+.transit .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/extract_transit.png');
+}
+
+.spawn-pmc .markerDot {
+    width: 24px;
+    height: 24px;
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/spawn_pmc.png');
+}
+
+.spawn-scav .markerDot {
+    width: 24px;
+    height: 24px;
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/spawn_scav.png');
+}
+
+.spawn-boss .markerDot {
+    width: 28px;
+    height: 28px;
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/spawn_boss.png');
+}
+
+.quest-objective .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/quest_objective.png');
+}
+
+.quest-item .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/quest_item.png');
+}
+
+.map-label .markerDot {
+    display: none;
+}
+
+.map-label .markerLabel {
+    left: 0;
+    top: 0;
+    background: transparent;
+    color: #d8d8d8;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding: 0;
+    border-radius: 0;
+    text-shadow:
+        1px 1px 2px black,
+        -1px -1px 2px black,
+        0 0 4px black;
+    transform-origin: center center;
+}
+
+.hazard .markerDot {
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/hazard.png');
+}
+
+.hazard .markerLabel {
+    color: #ffccbc;
+}
+
+.map-switch .markerDot {
+    width: 26px;
+    height: 26px;
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/switch.png');
+}
+
+.map-switch .markerLabel {
+    color: #ffe082;
+}
+
+.quest-objective .markerLabel {
+    color: #f3c4ff;
+}
+
+.quest-item .markerLabel {
+    color: #b9ffb9;
+}
+
+.hazardOutline {
+    fill: rgba(255, 87, 34, 0.22);
+    stroke: rgba(255, 87, 34, 0.85);
+    stroke-width: 2;
+}
+

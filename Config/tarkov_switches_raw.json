@@ -1,0 +1,387 @@
+﻿{
+    "data":  {
+                 "maps":  [
+                              {
+                                  "switches":  [
+                                                   {
+                                                       "id":  "ae4bdfc1fc5b30100701158b56ae4d20840e0550",
+                                                       "name":  "ZB-013 Power Switch",
+                                                       "position":  {
+                                                                        "x":  352.230316,
+                                                                        "y":  2.61458874,
+                                                                        "z":  -40.8052826
+                                                                    }
+                                                   }
+                                               ],
+                                  "name":  "Customs"
+                              },
+                              {
+                                  "switches":  [
+                                                   {
+                                                       "id":  "989f65d4cd4d4cd9e49fa6254fe97cb1d0e4f72d",
+                                                       "name":  "Lightkeeper Switch",
+                                                       "position":  {
+                                                                        "x":  445.3035,
+                                                                        "y":  33.391,
+                                                                        "z":  457.5599
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "a7e6ca8bfddbc8335d7a16e9d9416e794e1db598",
+                                                       "name":  "Lightkeeper Switch",
+                                                       "position":  {
+                                                                        "x":  444.6317,
+                                                                        "y":  33.391,
+                                                                        "z":  457.6145
+                                                                    }
+                                                   }
+                                               ],
+                                  "name":  "Lighthouse"
+                              },
+                              {
+                                  "switches":  [
+                                                   {
+                                                       "id":  "2c4a9ff1d031afefbd0965b189f58e3834cdb367",
+                                                       "name":  "Bunker Hermetic Door Power Switch",
+                                                       "position":  {
+                                                                        "x":  -60.7597275,
+                                                                        "y":  -5.55217171,
+                                                                        "z":  78.22821
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "9cad024bc31223f02f7296c3cb1834c5f6fa2fe2",
+                                                       "name":  "D-2 Power Switch",
+                                                       "position":  {
+                                                                        "x":  -117.184174,
+                                                                        "y":  -12.954,
+                                                                        "z":  22.6676826
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "fa1f22e776e4724582eb1dbb18ae864a9303cc5a",
+                                                       "name":  "D-2 Door Switch",
+                                                       "position":  {
+                                                                        "x":  -117.449867,
+                                                                        "y":  -16.9842987,
+                                                                        "z":  168.546936
+                                                                    }
+                                                   }
+                                               ],
+                                  "name":  "Reserve"
+                              },
+                              {
+                                  "switches":  [
+                                                   {
+                                                       "id":  "b6ebc39ee29cb6659334df309194b696bbfef555",
+                                                       "name":  "Mall Main Power Switch",
+                                                       "position":  {
+                                                                        "x":  -201.108,
+                                                                        "y":  23.1857,
+                                                                        "z":  -357.8291
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "6b9023f26446d73433823e872e6d69688083beaf",
+                                                       "name":  "Non-Kiba Alarms Switch",
+                                                       "position":  {
+                                                                        "x":  -46.555,
+                                                                        "y":  37.347,
+                                                                        "z":  -55.202
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "7850544cf54bb60c9d259b6b0583f53082637bf3",
+                                                       "name":  "Alarms Switch",
+                                                       "position":  {
+                                                                        "x":  -67.1342545,
+                                                                        "y":  27.9506,
+                                                                        "z":  53.7422676
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "42d13e53ae13417e3ee1dab2606e9b2fa4ff6147",
+                                                       "name":  "Saferoom Exfil Switch",
+                                                       "position":  {
+                                                                        "x":  -50.6210022,
+                                                                        "y":  22.632,
+                                                                        "z":  45.617
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "5173fd12df8e7445613e130233e235a94d94b70d",
+                                                       "name":  "Saferoom Exfil Unlock Switch",
+                                                       "position":  {
+                                                                        "x":  -51.547,
+                                                                        "y":  36.86,
+                                                                        "z":  -125.440712
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "a91897cf1f9ab86c1376fec5fdf8a921e491a1a4",
+                                                       "name":  "Object 14 Container Switch",
+                                                       "position":  {
+                                                                        "x":  -47.698,
+                                                                        "y":  22.891,
+                                                                        "z":  42.6198
+                                                                    }
+                                                   }
+                                               ],
+                                  "name":  "Interchange"
+                              },
+                              {
+                                  "switches":  [
+                                                   {
+                                                       "id":  "014e9122e0fad99bcff6f93161712c3c6e1a2a75",
+                                                       "name":  "Med Elevator Power Button",
+                                                       "position":  {
+                                                                        "x":  -124.758,
+                                                                        "y":  -2.31599617,
+                                                                        "z":  -313.806
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "72848c177c54e2913e7d0259f23fba929d14ebf5",
+                                                       "name":  "Main Elevator Call Button",
+                                                       "position":  {
+                                                                        "x":  -281.022,
+                                                                        "y":  -2.83799934,
+                                                                        "z":  -335.477
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "d1d16f043cea7be35b2729c5e1e1dd648c6dee13",
+                                                       "name":  "Med Elevator Call Button",
+                                                       "position":  {
+                                                                        "x":  -114.112,
+                                                                        "y":  -2.84599972,
+                                                                        "z":  -343.2
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "40ec0101fbf68e6d1b762a72080b9b9b9c91f6f1",
+                                                       "name":  "Hangar Gate Switch",
+                                                       "position":  {
+                                                                        "x":  -170.18,
+                                                                        "y":  5.185,
+                                                                        "z":  -281.508
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "8e6aa12e37d1b09a56e1ae19ab203832b0e78df9",
+                                                       "name":  "Cargo Elevator Call Button",
+                                                       "position":  {
+                                                                        "x":  -114.037,
+                                                                        "y":  5.31399727,
+                                                                        "z":  -406.427979
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "558a518a272f611d2e6879b917adb407f428977f",
+                                                       "name":  "Cargo Elevator Extract Button",
+                                                       "position":  {
+                                                                        "x":  -112.378006,
+                                                                        "y":  5.353998,
+                                                                        "z":  -406.806
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "911ef57b76415c1d42fdba3b5c8fdb587dd229a7",
+                                                       "name":  "Main Elevator Power Button",
+                                                       "position":  {
+                                                                        "x":  -271.439,
+                                                                        "y":  -2.380001,
+                                                                        "z":  -366.10498
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "e7096cec97efb58f59f78f048792235f89318a94",
+                                                       "name":  "Water Level Switch",
+                                                       "position":  {
+                                                                        "x":  -129.519989,
+                                                                        "y":  -6.7559967,
+                                                                        "z":  -244.764511
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "89170f110a27deb607f63b2382f28c25ba75e861",
+                                                       "name":  "Main Elevator Extract Button",
+                                                       "position":  {
+                                                                        "x":  -282.361,
+                                                                        "y":  -2.91199875,
+                                                                        "z":  -335.86
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "07fe694c3915c1363b5fa1faa604c68fe5849aba",
+                                                       "name":  "Parking Gate Switch",
+                                                       "position":  {
+                                                                        "x":  -243.443,
+                                                                        "y":  5.076,
+                                                                        "z":  -382.513
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "a948c3ba250ffcaaa508230d0b3392bf09cb6964",
+                                                       "name":  "Sewage Conduit Pump Button",
+                                                       "position":  {
+                                                                        "x":  -136.76,
+                                                                        "y":  -2.82599926,
+                                                                        "z":  -254.510513
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "c39cf1e7caac3b830c00b539ee12dfddeb061e2b",
+                                                       "name":  "Cargo Elevator Power Button",
+                                                       "position":  {
+                                                                        "x":  -121.007996,
+                                                                        "y":  -2.83698225,
+                                                                        "z":  -353.548
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "5077fd224eb1bb588b65e4d3c0b4b5719bdebb66",
+                                                       "name":  "Med Elevator Extract Button",
+                                                       "position":  {
+                                                                        "x":  -112.802,
+                                                                        "y":  -2.84599972,
+                                                                        "z":  -342.762
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "d5f297a1f5aee9dc19f1e4f54946850b99dca5e9",
+                                                       "name":  "Alarm Switch",
+                                                       "position":  {
+                                                                        "x":  -220.756,
+                                                                        "y":  5.249,
+                                                                        "z":  -381.263
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "5e017c1cab122d7b6dcccf32f6d7fdb152aa7027",
+                                                       "name":  "Containment Block Power Switch",
+                                                       "position":  {
+                                                                        "x":  -112.411,
+                                                                        "y":  1.06300008,
+                                                                        "z":  -435.429016
+                                                                    }
+                                                   }
+                                               ],
+                                  "name":  "The Lab"
+                              },
+                              {
+                                  "switches":  [
+                                                   {
+                                                       "id":  "31585af9b0359fc01725db4910068dec4886e008",
+                                                       "name":  "Alarm Switch",
+                                                       "position":  {
+                                                                        "x":  -4.279,
+                                                                        "y":  1.51507258,
+                                                                        "z":  55.87111
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "eda11d87828854f6793e072a937bcd7e0b02ff8c",
+                                                       "name":  "Alarm Switch",
+                                                       "position":  {
+                                                                        "x":  1.05600023,
+                                                                        "y":  1.50388885,
+                                                                        "z":  7.16910934
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "12dd87073c4b87b68021b02411c9693ade31daa7",
+                                                       "name":  "Alarm Switch",
+                                                       "position":  {
+                                                                        "x":  -13.3701,
+                                                                        "y":  1.63888884,
+                                                                        "z":  36.08191
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "6bfdec06869b8a511144243c319bbe63d18cb888",
+                                                       "name":  "Sealed Door",
+                                                       "position":  {
+                                                                        "x":  40.1832,
+                                                                        "y":  0.298618853,
+                                                                        "z":  19.1903
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "1f0c24f32701e18d03b80d023db457e07f1cd04b",
+                                                       "name":  "Alarm Switch",
+                                                       "position":  {
+                                                                        "x":  8.937,
+                                                                        "y":  1.54792,
+                                                                        "z":  28.68511
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "8f955feb9400b5a67957b76d5c853b5431517b0d",
+                                                       "name":  "Fire Trap Switch",
+                                                       "position":  {
+                                                                        "x":  -43.587,
+                                                                        "y":  1.56588888,
+                                                                        "z":  -10.9208889
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "2fb7f57dc84885d93bace8137115b29d42ad2f70",
+                                                       "name":  "Alarm Switch",
+                                                       "position":  {
+                                                                        "x":  -9.011,
+                                                                        "y":  1.66788888,
+                                                                        "z":  1.57610893
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "826f3ecfc95273700aec28b1a61eaa470a6ebc90",
+                                                       "name":  "Toxic Pool Trap Switch",
+                                                       "position":  {
+                                                                        "x":  -31.7254715,
+                                                                        "y":  2.08068,
+                                                                        "z":  58.2143
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "a8cb8a737ec186cd836b43128170e854b8bab750",
+                                                       "name":  "Sealed Door",
+                                                       "position":  {
+                                                                        "x":  -49.34948,
+                                                                        "y":  1.70373631,
+                                                                        "z":  -11.756073
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "bcfc84e5f79404bd840676050525ec5e44cfbb76",
+                                                       "name":  "Shotgun Trap Switch",
+                                                       "position":  {
+                                                                        "x":  25.4025669,
+                                                                        "y":  1.37,
+                                                                        "z":  59.453
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "a0296ed1d29971b48190ab776b8940c57a56d4cd",
+                                                       "name":  "Toxic Puddle Trap Switch",
+                                                       "position":  {
+                                                                        "x":  46.42,
+                                                                        "y":  1.031,
+                                                                        "z":  11.084
+                                                                    }
+                                                   },
+                                                   {
+                                                       "id":  "0f6a9ab8c77afe7609feaec4e2053c9e709a632f",
+                                                       "name":  "Steam Trap Switch",
+                                                       "position":  {
+                                                                        "x":  2.659,
+                                                                        "y":  2.109861,
+                                                                        "z":  -31.705
+                                                                    }
+                                                   }
+                                               ],
+                                  "name":  "The Labyrinth"
+                              }
+                          ]
+             }
+}

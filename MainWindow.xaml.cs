@@ -1,4 +1,4 @@
-﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,24 +7,22 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TarkovTracker.Models;
+using TarkovTracker.Services;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Xml.Linq;
 
 namespace TarkovTracker
 {
     public partial class MainWindow : Window
     {
+        internal const string MapAssetHostName = "tarkovtracker.local";
+        internal const string BaseLayerToggleTag = "__base_layer_toggle__";
+
+        private readonly MapDataService _mapData = new();
         private readonly string _mapsFolder;
-        private readonly string _configFile;
-        private readonly string _extractsFile;
-        private readonly string _transitsFile;
-        private readonly string _spawnsFile;
-        private readonly string _labelsFile;
-        private readonly string _questMarkersFile;
-        private string _screenshotFolder;
         private readonly string _userSettingsFile;
         private OverlayWindow? _overlayWindow;
         private string? _currentMapPath;
@@ -32,38 +30,28 @@ namespace TarkovTracker
         private string? _lastMapMarkersJson;
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _lastPlayerMarker;
 
-        private readonly Dictionary<string, MapConfig> _mapConfigs = new();
-        private readonly Dictionary<string, List<ExtractInfo>> _extractsByMapName = new();
-        private readonly Dictionary<string, List<TransitInfo>> _transitsByMapName = new();
-        private readonly Dictionary<string, List<SpawnInfo>> _spawnsByMapName = new();
-        private readonly Dictionary<string, List<MapLabel>> _labelsByMapName = new();
-        private readonly Dictionary<string, List<QuestMarker>> _questMarkersByMapName = new();
-
+        private string _screenshotFolder;
         private MapConfig? _currentMapConfig;
+        private MapLevelsConfig? _currentMapLevelsConfig;
         private string? _currentMapDisplayName;
 
         private FileSystemWatcher? _screenshotWatcher;
         private DateTime _lastProcessedTime = DateTime.MinValue;
 
         private double? _lastGameX;
-        private double? _lastGameY;
         private double? _lastGameZ;
         private double? _lastDirection;
 
         private bool _webViewReady = false;
+        private bool _suppressMapLevelRefresh = false;
         private bool _webMessageHooked = false;
+        private bool _mapWebViewHostMapped = false;
 
         public MainWindow()
         {
             InitializeComponent();
 
             _mapsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Maps");
-            _configFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "maps.json");
-            _extractsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_extracts_raw.json");
-            _transitsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_transits_raw.json");
-            _spawnsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_spawns_raw.json");
-            _labelsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_labels_raw.json");
-            _questMarkersFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "tarkov_quest_markers.json");
             _userSettingsFile = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "SayserTarkovTracker",
@@ -79,12 +67,10 @@ namespace TarkovTracker
                     "Screenshots");
             }
 
-            LoadMapConfig();
-            LoadExtracts();
-            LoadTransits();
-            LoadSpawns();
-            LoadLabels();
-            LoadQuestMarkers();
+            _mapData.LoadAll();
+            if (!string.IsNullOrWhiteSpace(_mapData.LastStatusMessage))
+                StatusText.Text = _mapData.LastStatusMessage;
+
             LoadMapsDropdown();
             StartScreenshotMonitoring();
         }
@@ -123,6 +109,16 @@ namespace TarkovTracker
                 JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
 
+        private void SetParserStatus(string message, bool isError = false)
+        {
+            ParserStatusText.Text = message.StartsWith("PARSER:", StringComparison.OrdinalIgnoreCase)
+                ? message.ToUpperInvariant()
+                : $"PARSER: {message.ToUpperInvariant()}";
+            ParserStatusText.Foreground = isError
+                ? (Brush)FindResource("TacticalTerminalRedBrush")
+                : (Brush)FindResource("TacticalTerminalGreenBrush");
+        }
+
         private void SetScreenshotFolder_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFolderDialog
@@ -141,188 +137,11 @@ namespace TarkovTracker
                 _screenshotWatcher?.Dispose();
                 StartScreenshotMonitoring();
 
-                StatusText.Text = $"Screenshot folder set to: {_screenshotFolder}";
-                ParserStatusText.Text = "Screenshot folder updated";
-                ParserStatusText.Foreground = Brushes.LawnGreen;
+                StatusText.Text = $"FOLDER: {_screenshotFolder}";
+                SetParserStatus("FOLDER UPDATED");
             }
         }
 
-
-        private void LoadMapConfig()
-        {
-            _mapConfigs.Clear();
-
-            if (!File.Exists(_configFile))
-            {
-                StatusText.Text = $"Config file not found: {_configFile}";
-                return;
-            }
-
-            var rawMaps = JsonSerializer.Deserialize<Dictionary<string, MapConfig>>(
-                File.ReadAllText(_configFile),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (rawMaps == null)
-                return;
-
-            foreach (var map in rawMaps.Values)
-            {
-                if (map.Svg == null || string.IsNullOrWhiteSpace(map.Svg.File))
-                    continue;
-
-                string key = Path.GetFileNameWithoutExtension(map.Svg.File);
-                _mapConfigs[key] = map;
-            }
-        }
-
-        private void LoadExtracts()
-        {
-            _extractsByMapName.Clear();
-
-            if (!File.Exists(_extractsFile))
-            {
-                StatusText.Text = $"Extracts file not found: {_extractsFile}";
-                return;
-            }
-
-            var data = JsonSerializer.Deserialize<TarkovExtractsRoot>(
-                File.ReadAllText(_extractsFile),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (data?.Data?.Maps == null)
-                return;
-
-            foreach (var map in data.Data.Maps)
-            {
-                if (string.IsNullOrWhiteSpace(map.Name))
-                    continue;
-
-                _extractsByMapName[NormalizeMapName(map.Name)] = map.Extracts ?? new List<ExtractInfo>();
-            }
-        }
-
-        private void LoadTransits()
-        {
-            _transitsByMapName.Clear();
-
-            if (!File.Exists(_transitsFile))
-            {
-                StatusText.Text = $"Transits file not found: {_transitsFile}";
-                return;
-            }
-
-            var data = JsonSerializer.Deserialize<TarkovTransitsRoot>(
-                File.ReadAllText(_transitsFile),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (data?.Data?.Maps == null)
-                return;
-
-            foreach (var map in data.Data.Maps)
-            {
-                if (string.IsNullOrWhiteSpace(map.Name))
-                    continue;
-
-                _transitsByMapName[NormalizeMapName(map.Name)] = map.Transits ?? new List<TransitInfo>();
-            }
-        }
-
-        private void LoadSpawns()
-        {
-            _spawnsByMapName.Clear();
-
-            if (!File.Exists(_spawnsFile))
-            {
-                StatusText.Text = $"Spawns file not found: {_spawnsFile}";
-                return;
-            }
-
-            var data = JsonSerializer.Deserialize<TarkovSpawnsRoot>(
-                File.ReadAllText(_spawnsFile),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (data?.Data?.Maps == null)
-                return;
-
-            foreach (var map in data.Data.Maps)
-            {
-                if (string.IsNullOrWhiteSpace(map.Name))
-                    continue;
-
-                _spawnsByMapName[NormalizeMapName(map.Name)] = map.Spawns ?? new List<SpawnInfo>();
-            }
-        }
-
-        private void LoadLabels()
-        {
-            _labelsByMapName.Clear();
-
-            if (!File.Exists(_labelsFile))
-            {
-                StatusText.Text = $"Labels file not found: {_labelsFile}";
-                return;
-            }
-
-            var data = JsonSerializer.Deserialize<Dictionary<string, List<MapLabel>>>(
-                File.ReadAllText(_labelsFile),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (data == null)
-                return;
-
-            foreach (var mapEntry in data)
-            {
-                string mapKey = NormalizeMapName(mapEntry.Key);
-
-                if (!_labelsByMapName.ContainsKey(mapKey))
-                    _labelsByMapName[mapKey] = new List<MapLabel>();
-
-                foreach (var label in mapEntry.Value ?? new List<MapLabel>())
-                {
-                    if (string.IsNullOrWhiteSpace(label.Text))
-                        continue;
-
-                    if (string.IsNullOrWhiteSpace(label.MapKey))
-                        label.MapKey = mapEntry.Key;
-
-                    _labelsByMapName[mapKey].Add(label);
-                }
-            }
-        }
-
-        private void LoadQuestMarkers()
-        {
-            _questMarkersByMapName.Clear();
-
-            if (!File.Exists(_questMarkersFile))
-            {
-                StatusText.Text = $"Quest markers file not found: {_questMarkersFile}";
-                return;
-            }
-
-            var data = JsonSerializer.Deserialize<Dictionary<string, List<QuestMarker>>>(
-                File.ReadAllText(_questMarkersFile),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (data == null)
-                return;
-
-            foreach (var mapEntry in data)
-            {
-                string mapKey = NormalizeMapName(mapEntry.Key);
-
-                if (!_questMarkersByMapName.ContainsKey(mapKey))
-                    _questMarkersByMapName[mapKey] = new List<QuestMarker>();
-
-                foreach (var questMarker in mapEntry.Value ?? new List<QuestMarker>())
-                {
-                    if (string.IsNullOrWhiteSpace(questMarker.Quest) || questMarker.X == null || questMarker.Z == null)
-                        continue;
-
-                    _questMarkersByMapName[mapKey].Add(questMarker);
-                }
-            }
-        }
 
         private void LoadMapsDropdown()
         {
@@ -339,18 +158,20 @@ namespace TarkovTracker
                 .OrderBy(Path.GetFileNameWithoutExtension)
                 .ToList();
 
+            var itemForeground = (Brush)FindResource("TacticalAmberBrightBrush");
+
             foreach (var svgFile in svgFiles)
             {
                 MapComboBox.Items.Add(new ComboBoxItem
                 {
-                    Content = Path.GetFileNameWithoutExtension(svgFile),
+                    Content = Path.GetFileNameWithoutExtension(svgFile).ToUpperInvariant(),
                     Tag = svgFile,
-                    Foreground = Brushes.Black
+                    Foreground = itemForeground
                 });
             }
 
             StatusText.Text =
-                $"{svgFiles.Count} maps loaded. Extract maps: {_extractsByMapName.Count}. Transit maps: {_transitsByMapName.Count}. Spawn maps: {_spawnsByMapName.Count}. Label maps: {_labelsByMapName.Count}. Quest maps: {_questMarkersByMapName.Count}.";
+                $"{svgFiles.Count} maps loaded. Extract maps: {_mapData.ExtractsByMapName.Count}. Transit maps: {_mapData.TransitsByMapName.Count}. Spawn maps: {_mapData.SpawnsByMapName.Count}. Boss spawn maps: {_mapData.BossSpawnMarkersByMapName.Count}. Label maps: {_mapData.LabelsByMapName.Count}. Quest maps: {_mapData.QuestMarkersByMapName.Count}. Hazard maps: {_mapData.HazardsByMapName.Count}. Switch maps: {_mapData.SwitchesByMapName.Count}.";
         }
 
         private async void MapComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -366,8 +187,15 @@ namespace TarkovTracker
             string mapFileName = Path.GetFileNameWithoutExtension(mapPath);
             _currentMapPath = mapPath;
 
-            CurrentMapText.Text = mapFileName;
-            _mapConfigs.TryGetValue(mapFileName, out _currentMapConfig);
+            CurrentMapText.Text = mapFileName.ToUpperInvariant();
+
+            if (!_mapData.TryResolveMapConfig(mapFileName, out _currentMapConfig))
+            {
+                _currentMapConfig = null;
+                StatusText.Text = $"CONFIG MISSING: {mapFileName.ToUpperInvariant()}";
+                SetParserStatus("MAP CONFIG MISSING", isError: true);
+                return;
+            }
 
             _currentMapDisplayName =
                 !string.IsNullOrWhiteSpace(_currentMapConfig?.Locale?.En)
@@ -376,30 +204,42 @@ namespace TarkovTracker
 
             await LoadSvgMapInWebView(mapPath);
             LoadLayersPanel(mapPath);
+            await ApplyMapLevelStateAsync();
 
             DrawMapMarkersForCurrentMap();
             RedrawLastMarker();
             _ = SyncOverlayToCurrentMapAsync();
-
-            // Disabled for now because it hides too many SVG layers on maps like Factory.
-            // if (_lastGameY != null)
-            //     AutoSwitchFloorLayers(_lastGameY.Value);
 
             StatusText.Text = _currentMapConfig == null
                 ? $"Loaded map: {mapFileName}. No config found."
                 : $"Loaded map: {mapFileName}. Rotation={_currentMapConfig.Svg.CoordinateRotation}.";
         }
 
+        private async System.Threading.Tasks.Task EnsureMapWebViewHostMappingAsync()
+        {
+            await MapWebView.EnsureCoreWebView2Async();
+
+            if (_mapWebViewHostMapped)
+                return;
+
+            MapWebView.CoreWebView2.SetVirtualHostNameToFolderMapping(
+                MapAssetHostName,
+                _mapsFolder,
+                CoreWebView2HostResourceAccessKind.Allow);
+
+            _mapWebViewHostMapped = true;
+        }
+
         private async System.Threading.Tasks.Task LoadSvgMapInWebView(string mapPath)
         {
             _webViewReady = false;
 
-            string svg = File.ReadAllText(mapPath);
-            string html = BuildMapHtml(svg);
+            string svg = PrepareSvgForWebView(File.ReadAllText(mapPath), mapPath);
+            string html = MapHtmlBuilder.Build(svg, MapAssetHostName);
             _currentMapPath = mapPath;
             _currentMapHtml = html;
 
-            await MapWebView.EnsureCoreWebView2Async();
+            await EnsureMapWebViewHostMappingAsync();
 
             if (!_webMessageHooked)
             {
@@ -465,548 +305,249 @@ namespace TarkovTracker
             }
         }
 
-        private string BuildMapHtml(string svg)
+        private string PrepareSvgForWebView(string svg, string mapPath)
         {
-            return $@"
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset='utf-8'>
-<style>
-html, body {{
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #252526;
-}}
-
-#stage {{
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-    background: #252526;
-    cursor: grab;
-}}
-
-#content {{
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform-origin: 0 0;
-}}
-
-#content svg {{
-    position: absolute;
-    left: 0;
-    top: 0;
-}}
-
-#playerMarker {{
-    position: absolute;
-    width: 0;
-    height: 0;
-    z-index: 9999;
-    transform-origin: 0 0;
-    display: none;
-    pointer-events: none;
-}}
-
-#playerMarkerInner {{
-    position: relative;
-    width: 30px;
-    height: 36px;
-    background: #ff1744;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px black);
-    transform: translate(-50%, -50%);
-}}
-
-#playerMarkerInner::after {{
-    content: '';
-    position: absolute;
-    left: 9px;
-    top: 1px;
-    width: 12px;
-    height: 15px;
-    background: #b000ff;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}}
-
-.mapMarker {{
-    position: absolute;
-    z-index: 9000;
-    transform-origin: 0 0;
-    cursor: pointer;
-}}
-
-.markerDot {{
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 0 4px black;
-    transform: translate(-50%, -50%);
-}}
-
-.markerLabel {{
-    position: absolute;
-    left: 10px;
-    top: -9px;
-    white-space: nowrap;
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    background: rgba(0,0,0,0.65);
-    padding: 2px 5px;
-    border-radius: 3px;
-    text-shadow: 1px 1px 2px black;
-}}
-
-.extract-pmc .markerDot {{ background: #00c853; }}
-.extract-scav .markerDot {{ background: #ffd600; }}
-.extract-shared .markerDot {{ background: #40c4ff; }}
-
-.transit .markerDot {{
-    background: #b000ff;
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-}}
-
-.spawn-pmc .markerDot {{
-    background: #2979ff;
-    width: 10px;
-    height: 10px;
-}}
-
-.spawn-scav .markerDot {{
-    background: #ff9800;
-    width: 10px;
-    height: 10px;
-}}
-
-.spawn-boss .markerDot {{
-    background: #ff1744;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-}}
-
-.quest-objective .markerDot {{
-    background: #e040fb;
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
-    transform: translate(-50%, -50%) rotate(45deg);
-}}
-
-.quest-objective .markerLabel {{
-    color: #f3c4ff;
-}}
-
-.map-label .markerDot {{
-    display: none;
-}}
-
-.map-label .markerLabel {{
-    left: 0;
-    top: 0;
-    background: transparent;
-    color: #d8d8d8;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    padding: 0;
-    border-radius: 0;
-    text-shadow:
-        1px 1px 2px black,
-        -1px -1px 2px black,
-        0 0 4px black;
-    transform-origin: center center;
-}}
-</style>
-</head>
-
-<body>
-<div id='stage'>
-    <div id='content'>
-        {svg}
-        <div id='markerLayer'></div>
-        <div id='playerMarker'>
-            <div id='playerMarkerInner'></div>
-        </div>
-    </div>
-</div>
-
-<script>
-let stage = document.getElementById('stage');
-let content = document.getElementById('content');
-let playerMarker = document.getElementById('playerMarker');
-let markerLayer = document.getElementById('markerLayer');
-let svg = content.querySelector('svg');
-
-let scale = 1;
-let panX = 0;
-let panY = 0;
-let isPanning = false;
-let lastX = 0;
-let lastY = 0;
-let playerMarkerData = null;
-
-function getViewBox() {{
-    let raw = svg.getAttribute('viewBox');
-    if (!raw) return {{ x: 0, y: 0, w: 1000, h: 1000 }};
-
-    let vb = raw.trim().split(/\s+/).map(Number);
-    return {{ x: vb[0], y: vb[1], w: vb[2], h: vb[3] }};
-}}
-
-function initialize() {{
-    let vb = getViewBox();
-
-    svg.setAttribute('width', vb.w);
-    svg.setAttribute('height', vb.h);
-
-    content.style.width = vb.w + 'px';
-    content.style.height = vb.h + 'px';
-
-    resetView();
-}}
-
-function applyTransform() {{
-    content.style.transform = `translate(${{panX}}px, ${{panY}}px) scale(${{scale}})`;
-    updatePlayerMarkerVisual();
-    updateMapMarkerVisuals();
-}}
-
-function resetView() {{
-    let vb = getViewBox();
-
-    let sx = stage.clientWidth / vb.w;
-    let sy = stage.clientHeight / vb.h;
-
-    scale = Math.min(sx, sy) * 0.95;
-
-    panX = (stage.clientWidth - vb.w * scale) / 2;
-    panY = (stage.clientHeight - vb.h * scale) / 2;
-
-    applyTransform();
-}}
-
-function setPlayerMarkerNormalized(nx, ny, directionDegrees) {{
-    let vb = getViewBox();
-
-    playerMarkerData = {{
-        x: nx * vb.w,
-        y: ny * vb.h,
-        direction: directionDegrees
-    }};
-
-    updatePlayerMarkerVisual();
-}}
-
-function updatePlayerMarkerVisual() {{
-    if (!playerMarkerData) return;
-
-    let inverseScale = 1 / scale;
-
-    playerMarker.style.left = playerMarkerData.x + 'px';
-    playerMarker.style.top = playerMarkerData.y + 'px';
-    playerMarker.style.display = 'block';
-
-    playerMarker.style.transform =
-        `rotate(${{playerMarkerData.direction + 180}}deg) scale(${{inverseScale}})`;
-}}
-
-function clearMapMarkers() {{
-    markerLayer.innerHTML = '';
-}}
-
-function addMapMarkers(markers) {{
-    clearMapMarkers();
-
-    let vb = getViewBox();
-
-    for (let m of markers) {{
-        let marker = document.createElement('div');
-
-        marker.className = 'mapMarker ' + m.cssClass;
-        marker.dataset.markerType = m.markerType;
-        marker.dataset.faction = m.faction || '';
-
-        marker.title = m.tooltip;
-
-        let x = m.normalizedX * vb.w;
-        let y = m.normalizedY * vb.h;
-
-        marker.style.left = x + 'px';
-        marker.style.top = y + 'px';
-
-        let dot = document.createElement('div');
-        dot.className = 'markerDot';
-
-        marker.appendChild(dot);
-
-        if (
-            m.markerType !== 'spawn-pmc' &&
-            m.markerType !== 'spawn-scav' &&
-            m.markerType !== 'spawn-boss'
-        ) {{
-            let label = document.createElement('div');
-            label.className = 'markerLabel';
-            label.textContent = m.name;
-
-            if (m.markerType === 'label') {{
-                label.style.fontSize = (m.labelSize || 14) + 'px';
-                label.style.transform = 'translate(-50%, -50%) rotate(' + (m.labelRotation || 0) + 'deg)';
-            }}
-
-            marker.appendChild(label);
-        }}
-
-        marker.addEventListener('click', function(e) {{
-            e.stopPropagation();
-
-            if (window.chrome && window.chrome.webview) {{
-                window.chrome.webview.postMessage({{
-                    messageType: 'markerClicked',
-                    name: m.name,
-                    markerType: m.markerType,
-                    faction: m.faction || '',
-                    zoneName: m.zoneName || '',
-                    categories: m.categories || '',
-                    conditions: m.conditions || '',
-                    position: m.position || ''
-                }});
-            }}
-        }});
-
-        markerLayer.appendChild(marker);
-    }}
-
-    updateMapMarkerVisuals();
-}}
-
-function updateMapMarkerVisuals() {{
-    let inverseScale = 1 / scale;
-
-    document.querySelectorAll('.mapMarker').forEach(function(marker) {{
-        marker.style.transform = `scale(${{inverseScale}})`;
-    }});
-}}
-
-function setExtractFactionVisibility(faction, visible) {{
-    document.querySelectorAll('.mapMarker[data-marker-type=""extract""][data-faction=""' + faction + '""]').forEach(function(marker) {{
-        marker.style.display = visible ? 'block' : 'none';
-    }});
-}}
-
-function setTransitVisibility(visible) {{
-    document.querySelectorAll('.mapMarker[data-marker-type=""transit""]').forEach(function(marker) {{
-        marker.style.display = visible ? 'block' : 'none';
-    }});
-}}
-
-function setSpawnVisibility(spawnType, visible) {{
-    document.querySelectorAll('.mapMarker[data-marker-type=""' + spawnType + '""]').forEach(function(marker) {{
-        marker.style.display = visible ? 'block' : 'none';
-    }});
-}}
-
-function setLabelVisibility(visible) {{
-    document.querySelectorAll('.mapMarker[data-marker-type=""label""]').forEach(function(marker) {{
-        marker.style.display = visible ? 'block' : 'none';
-    }});
-}}
-
-function setQuestVisibility(visible) {{
-    document.querySelectorAll('.mapMarker[data-marker-type=""quest""]').forEach(function(marker) {{
-        marker.style.display = visible ? 'block' : 'none';
-    }});
-}}
-
-function setLayerVisibility(id, visible) {{
-    let el = document.getElementById(id);
-    if (!el) return;
-    el.style.display = visible ? '' : 'none';
-}}
-
-stage.addEventListener('wheel', function(e) {{
-    e.preventDefault();
-
-    let oldScale = scale;
-    let zoomFactor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    let newScale = Math.max(0.2, Math.min(oldScale * zoomFactor, 12));
-
-    let rect = stage.getBoundingClientRect();
-    let mx = e.clientX - rect.left;
-    let my = e.clientY - rect.top;
-
-    let ratio = newScale / oldScale;
-
-    panX = mx - (mx - panX) * ratio;
-    panY = my - (my - panY) * ratio;
-
-    scale = newScale;
-    applyTransform();
-}});
-
-stage.addEventListener('mousedown', function(e) {{
-    isPanning = true;
-    lastX = e.clientX;
-    lastY = e.clientY;
-    stage.style.cursor = 'grabbing';
-}});
-
-window.addEventListener('mouseup', function() {{
-    isPanning = false;
-    stage.style.cursor = 'grab';
-}});
-
-window.addEventListener('mousemove', function(e) {{
-    if (!isPanning) return;
-
-    panX += e.clientX - lastX;
-    panY += e.clientY - lastY;
-
-    lastX = e.clientX;
-    lastY = e.clientY;
-
-    applyTransform();
-}});
-
-window.addEventListener('resize', resetView);
-
-initialize();
-</script>
-</body>
-</html>";
+            string mapDir = Path.GetDirectoryName(mapPath)!;
+
+            return Regex.Replace(
+                svg,
+                @"(?<attr>(?:xlink:)?href)\s*=\s*""(?!(?:data:|https?:|file:))(?<path>[^""]+)""",
+                match =>
+                {
+                    string relativePath = match.Groups["path"].Value;
+                    string fullPath = Path.GetFullPath(Path.Combine(mapDir, relativePath));
+
+                    if (!File.Exists(fullPath))
+                        return match.Value;
+
+                    string assetUrl = $"https://{MapAssetHostName}/{Path.GetFileName(fullPath)}";
+                    return $"{match.Groups["attr"].Value}=\"{assetUrl}\"";
+                },
+                RegexOptions.IgnoreCase);
         }
+
 
         private void LoadLayersPanel(string mapPath)
         {
             LayersPanel.Children.Clear();
 
-            var layerIds = GetSvgLayerIds(mapPath);
+            string mapFileName = Path.GetFileNameWithoutExtension(mapPath);
+            _currentMapLevelsConfig = _mapData.GetMapLevelsForMap(mapFileName);
+            var levels = _currentMapLevelsConfig?.Levels ?? new List<MapLevelEntry>();
+            bool hasLevels = levels.Any(level => !string.IsNullOrWhiteSpace(level.SvgLayer));
 
-            foreach (string layerId in layerIds)
+            LevelsHeaderGrid.Visibility = hasLevels ? Visibility.Visible : Visibility.Collapsed;
+
+            if (!hasLevels)
+                return;
+
+            var levelChipStyle = (Style)FindResource("TacticalLevelChip");
+
+            if (!string.IsNullOrWhiteSpace(_currentMapLevelsConfig?.DefaultSvgLayer))
             {
-                var checkBox = new CheckBox
+                var baseCheckBox = new CheckBox
                 {
-                    Content = layerId,
+                    Content = "BASE",
+                    Tag = BaseLayerToggleTag,
                     IsChecked = true,
-                    Foreground = Brushes.White,
-                    Margin = new Thickness(0, 2, 0, 2)
+                    Style = levelChipStyle,
+                    FontWeight = FontWeights.Bold
                 };
 
-                checkBox.Checked += async (_, _) => await SetSvgLayerVisibility(layerId, true);
-                checkBox.Unchecked += async (_, _) => await SetSvgLayerVisibility(layerId, false);
+                baseCheckBox.Checked += async (_, _) =>
+                {
+                    if (!_suppressMapLevelRefresh)
+                        await ApplyMapLevelStateAsync();
+                };
+                baseCheckBox.Unchecked += async (_, _) =>
+                {
+                    if (!_suppressMapLevelRefresh)
+                        await ApplyMapLevelStateAsync();
+                };
+
+                LayersPanel.Children.Add(baseCheckBox);
+            }
+
+            foreach (var level in levels)
+            {
+                if (string.IsNullOrWhiteSpace(level.SvgLayer))
+                    continue;
+
+                string svgLayer = level.SvgLayer;
+                var checkBox = new CheckBox
+                {
+                    Content = FormatLevelChipLabel(level.Name),
+                    Tag = svgLayer,
+                    IsChecked = level.DefaultVisible,
+                    Style = levelChipStyle
+                };
+
+                checkBox.Checked += async (_, _) =>
+                {
+                    if (!_suppressMapLevelRefresh)
+                        await ApplyMapLevelStateAsync();
+                };
+                checkBox.Unchecked += async (_, _) =>
+                {
+                    if (!_suppressMapLevelRefresh)
+                        await ApplyMapLevelStateAsync();
+                };
 
                 LayersPanel.Children.Add(checkBox);
             }
         }
 
-        private List<string> GetSvgLayerIds(string mapPath)
+        private static string FormatLevelChipLabel(string name)
         {
-            try
-            {
-                XDocument doc = XDocument.Load(mapPath);
+            if (string.IsNullOrWhiteSpace(name))
+                return "LEVEL";
 
-                return doc
-                    .Descendants()
-                    .Where(e => e.Name.LocalName == "g")
-                    .Select(e => e.Attribute("id")?.Value)
-                    .Where(id => !string.IsNullOrWhiteSpace(id))
-                    .Select(id => id!)
-                    .Distinct()
-                    .OrderBy(id => id)
-                    .ToList();
-            }
-            catch
-            {
-                return new List<string>();
-            }
+            string normalized = name.Replace('_', ' ').Trim().ToUpperInvariant();
+            return normalized.Length <= 14 ? normalized : normalized[..14];
         }
 
-        private async System.Threading.Tasks.Task SetSvgLayerVisibility(string layerId, bool visible)
-        {
-            string idJson = JsonSerializer.Serialize(layerId);
-            string visibleJson = visible ? "true" : "false";
+        private static bool IsBaseLayerCheckbox(CheckBox checkBox) =>
+            string.Equals(checkBox.Tag as string, BaseLayerToggleTag, StringComparison.Ordinal);
 
-            if (_webViewReady)
+        private MapLevelStatePayload BuildMapLevelState()
+        {
+            var config = _currentMapLevelsConfig!;
+            var activeLevelIds = new List<string>();
+            bool showBaseLayer = true;
+
+            foreach (var child in LayersPanel.Children)
             {
-                await MapWebView.ExecuteScriptAsync(
-                    $"setLayerVisibility({idJson}, {visibleJson});");
+                if (child is not CheckBox checkBox)
+                    continue;
+
+                if (IsBaseLayerCheckbox(checkBox))
+                {
+                    showBaseLayer = checkBox.IsChecked == true;
+                    continue;
+                }
+
+                if (checkBox.IsChecked == true && checkBox.Tag is string svgLayer && !string.IsNullOrWhiteSpace(svgLayer))
+                    activeLevelIds.Add(svgLayer);
             }
 
+            bool dimBase = showBaseLayer && activeLevelIds.Any(id =>
+                config.Levels.Any(level =>
+                    string.Equals(level.SvgLayer, id, StringComparison.OrdinalIgnoreCase) && !level.DefaultVisible));
+
+            return new MapLevelStatePayload
+            {
+                DefaultLayerId = config.DefaultSvgLayer,
+                OverlayLayerIds = config.Levels
+                    .Select(level => level.SvgLayer)
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Select(id => id!)
+                    .ToList(),
+                ShowBaseLayer = showBaseLayer,
+                DimBase = dimBase,
+                ActiveLevelIds = activeLevelIds
+            };
+        }
+
+        private async System.Threading.Tasks.Task ApplyMapLevelStateAsync()
+        {
+            if (!_webViewReady || _currentMapLevelsConfig == null)
+                return;
+
+            string stateJson = JsonSerializer.Serialize(BuildMapLevelState());
+
+            await MapWebView.ExecuteScriptAsync($"applyMapLevelState({stateJson});");
+
             if (_overlayWindow != null)
-                await _overlayWindow.SetLayerVisibilityAsync(layerId, visible);
+                await _overlayWindow.ApplyMapLevelStateAsync(stateJson);
+        }
+
+        private MarkerFilterState BuildMarkerFilterState()
+        {
+            return new MarkerFilterState
+            {
+                PmcExtracts = ShowPmcExtractsCheckBox?.IsChecked == true,
+                ScavExtracts = ShowScavExtractsCheckBox?.IsChecked == true,
+                SharedExtracts = ShowSharedExtractsCheckBox?.IsChecked == true,
+                Transits = ShowTransitsCheckBox?.IsChecked == true,
+                PmcSpawns = ShowPmcSpawnsCheckBox?.IsChecked == true,
+                ScavSpawns = ShowScavSpawnsCheckBox?.IsChecked == true,
+                BossSpawns = ShowBossSpawnsCheckBox?.IsChecked == true,
+                Labels = ShowLabelsCheckBox?.IsChecked == true,
+                QuestItems = ShowQuestItemsCheckBox?.IsChecked == true,
+                QuestObjectives = ShowQuestObjectivesCheckBox?.IsChecked == true,
+                Hazards = ShowHazardsCheckBox?.IsChecked == true,
+                Switches = ShowSwitchesCheckBox?.IsChecked == true
+            };
         }
 
         private void ShowAllLayers_Click(object sender, RoutedEventArgs e)
         {
+            _suppressMapLevelRefresh = true;
+
             foreach (var child in LayersPanel.Children)
             {
-                if (child is CheckBox checkBox)
+                if (child is CheckBox checkBox && !IsBaseLayerCheckbox(checkBox))
                     checkBox.IsChecked = true;
             }
+
+            _suppressMapLevelRefresh = false;
+            _ = ApplyMapLevelStateAsync();
         }
 
         private void HideAllLayers_Click(object sender, RoutedEventArgs e)
         {
+            _suppressMapLevelRefresh = true;
+
             foreach (var child in LayersPanel.Children)
             {
-                if (child is CheckBox checkBox)
+                if (child is CheckBox checkBox && !IsBaseLayerCheckbox(checkBox))
                     checkBox.IsChecked = false;
             }
+
+            _suppressMapLevelRefresh = false;
+            _ = ApplyMapLevelStateAsync();
+        }
+
+        private bool _suppressMarkerFilterRefresh = false;
+
+        private void ShowAllMarkers_Click(object sender, RoutedEventArgs e)
+        {
+            _suppressMarkerFilterRefresh = true;
+
+            ShowLabelsCheckBox.IsChecked = true;
+            ShowQuestItemsCheckBox.IsChecked = true;
+            ShowQuestObjectivesCheckBox.IsChecked = true;
+            ShowPmcExtractsCheckBox.IsChecked = true;
+            ShowScavExtractsCheckBox.IsChecked = true;
+            ShowSharedExtractsCheckBox.IsChecked = true;
+            ShowTransitsCheckBox.IsChecked = true;
+            ShowHazardsCheckBox.IsChecked = true;
+            ShowSwitchesCheckBox.IsChecked = true;
+            ShowPmcSpawnsCheckBox.IsChecked = true;
+            ShowScavSpawnsCheckBox.IsChecked = true;
+            ShowBossSpawnsCheckBox.IsChecked = true;
+
+            _suppressMarkerFilterRefresh = false;
+            _ = ApplyMarkerVisibility();
         }
 
         private async void MarkerFilter_Changed(object sender, RoutedEventArgs e)
         {
+            if (_suppressMarkerFilterRefresh)
+                return;
+
             await ApplyMarkerVisibility();
         }
 
         private async System.Threading.Tasks.Task ApplyMarkerVisibility()
         {
-            bool showPmcExtracts = ShowPmcExtractsCheckBox?.IsChecked == true;
-            bool showScavExtracts = ShowScavExtractsCheckBox?.IsChecked == true;
-            bool showSharedExtracts = ShowSharedExtractsCheckBox?.IsChecked == true;
-            bool showTransits = ShowTransitsCheckBox?.IsChecked == true;
-            bool showPmcSpawns = ShowPmcSpawnsCheckBox?.IsChecked == true;
-            bool showScavSpawns = ShowScavSpawnsCheckBox?.IsChecked == true;
-            bool showBossSpawns = ShowBossSpawnsCheckBox?.IsChecked == true;
-            bool showLabels = ShowLabelsCheckBox?.IsChecked == true;
-            bool showQuestMarkers = ShowQuestMarkersCheckBox?.IsChecked == true;
+            string filtersJson = JsonSerializer.Serialize(BuildMarkerFilterState());
 
             if (_webViewReady)
-            {
-                await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('pmc', {(showPmcExtracts ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('scav', {(showScavExtracts ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setExtractFactionVisibility('shared', {(showSharedExtracts ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setTransitVisibility({(showTransits ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-pmc', {(showPmcSpawns ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-scav', {(showScavSpawns ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setSpawnVisibility('spawn-boss', {(showBossSpawns ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setLabelVisibility({(showLabels ? "true" : "false")});");
-                await MapWebView.ExecuteScriptAsync($"setQuestVisibility({(showQuestMarkers ? "true" : "false")});");
-            }
+                await MapWebView.ExecuteScriptAsync($"applyMarkerFilters({filtersJson});");
 
             if (_overlayWindow != null)
-            {
-                await _overlayWindow.ApplyMarkerVisibilityAsync(
-                    showPmcExtracts,
-                    showScavExtracts,
-                    showSharedExtracts,
-                    showTransits,
-                    showPmcSpawns,
-                    showScavSpawns,
-                    showBossSpawns,
-                    showLabels,
-                    showQuestMarkers);
-            }
+                await _overlayWindow.ApplyMarkerFiltersAsync(filtersJson);
         }
 
         private async void ResetView_Click(object sender, RoutedEventArgs e)
@@ -1024,10 +565,10 @@ initialize();
             if (!_webViewReady || _currentMapConfig == null || string.IsNullOrWhiteSpace(_currentMapDisplayName))
                 return;
 
-            string normalizedName = NormalizeMapName(_currentMapDisplayName);
+            string normalizedName = MapDataService.NormalizeMapName(_currentMapDisplayName);
             var markers = new List<WebMapMarker>();
 
-            if (_extractsByMapName.TryGetValue(normalizedName, out var extracts))
+            if (_mapData.ExtractsByMapName.TryGetValue(normalizedName, out var extracts))
             {
                 foreach (var extract in extracts.Where(e => e.Position != null))
                 {
@@ -1052,7 +593,7 @@ initialize();
                 }
             }
 
-            if (_transitsByMapName.TryGetValue(normalizedName, out var transits))
+            if (_mapData.TransitsByMapName.TryGetValue(normalizedName, out var transits))
             {
                 foreach (var transit in transits.Where(t => t.Position != null))
                 {
@@ -1077,37 +618,49 @@ initialize();
                 }
             }
 
-            bool mapHasBoss = CurrentMapHasRealBoss();
-
-            if (_spawnsByMapName.TryGetValue(normalizedName, out var spawns))
+            if (_mapData.SpawnsByMapName.TryGetValue(normalizedName, out var spawns))
             {
                 foreach (var spawn in spawns.Where(s => s.Position != null))
                 {
+                    string categories = spawn.Categories == null || spawn.Categories.Count == 0
+                        ? ""
+                        : string.Join(",", spawn.Categories).ToLowerInvariant();
+
+                    if (categories.Contains("boss"))
+                        continue;
+
                     var converted = ConvertGameToNormalizedMap(spawn.Position!.X, spawn.Position.Z);
 
                     string sides = spawn.Sides == null || spawn.Sides.Count == 0
                         ? ""
                         : string.Join(",", spawn.Sides).ToLowerInvariant();
 
-                    string categories = spawn.Categories == null || spawn.Categories.Count == 0
-                        ? ""
-                        : string.Join(",", spawn.Categories).ToLowerInvariant();
-
-                    bool isBoss = mapHasBoss && categories.Contains("boss");
                     bool isPmc = sides.Contains("pmc") || sides.Contains("all");
                     bool isScav = sides.Contains("scav");
 
-                    if (isBoss)
-                        markers.Add(BuildSpawnMarker(spawn, converted, "spawn-boss", "Boss Spawn Zone", "spawn-boss"));
-                    else if (isPmc && !isScav)
+                    if (isPmc && !isScav)
                         markers.Add(BuildSpawnMarker(spawn, converted, "spawn-pmc", "PMC Spawn", "spawn-pmc"));
                     else if (isScav)
                         markers.Add(BuildSpawnMarker(spawn, converted, "spawn-scav", "Scav Spawn", "spawn-scav"));
                 }
             }
 
+            if (_mapData.BossSpawnMarkersByMapName.TryGetValue(normalizedName, out var bossSpawns))
+            {
+                var bossGroups = bossSpawns
+                    .Where(b => b.X != null && b.Z != null)
+                    .GroupBy(b => $"{b.ZoneName}|{Math.Round(b.X!.Value, 1)}|{Math.Round(b.Z!.Value, 1)}");
 
-            if (_questMarkersByMapName.TryGetValue(normalizedName, out var questMarkers))
+                foreach (var group in bossGroups)
+                {
+                    var primary = group.First();
+                    var converted = ConvertGameToNormalizedMap(primary.X!.Value, primary.Z!.Value);
+                    markers.Add(BuildBossSpawnMarker(group.ToList(), converted));
+                }
+            }
+
+
+            if (_mapData.QuestMarkersByMapName.TryGetValue(normalizedName, out var questMarkers))
             {
                 foreach (var questMarker in questMarkers)
                 {
@@ -1115,29 +668,103 @@ initialize();
                         continue;
 
                     var converted = ConvertGameToNormalizedMap(questMarker.X.Value, questMarker.Z.Value);
+
+                    string category = NormalizeQuestCategory(questMarker.Category);
+                    string cssClass = category == "item" ? "quest-item" : "quest-objective";
                     string description = string.IsNullOrWhiteSpace(questMarker.Description)
                         ? "Quest objective"
                         : questMarker.Description;
+
+                    string itemText = string.IsNullOrWhiteSpace(questMarker.QuestItem)
+                        ? ""
+                        : $"\nItem: {questMarker.QuestItem}" +
+                          (string.IsNullOrWhiteSpace(questMarker.ItemShortName) ? "" : $" ({questMarker.ItemShortName})");
+
+                    string traderText = string.IsNullOrWhiteSpace(questMarker.Trader)
+                        ? ""
+                        : $"\nTrader: {questMarker.Trader}";
+
+                    string levelText = questMarker.MinPlayerLevel > 0
+                        ? $"\nLevel: {questMarker.MinPlayerLevel}+"
+                        : "";
+
+                    string optionalText = questMarker.Optional ? "\nOptional: yes" : "";
 
                     markers.Add(new WebMapMarker
                     {
                         Name = questMarker.Quest,
                         MarkerType = "quest",
                         Faction = "",
-                        CssClass = "quest-objective",
-                        Tooltip = $"{questMarker.Quest}\n{description}",
+                        CssClass = cssClass,
+                        Tooltip = $"{questMarker.Quest}\n{description}{itemText}{traderText}{levelText}{optionalText}",
                         ZoneName = questMarker.Quest,
-                        Categories = "Quest Objective",
-                        Conditions = description,
+                        Categories = category == "item" ? "Quest Item" : "Quest Objective",
+                        Conditions = BuildQuestDetails(questMarker, description),
                         Position = $"X={questMarker.X.Value:0.##}, Y={(questMarker.Y ?? 0):0.##}, Z={questMarker.Z.Value:0.##}",
+                        NormalizedX = converted.normalizedX,
+                        NormalizedY = converted.normalizedY,
+                        QuestCategory = category,
+                        QuestObjectiveType = questMarker.ObjectiveType,
+                        QuestItem = questMarker.QuestItem,
+                        QuestItemShortName = questMarker.ItemShortName,
+                        QuestItemIconLink = questMarker.ItemIconLink,
+                        QuestTrader = questMarker.Trader,
+                        QuestMinPlayerLevel = questMarker.MinPlayerLevel,
+                        QuestOptional = questMarker.Optional
+                    });
+                }
+            }
+
+
+            if (_mapData.HazardsByMapName.TryGetValue(normalizedName, out var hazards))
+            {
+                foreach (var hazard in hazards.Where(h => h.Position != null))
+                {
+                    var converted = ConvertGameToNormalizedMap(hazard.Position!.X, hazard.Position.Z);
+                    string hazardName = string.IsNullOrWhiteSpace(hazard.Name) ? "Hazard" : hazard.Name;
+
+                    markers.Add(new WebMapMarker
+                    {
+                        Name = hazardName,
+                        MarkerType = "hazard",
+                        Faction = "",
+                        CssClass = "hazard",
+                        Tooltip = hazardName,
+                        ZoneName = "",
+                        Categories = hazard.HazardType ?? "hazard",
+                        Conditions = "",
+                        Position = $"X={hazard.Position.X:0.##}, Y={hazard.Position.Y:0.##}, Z={hazard.Position.Z:0.##}",
                         NormalizedX = converted.normalizedX,
                         NormalizedY = converted.normalizedY
                     });
                 }
             }
 
+            if (_mapData.SwitchesByMapName.TryGetValue(normalizedName, out var switches))
+            {
+                foreach (var mapSwitch in switches.Where(s => s.Position != null))
+                {
+                    var converted = ConvertGameToNormalizedMap(mapSwitch.Position!.X, mapSwitch.Position.Z);
+                    string switchName = string.IsNullOrWhiteSpace(mapSwitch.Name) ? "Switch" : mapSwitch.Name;
 
-            if (_labelsByMapName.TryGetValue(normalizedName, out var labels))
+                    markers.Add(new WebMapMarker
+                    {
+                        Name = switchName,
+                        MarkerType = "switch",
+                        Faction = "",
+                        CssClass = "map-switch",
+                        Tooltip = switchName,
+                        ZoneName = "",
+                        Categories = "Switch",
+                        Conditions = "",
+                        Position = $"X={mapSwitch.Position.X:0.##}, Y={mapSwitch.Position.Y:0.##}, Z={mapSwitch.Position.Z:0.##}",
+                        NormalizedX = converted.normalizedX,
+                        NormalizedY = converted.normalizedY
+                    });
+                }
+            }
+
+            if (_mapData.LabelsByMapName.TryGetValue(normalizedName, out var labels))
             {
                 foreach (var label in labels)
                 {
@@ -1171,8 +798,66 @@ initialize();
             if (_overlayWindow != null)
                 _ = _overlayWindow.SetMapMarkersAsync(json);
 
-            ParserStatusText.Text = $"Loaded {markers.Count} map markers";
-            ParserStatusText.Foreground = Brushes.LawnGreen;
+            SetParserStatus($"LOADED {markers.Count} MARKERS");
+        }
+
+        private List<WebMapOutlinePoint>? BuildNormalizedOutline(List<MapOutlinePoint>? outline)
+        {
+            if (outline == null || outline.Count == 0)
+                return null;
+
+            return outline
+                .Select(point =>
+                {
+                    var converted = ConvertGameToNormalizedMap(point.X, point.Z);
+                    return new WebMapOutlinePoint
+                    {
+                        NormalizedX = converted.normalizedX,
+                        NormalizedY = converted.normalizedY
+                    };
+                })
+                .ToList();
+        }
+
+        private string NormalizeQuestCategory(string category)
+        {
+            string value = (category ?? "").Trim().ToLowerInvariant();
+
+            if (value == "item" || value == "items")
+                return "item";
+
+            return "objective";
+        }
+
+        private string BuildQuestDetails(QuestMarker questMarker, string description)
+        {
+            var details = new List<string>
+            {
+                $"Description: {description}",
+                $"Category: {(NormalizeQuestCategory(questMarker.Category) == "item" ? "Item" : "Objective")}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(questMarker.ObjectiveType))
+                details.Add($"Objective Type: {questMarker.ObjectiveType}");
+
+            if (!string.IsNullOrWhiteSpace(questMarker.Trader))
+                details.Add($"Trader: {questMarker.Trader}");
+
+            if (questMarker.MinPlayerLevel > 0)
+                details.Add($"Required Level: {questMarker.MinPlayerLevel}");
+
+            if (!string.IsNullOrWhiteSpace(questMarker.QuestItem))
+                details.Add($"Item: {questMarker.QuestItem}");
+
+            if (!string.IsNullOrWhiteSpace(questMarker.ItemShortName))
+                details.Add($"Item Short Name: {questMarker.ItemShortName}");
+
+            if (!string.IsNullOrWhiteSpace(questMarker.ItemIconLink))
+                details.Add($"Item Icon: {questMarker.ItemIconLink}");
+
+            details.Add($"Optional: {(questMarker.Optional ? "Yes" : "No")}");
+
+            return string.Join(Environment.NewLine, details);
         }
 
         private double GetLabelFontSize(double size)
@@ -1250,22 +935,32 @@ initialize();
             return null;
         }
 
-        private bool CurrentMapHasRealBoss()
+        private WebMapMarker BuildBossSpawnMarker(
+            List<BossSpawnMarker> bossesAtLocation,
+            (double normalizedX, double normalizedY) converted)
         {
-            if (_currentMapConfig?.Enemies == null || _currentMapConfig.Enemies.Count == 0)
-                return false;
+            var primary = bossesAtLocation[0];
+            string bossNames = string.Join(", ", bossesAtLocation.Select(b => b.BossName).Distinct());
+            string locations = string.Join(", ", bossesAtLocation.Select(b => b.LocationName).Distinct());
 
-            string[] nonBossEnemies =
+            string chanceText = bossesAtLocation.Count == 1 && primary.SpawnChance > 0
+                ? $"\nSpawn chance: {primary.SpawnChance:P0}"
+                : "";
+
+            return new WebMapMarker
             {
-                "Scavs",
-                "Cultists",
-                "Raiders",
-                "Rogues"
+                Name = bossNames,
+                MarkerType = "spawn-boss",
+                Faction = "",
+                CssClass = "spawn-boss",
+                Tooltip = $"{bossNames}\n{locations}\nZone: {primary.ZoneName}{chanceText}",
+                ZoneName = primary.ZoneName,
+                Categories = "boss",
+                Conditions = "",
+                Position = $"X={primary.X:0.##}, Y={primary.Y:0.##}, Z={primary.Z:0.##}",
+                NormalizedX = converted.normalizedX,
+                NormalizedY = converted.normalizedY
             };
-
-            return _currentMapConfig.Enemies.Any(enemy =>
-                !nonBossEnemies.Any(nonBoss =>
-                    string.Equals(enemy, nonBoss, StringComparison.OrdinalIgnoreCase)));
         }
 
         private WebMapMarker BuildSpawnMarker(
@@ -1307,24 +1002,19 @@ initialize();
             return "shared";
         }
 
-        private string NormalizeMapName(string name)
-        {
-            return new string(
-                (name ?? "")
-                    .Where(char.IsLetterOrDigit)
-                    .Select(char.ToLowerInvariant)
-                    .ToArray());
-        }
-
         private (double normalizedX, double normalizedY) ConvertGameToNormalizedMap(double gameX, double gameZ)
         {
             if (_currentMapConfig?.Svg?.Bounds == null || _currentMapConfig.Svg.Bounds.Length < 2)
                 return (0.5, 0.5);
 
-            double x1 = _currentMapConfig.Svg.Bounds[0][0];
-            double z1 = _currentMapConfig.Svg.Bounds[0][1];
-            double x2 = _currentMapConfig.Svg.Bounds[1][0];
-            double z2 = _currentMapConfig.Svg.Bounds[1][1];
+            var svg = _currentMapConfig.Svg;
+            if (svg.Transform != null && svg.Transform.Length >= 4)
+                return ConvertGameToNormalizedMapWithTransform(gameX, gameZ);
+
+            double x1 = svg.Bounds[0][0];
+            double z1 = svg.Bounds[0][1];
+            double x2 = svg.Bounds[1][0];
+            double z2 = svg.Bounds[1][1];
 
             double minX = Math.Min(x1, x2);
             double maxX = Math.Max(x1, x2);
@@ -1334,7 +1024,7 @@ initialize();
             double normalizedX = (gameX - minX) / (maxX - minX);
             double normalizedY = (gameZ - minZ) / (maxZ - minZ);
 
-            switch (_currentMapConfig.Svg.CoordinateRotation)
+            switch (svg.CoordinateRotation)
             {
                 case 90:
                     double oldX = normalizedX;
@@ -1355,12 +1045,91 @@ initialize();
             return (normalizedX, normalizedY);
         }
 
+        private (double normalizedX, double normalizedY) ConvertGameToNormalizedMapWithTransform(double gameX, double gameZ)
+        {
+            var svg = _currentMapConfig!.Svg;
+
+            if (svg.MapPixelSize > 0)
+            {
+                int tileZoom = svg.NativeZoom > 0 ? svg.NativeZoom : 4;
+                var (tilePx, tilePy) = GameCoordsToMapPixels(gameX, gameZ, tileZoom);
+                return (tilePx / svg.MapPixelSize, tilePy / svg.MapPixelSize);
+            }
+
+            const int referenceZoom = 0;
+            var (px, py) = GameCoordsToMapPixels(gameX, gameZ, referenceZoom);
+            var (minPx, maxPx, minPy, maxPy) = GetBoundsPixelExtents(svg, referenceZoom);
+
+            double width = maxPx - minPx;
+            double height = maxPy - minPy;
+            if (width <= 0 || height <= 0)
+                return (0.5, 0.5);
+
+            return ((px - minPx) / width, (py - minPy) / height);
+        }
+
+        private (double minPx, double maxPx, double minPy, double maxPy) GetBoundsPixelExtents(MapSvg svg, int zoom)
+        {
+            double[][] bounds = svg.SvgBounds ?? svg.Bounds;
+            var corners = new (double x, double z)[]
+            {
+                (bounds[0][0], bounds[0][1]),
+                (bounds[1][0], bounds[0][1]),
+                (bounds[0][0], bounds[1][1]),
+                (bounds[1][0], bounds[1][1])
+            };
+
+            double minPx = double.MaxValue;
+            double maxPx = double.MinValue;
+            double minPy = double.MaxValue;
+            double maxPy = double.MinValue;
+
+            foreach (var (x, z) in corners)
+            {
+                var (cornerPx, cornerPy) = GameCoordsToMapPixels(x, z, zoom);
+                minPx = Math.Min(minPx, cornerPx);
+                maxPx = Math.Max(maxPx, cornerPx);
+                minPy = Math.Min(minPy, cornerPy);
+                maxPy = Math.Max(maxPy, cornerPy);
+            }
+
+            return (minPx, maxPx, minPy, maxPy);
+        }
+
+        private (double px, double py) GameCoordsToMapPixels(double gameX, double gameZ, int zoom)
+        {
+            var svg = _currentMapConfig!.Svg;
+            var (rotLat, rotLng) = ApplyMapCoordinateRotation(gameZ, gameX, svg.CoordinateRotation);
+
+            double scale = Math.Pow(2, zoom);
+            double scaleX = svg.Transform![0];
+            double scaleY = svg.Transform[2] * -1;
+            double marginX = svg.Transform[1];
+            double marginY = svg.Transform[3];
+
+            double px = scale * (scaleX * rotLng + marginX);
+            double py = scale * (scaleY * rotLat + marginY);
+            return (px, py);
+        }
+
+        private static (double lat, double lng) ApplyMapCoordinateRotation(double lat, double lng, int rotation)
+        {
+            if (rotation == 0)
+                return (lat, lng);
+
+            double angle = rotation * Math.PI / 180.0;
+            double cos = Math.Cos(angle);
+            double sin = Math.Sin(angle);
+            double rotatedLng = lng * cos - lat * sin;
+            double rotatedLat = lng * sin + lat * cos;
+            return (rotatedLat, rotatedLng);
+        }
+
         private void StartScreenshotMonitoring()
         {
             if (!Directory.Exists(_screenshotFolder))
             {
-                ParserStatusText.Text = "Screenshot folder not found";
-                ParserStatusText.Foreground = Brushes.OrangeRed;
+                SetParserStatus("FOLDER NOT FOUND", isError: true);
                 return;
             }
 
@@ -1374,8 +1143,7 @@ initialize();
             _screenshotWatcher.Created += ScreenshotWatcher_Changed;
             _screenshotWatcher.Renamed += ScreenshotWatcher_Changed;
 
-            ParserStatusText.Text = "Monitoring screenshots";
-            ParserStatusText.Foreground = Brushes.LawnGreen;
+            SetParserStatus("MONITORING SCREENSHOTS");
         }
 
         private void ScreenshotWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -1441,9 +1209,8 @@ initialize();
 
             if (!match.Success)
             {
-                ParserStatusText.Text = "Parse failed";
-                ParserStatusText.Foreground = Brushes.OrangeRed;
-                StatusText.Text = "Failed to parse screenshot filename.";
+                SetParserStatus("PARSE FAILED", isError: true);
+                StatusText.Text = "PARSE FAILED";
                 return;
             }
 
@@ -1460,7 +1227,6 @@ initialize();
             direction = ApplyMapDirectionOffset(direction);
 
             _lastGameX = gameX;
-            _lastGameY = gameY;
             _lastGameZ = gameZ;
             _lastDirection = direction;
 
@@ -1469,85 +1235,11 @@ initialize();
             GameZText.Text = gameZ.ToString("0.00", CultureInfo.InvariantCulture);
             DirectionText.Text = direction.ToString("0.00", CultureInfo.InvariantCulture) + "°";
 
-            ParserStatusText.Text = $"Updated: {DateTime.Now:T}";
-            ParserStatusText.Foreground = Brushes.LawnGreen;
+            SetParserStatus($"TRACKING {DateTime.Now:T}");
 
-            StatusText.Text = $"Parsed: X={gameX:0.00}, Y={gameY:0.00}, Z={gameZ:0.00}, Direction={direction:0.00}°";
+            StatusText.Text = $"X={gameX:0.00} Y={gameY:0.00} Z={gameZ:0.00} DIR={direction:0.00}";
 
             DrawPlayerMarkerFromGameCoordinates(gameX, gameZ, direction);
-            // Disabled for now because it hides too many SVG layers on maps like Factory.
-            // AutoSwitchFloorLayers(gameY);
-        }
-
-        private void AutoSwitchFloorLayers(double gameY)
-        {
-            string mapName = NormalizeMapName(_currentMapDisplayName ?? CurrentMapText.Text);
-            var targetLayer = GetFloorLayerForMapAndY(mapName, gameY);
-
-            if (string.IsNullOrWhiteSpace(targetLayer))
-                return;
-
-            foreach (var child in LayersPanel.Children)
-            {
-                if (child is not CheckBox checkBox)
-                    continue;
-
-                string layerName = checkBox.Content?.ToString() ?? "";
-
-                if (IsFloorLayer(layerName))
-                    checkBox.IsChecked = string.Equals(layerName, targetLayer, StringComparison.OrdinalIgnoreCase);
-            }
-        }
-
-        private string? GetFloorLayerForMapAndY(string normalizedMapName, double gameY)
-        {
-            if (normalizedMapName == "factory" || normalizedMapName == "nightfactory")
-            {
-                if (gameY < -1.0) return "Basement";
-                if (gameY < 3.5) return "GroundFloor";
-                if (gameY < 6.5) return "SecondFloor";
-                return "ThirdFloor";
-            }
-
-            if (normalizedMapName == "groundzero" || normalizedMapName == "groundzero21")
-            {
-                if (gameY < 18) return "Underground_Level";
-                if (gameY < 28) return "Ground_Level";
-                if (gameY < 36) return "First_Floor";
-                if (gameY < 44) return "Second_Floor";
-                return "Third_Floor";
-            }
-
-            if (normalizedMapName == "thelab" || normalizedMapName == "lab")
-            {
-                if (gameY < -1) return "Technical_Level";
-                if (gameY < 4) return "First_Level";
-                return "Second_Level";
-            }
-
-            if (normalizedMapName == "interchange")
-            {
-                if (gameY < 22) return "Ground_Level";
-                if (gameY < 30) return "First_Floor";
-                return "Second_Floor";
-            }
-
-            return null;
-        }
-
-        private bool IsFloorLayer(string layerName)
-        {
-            string lower = layerName.ToLowerInvariant();
-
-            return lower.Contains("floor") ||
-                   lower.Contains("level") ||
-                   lower.Contains("basement") ||
-                   lower.Contains("bunker") ||
-                   lower.Contains("groundfloor") ||
-                   lower.Contains("ground_level") ||
-                   lower.Contains("technical_level") ||
-                   lower.Contains("first_level") ||
-                   lower.Contains("second_level");
         }
 
         private double GetYawFromQuaternion(double x, double y, double z, double w)
@@ -1561,7 +1253,7 @@ initialize();
 
         private double ApplyMapDirectionOffset(double direction)
         {
-            string mapName = NormalizeMapName(_currentMapDisplayName ?? CurrentMapText.Text);
+            string mapName = MapDataService.NormalizeMapName(_currentMapDisplayName ?? CurrentMapText.Text);
 
             // Customs and the other maps tested use the raw screenshot direction correctly.
             // Factory/Night Factory SVG orientation is opposite for player-facing direction,
@@ -1651,6 +1343,7 @@ initialize();
             if (string.IsNullOrWhiteSpace(_currentMapHtml))
                 return;
 
+            _overlayWindow.ConfigureMapAssetHost(_mapsFolder);
             await _overlayWindow.LoadMapHtmlAsync(_currentMapHtml);
 
             if (!string.IsNullOrWhiteSpace(_lastMapMarkersJson))
@@ -1672,27 +1365,13 @@ initialize();
             if (_overlayWindow == null)
                 return;
 
-            foreach (var child in LayersPanel.Children)
+            if (_currentMapLevelsConfig != null)
             {
-                if (child is not CheckBox checkBox)
-                    continue;
-
-                string layerId = checkBox.Content?.ToString() ?? "";
-
-                if (!string.IsNullOrWhiteSpace(layerId))
-                    await _overlayWindow.SetLayerVisibilityAsync(layerId, checkBox.IsChecked == true);
+                string stateJson = JsonSerializer.Serialize(BuildMapLevelState());
+                await _overlayWindow.ApplyMapLevelStateAsync(stateJson);
             }
 
-            await _overlayWindow.ApplyMarkerVisibilityAsync(
-                ShowPmcExtractsCheckBox.IsChecked == true,
-                ShowScavExtractsCheckBox.IsChecked == true,
-                ShowSharedExtractsCheckBox.IsChecked == true,
-                ShowTransitsCheckBox.IsChecked == true,
-                ShowPmcSpawnsCheckBox.IsChecked == true,
-                ShowScavSpawnsCheckBox.IsChecked == true,
-                ShowBossSpawnsCheckBox.IsChecked == true,
-                ShowLabelsCheckBox.IsChecked == true,
-                ShowQuestMarkersCheckBox.IsChecked == true);
+            await _overlayWindow.ApplyMarkerFiltersAsync(JsonSerializer.Serialize(BuildMarkerFilterState()));
         }
 
         protected override void OnClosed(EventArgs e)
@@ -1702,325 +1381,4 @@ initialize();
             base.OnClosed(e);
         }
     }
-
-    public class MapConfig
-    {
-        [JsonPropertyName("locale")]
-        public MapLocale Locale { get; set; } = new();
-
-        [JsonPropertyName("enemies")]
-        public List<string> Enemies { get; set; } = new();
-
-        [JsonPropertyName("svg")]
-        public MapSvg Svg { get; set; } = new();
-    }
-
-    public class MapLocale
-    {
-        [JsonPropertyName("en")]
-        public string En { get; set; } = "";
-    }
-
-    public class MapSvg
-    {
-        [JsonPropertyName("file")]
-        public string File { get; set; } = "";
-
-        [JsonPropertyName("coordinateRotation")]
-        public int CoordinateRotation { get; set; }
-
-        [JsonPropertyName("bounds")]
-        public double[][] Bounds { get; set; } = Array.Empty<double[]>();
-    }
-
-    public class TarkovExtractsRoot
-    {
-        [JsonPropertyName("data")]
-        public TarkovExtractsData Data { get; set; } = new();
-    }
-
-    public class TarkovExtractsData
-    {
-        [JsonPropertyName("maps")]
-        public List<TarkovExtractMap> Maps { get; set; } = new();
-    }
-
-    public class TarkovExtractMap
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-
-        [JsonPropertyName("extracts")]
-        public List<ExtractInfo> Extracts { get; set; } = new();
-    }
-
-    public class ExtractInfo
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-
-        [JsonPropertyName("faction")]
-        public string Faction { get; set; } = "";
-
-        [JsonPropertyName("conditions")]
-        public string? Conditions { get; set; }
-
-        [JsonPropertyName("requirements")]
-        public List<string> Requirements { get; set; } = new();
-
-        [JsonPropertyName("switches")]
-        public List<ExtractSwitch> Switches { get; set; } = new();
-
-        [JsonPropertyName("transferItem")]
-        public JsonElement? TransferItem { get; set; }
-
-        [JsonPropertyName("position")]
-        public MapPosition? Position { get; set; }
-    }
-
-    public class ExtractSwitch
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = "";
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-    }
-
-    public class TarkovTransitsRoot
-    {
-        [JsonPropertyName("data")]
-        public TarkovTransitsData Data { get; set; } = new();
-    }
-
-    public class TarkovTransitsData
-    {
-        [JsonPropertyName("maps")]
-        public List<TarkovTransitMap> Maps { get; set; } = new();
-    }
-
-    public class TarkovTransitMap
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-
-        [JsonPropertyName("transits")]
-        public List<TransitInfo> Transits { get; set; } = new();
-    }
-
-    public class TransitInfo
-    {
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = "";
-
-        [JsonPropertyName("conditions")]
-        public string? Conditions { get; set; }
-
-        [JsonPropertyName("position")]
-        public MapPosition? Position { get; set; }
-    }
-
-    public class TarkovSpawnsRoot
-    {
-        [JsonPropertyName("data")]
-        public TarkovSpawnsData Data { get; set; } = new();
-    }
-
-    public class TarkovSpawnsData
-    {
-        [JsonPropertyName("maps")]
-        public List<TarkovSpawnMap> Maps { get; set; } = new();
-    }
-
-    public class TarkovSpawnMap
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-
-        [JsonPropertyName("spawns")]
-        public List<SpawnInfo> Spawns { get; set; } = new();
-    }
-
-    public class SpawnInfo
-    {
-        [JsonPropertyName("zoneName")]
-        public string ZoneName { get; set; } = "";
-
-        [JsonPropertyName("sides")]
-        public List<string> Sides { get; set; } = new();
-
-        [JsonPropertyName("categories")]
-        public List<string> Categories { get; set; } = new();
-
-        [JsonPropertyName("position")]
-        public MapPosition? Position { get; set; }
-    }
-
-    public class QuestMarker
-    {
-        [JsonPropertyName("quest")]
-        public string Quest { get; set; } = "";
-
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = "";
-
-        [JsonPropertyName("x")]
-        public double? X { get; set; }
-
-        [JsonPropertyName("y")]
-        public double? Y { get; set; }
-
-        [JsonPropertyName("z")]
-        public double? Z { get; set; }
-    }
-
-    public class MapLabel
-    {
-        [JsonPropertyName("mapKey")]
-        public string MapKey { get; set; } = "";
-
-        [JsonIgnore]
-        public string MapName
-        {
-            get => MapKey;
-            set => MapKey = value;
-        }
-
-        [JsonPropertyName("projection")]
-        public string Projection { get; set; } = "";
-
-        [JsonPropertyName("text")]
-        public string Text { get; set; } = "";
-
-        [JsonPropertyName("x")]
-        public double X { get; set; }
-
-        [JsonPropertyName("z")]
-        public double Z { get; set; }
-
-        [JsonPropertyName("rotation")]
-        [JsonConverter(typeof(FlexibleDoubleConverter))]
-        public double Rotation { get; set; }
-
-        [JsonPropertyName("size")]
-        [JsonConverter(typeof(FlexibleDoubleConverter))]
-        public double Size { get; set; }
-    }
-
-    public class MapPosition
-    {
-        [JsonPropertyName("x")]
-        public double X { get; set; }
-
-        [JsonPropertyName("y")]
-        public double Y { get; set; }
-
-        [JsonPropertyName("z")]
-        public double Z { get; set; }
-    }
-
-    public class UserAppSettings
-    {
-        public string ScreenshotFolder { get; set; } = "";
-    }
-
-
-    public class WebMapMarker
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-
-        [JsonPropertyName("markerType")]
-        public string MarkerType { get; set; } = "";
-
-        [JsonPropertyName("faction")]
-        public string Faction { get; set; } = "";
-
-        [JsonPropertyName("cssClass")]
-        public string CssClass { get; set; } = "";
-
-        [JsonPropertyName("tooltip")]
-        public string Tooltip { get; set; } = "";
-
-        [JsonPropertyName("zoneName")]
-        public string ZoneName { get; set; } = "";
-
-        [JsonPropertyName("categories")]
-        public string Categories { get; set; } = "";
-
-        [JsonPropertyName("conditions")]
-        public string Conditions { get; set; } = "";
-
-        [JsonPropertyName("position")]
-        public string Position { get; set; } = "";
-
-        [JsonPropertyName("labelRotation")]
-        public double LabelRotation { get; set; }
-
-        [JsonPropertyName("labelSize")]
-        public double LabelSize { get; set; }
-
-        [JsonPropertyName("normalizedX")]
-        public double NormalizedX { get; set; }
-
-        [JsonPropertyName("normalizedY")]
-        public double NormalizedY { get; set; }
-    }
-
-    public class WebMarkerClickMessage
-    {
-        [JsonPropertyName("messageType")]
-        public string MessageType { get; set; } = "";
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = "";
-
-        [JsonPropertyName("markerType")]
-        public string MarkerType { get; set; } = "";
-
-        [JsonPropertyName("faction")]
-        public string Faction { get; set; } = "";
-
-        [JsonPropertyName("zoneName")]
-        public string ZoneName { get; set; } = "";
-
-        [JsonPropertyName("categories")]
-        public string Categories { get; set; } = "";
-
-        [JsonPropertyName("conditions")]
-        public string Conditions { get; set; } = "";
-
-        [JsonPropertyName("position")]
-        public string Position { get; set; } = "";
-    }
-
-    public class FlexibleDoubleConverter : JsonConverter<double>
-    {
-        public override double Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Number)
-            {
-                return reader.TryGetDouble(out double value) ? value : 0;
-            }
-
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                string? text = reader.GetString();
-
-                if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
-                    return value;
-            }
-
-            if (reader.TokenType == JsonTokenType.Null)
-                return 0;
-
-            return 0;
-        }
-
-        public override void Write(Utf8JsonWriter writer, double value, JsonSerializerOptions options)
-        {
-            writer.WriteNumberValue(value);
-        }
-    }
-
 }

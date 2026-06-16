@@ -1,0 +1,13 @@
+﻿{
+    "tdevId":  null,
+    "description":  "The southern port Terminal has been under Russian Armed Forces control since the beginning of the Tarkov conflict. After the city was sealed off, the terminal was fortified and became the primary evacuation point, sought by both civilian refugees and PMC units. According to unconfirmed reports, TerraGroup personnel were also evacuated through this port.",
+    "enemies":  [
+                    "Scavs",
+                    "Black Div.",
+                    "AF",
+                    "AF",
+                    "Reshala",
+                    "Reshala Guard"
+                ],
+    "raidDuration":  50
+}
