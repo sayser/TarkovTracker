@@ -53,11 +53,15 @@ html, body {
 
 #playerMarkerInner {
     position: relative;
-    width: 18px;
-    height: 22px;
+    width: 28px;
+    height: 34px;
     transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95))
-            drop-shadow(0 0 4px rgba(0, 0, 0, 0.85));
+    filter:
+        drop-shadow(0 0 2px rgba(255, 255, 255, 1))
+        drop-shadow(0 0 6px rgba(255, 82, 82, 0.95))
+        drop-shadow(0 0 14px rgba(255, 64, 64, 0.85))
+        drop-shadow(0 0 22px rgba(255, 40, 40, 0.55))
+        drop-shadow(0 0 2px rgba(0, 0, 0, 0.9));
 }
 
 #playerMarkerInner::before {
@@ -72,12 +76,13 @@ html, body {
     content: '';
     position: absolute;
     left: 50%;
-    top: 2px;
-    width: 6px;
-    height: 9px;
+    top: 3px;
+    width: 9px;
+    height: 14px;
     transform: translateX(-50%);
     background: linear-gradient(180deg, #80deea 0%, #00acc1 100%);
     clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    filter: drop-shadow(0 0 3px rgba(128, 222, 234, 0.9));
 }
 
 #markerLayer .mapMarker.off-level {
