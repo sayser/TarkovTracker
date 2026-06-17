@@ -44,8 +44,19 @@ public class MapDataService
         LoadBtr();
     }
 
+    public const string CultistPriestNormalizedName = "cultist-priest";
+
     public static bool MapSupportsBtr(string normalizedMapName) =>
         normalizedMapName is "woods" or "streetsoftarkov";
+
+    public bool MapHasCultistSpawns(string normalizedMapName)
+    {
+        if (!BossSpawnMarkersByMapName.TryGetValue(normalizedMapName, out List<BossSpawnMarker>? markers))
+            return false;
+
+        return markers.Any(marker =>
+            string.Equals(marker.NormalizedName, CultistPriestNormalizedName, StringComparison.OrdinalIgnoreCase));
+    }
 
     public static string NormalizeMapName(string name)
     {
@@ -257,6 +268,56 @@ public class MapDataService
 
             SpawnsByMapName[NormalizeMapName(map.Name)] = map.Spawns ?? new List<SpawnInfo>();
         }
+
+        MergeSpawnMapSources();
+    }
+
+    private void MergeSpawnMapSources()
+    {
+        MergeBossSpawnsIntoMap("nightfactory", "factory");
+    }
+
+    private void MergeBossSpawnsIntoMap(string sourceMapKey, string targetMapKey)
+    {
+        if (!SpawnsByMapName.TryGetValue(sourceMapKey, out List<SpawnInfo>? sourceSpawns) ||
+            sourceSpawns.Count == 0)
+        {
+            return;
+        }
+
+        if (!SpawnsByMapName.TryGetValue(targetMapKey, out List<SpawnInfo>? targetSpawns))
+        {
+            targetSpawns = new List<SpawnInfo>();
+            SpawnsByMapName[targetMapKey] = targetSpawns;
+        }
+
+        foreach (SpawnInfo spawn in sourceSpawns)
+        {
+            if (spawn.Categories?.Any(category =>
+                    string.Equals(category, "boss", StringComparison.OrdinalIgnoreCase)) != true)
+            {
+                continue;
+            }
+
+            if (targetSpawns.Any(existing => SpawnsMatch(existing, spawn)))
+                continue;
+
+            targetSpawns.Add(spawn);
+        }
+    }
+
+    private static bool SpawnsMatch(SpawnInfo left, SpawnInfo right)
+    {
+        if (!string.Equals(left.ZoneName, right.ZoneName, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (left.Position == null || right.Position == null)
+            return false;
+
+        const double tolerance = 0.05;
+        return Math.Abs(left.Position.X - right.Position.X) < tolerance &&
+               Math.Abs(left.Position.Y - right.Position.Y) < tolerance &&
+               Math.Abs(left.Position.Z - right.Position.Z) < tolerance;
     }
 
     private void LoadBossSpawns()
@@ -276,19 +337,55 @@ public class MapDataService
 
         foreach (var mapEntry in data)
         {
-            string mapKey = NormalizeMapName(mapEntry.Key);
+            var markers = (mapEntry.Value ?? new List<BossSpawnMarker>())
+                .Where(marker => !string.IsNullOrWhiteSpace(marker.BossName))
+                .ToList();
 
-            if (!BossSpawnMarkersByMapName.ContainsKey(mapKey))
-                BossSpawnMarkersByMapName[mapKey] = new List<BossSpawnMarker>();
+            if (markers.Count == 0)
+                continue;
 
-            foreach (var marker in mapEntry.Value ?? new List<BossSpawnMarker>())
-            {
-                if (string.IsNullOrWhiteSpace(marker.BossName))
-                    continue;
+            RegisterBossSpawnMarkers(NormalizeMapName(mapEntry.Key), markers);
 
-                BossSpawnMarkersByMapName[mapKey].Add(marker);
-            }
+            foreach (string alias in GetBossSpawnMapAliases(mapEntry.Key))
+                RegisterBossSpawnMarkers(alias, markers);
         }
+    }
+
+    private void RegisterBossSpawnMarkers(string mapKey, List<BossSpawnMarker> markers)
+    {
+        if (string.IsNullOrWhiteSpace(mapKey))
+            return;
+
+        if (!BossSpawnMarkersByMapName.TryGetValue(mapKey, out List<BossSpawnMarker>? existing))
+        {
+            BossSpawnMarkersByMapName[mapKey] = markers.ToList();
+            return;
+        }
+
+        foreach (BossSpawnMarker marker in markers)
+        {
+            if (existing.Any(existingMarker =>
+                    string.Equals(existingMarker.ZoneName, marker.ZoneName, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(existingMarker.BossName, marker.BossName, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            existing.Add(marker);
+        }
+    }
+
+    private static IEnumerable<string> GetBossSpawnMapAliases(string mapKey)
+    {
+        string normalizedKey = NormalizeMapName(mapKey);
+
+        return normalizedKey switch
+        {
+            "thelab" or "lab" => new[] { "thelab", "lab" },
+            "groundzero" or "groundzero21" => new[] { "groundzero", "groundzero21" },
+            "labyrinth" or "thelabyrinth" => new[] { "labyrinth", "thelabyrinth" },
+            _ => Array.Empty<string>()
+        };
     }
 
     private void LoadLabels()

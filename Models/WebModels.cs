@@ -70,6 +70,9 @@ public class WebMapMarker
     [JsonPropertyName("hideLabel")]
     public bool HideLabel { get; set; }
 
+    [JsonPropertyName("gameY")]
+    public double? GameY { get; set; }
+
     [JsonPropertyName("outline")]
     public List<WebMapOutlinePoint>? Outline { get; set; }
 }

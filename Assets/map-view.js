@@ -104,6 +104,9 @@ function addMapMarkers(markers) {
         marker.dataset.markerName = m.name || '';
         marker.dataset.faction = m.faction || '';
         marker.dataset.questCategory = m.questCategory || '';
+        if (m.gameY != null && !Number.isNaN(m.gameY)) {
+            marker.dataset.gameY = String(m.gameY);
+        }
 
         marker.title = m.tooltip;
 
@@ -127,6 +130,7 @@ function addMapMarkers(markers) {
             m.markerType !== 'spawn-pmc' &&
             m.markerType !== 'spawn-scav' &&
             m.markerType !== 'spawn-boss' &&
+            m.markerType !== 'spawn-cultist' &&
             !m.hideLabel
         ) {
             let label = document.createElement('div');
@@ -162,6 +166,7 @@ function addMapMarkers(markers) {
     }
 
     updateMapMarkerVisuals();
+    refreshMarkerLevelVisibility();
     refreshRaidExfilHighlights();
 }
 
@@ -243,6 +248,7 @@ function applyMarkerFilters(filters) {
     setSpawnVisibility('spawn-pmc', !!filters.pmcSpawns);
     setSpawnVisibility('spawn-scav', !!filters.scavSpawns);
     setSpawnVisibility('spawn-boss', !!filters.bossSpawns);
+    setSpawnVisibility('spawn-cultist', !!filters.cultistSpawns);
     setLabelVisibility(!!filters.labels);
     setQuestCategoryVisibility('item', !!filters.questItems);
     setQuestCategoryVisibility('objective', !!filters.questObjectives);
@@ -307,8 +313,39 @@ let mapLevelState = {
     overlayLayerIds: [],
     showBaseLayer: true,
     dimBase: false,
-    activeLevelIds: []
+    activeLevelIds: [],
+    levelExtents: []
 };
+
+function refreshMarkerLevelVisibility() {
+    const extents = mapLevelState.levelExtents || [];
+    if (extents.length === 0) {
+        document.querySelectorAll('.mapMarker.off-level').forEach(function(marker) {
+            marker.classList.remove('off-level');
+        });
+        return;
+    }
+
+    const activeIds = new Set(mapLevelState.activeLevelIds || []);
+
+    document.querySelectorAll('.mapMarker[data-game-y]').forEach(function(marker) {
+        const y = parseFloat(marker.dataset.gameY);
+        if (Number.isNaN(y)) {
+            marker.classList.remove('off-level');
+            return;
+        }
+
+        let onLevel = true;
+        for (const ext of extents) {
+            if (y >= ext.minHeight && y < ext.maxHeight) {
+                onLevel = activeIds.has(ext.svgLayer);
+                break;
+            }
+        }
+
+        marker.classList.toggle('off-level', !onLevel);
+    });
+}
 
 function setupMapLayerClasses(defaultLayerId, overlayLayerIds) {
     const svgRoot = document.querySelector('#content svg');
@@ -380,8 +417,10 @@ function applyMapLevelState(state) {
     mapLevelState.showBaseLayer = state.showBaseLayer !== false;
     mapLevelState.dimBase = state.dimBase === true;
     mapLevelState.activeLevelIds = state.activeLevelIds || [];
+    mapLevelState.levelExtents = state.levelExtents || [];
 
     refreshMapLevelDisplay();
+    refreshMarkerLevelVisibility();
 }
 
 stage.addEventListener('wheel', function(e) {

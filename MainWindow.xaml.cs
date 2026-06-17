@@ -267,6 +267,7 @@ namespace TarkovTracker
             await ApplyMapLevelStateAsync();
 
             UpdateBtrControlsVisibility();
+            UpdateCultistControlsVisibility();
             DrawMapMarkersForCurrentMap();
             RedrawLastMarker();
             _ = SyncOverlayToCurrentMapAsync();
@@ -505,7 +506,18 @@ namespace TarkovTracker
                     .ToList(),
                 ShowBaseLayer = showBaseLayer,
                 DimBase = dimBase,
-                ActiveLevelIds = activeLevelIds
+                ActiveLevelIds = activeLevelIds,
+                LevelExtents = config.Levels
+                    .Where(level => !string.IsNullOrWhiteSpace(level.SvgLayer) &&
+                                    level.MinHeight.HasValue &&
+                                    level.MaxHeight.HasValue)
+                    .Select(level => new MapLevelExtent
+                    {
+                        SvgLayer = level.SvgLayer!,
+                        MinHeight = level.MinHeight!.Value,
+                        MaxHeight = level.MaxHeight!.Value
+                    })
+                    .ToList()
             };
         }
 
@@ -525,6 +537,7 @@ namespace TarkovTracker
         private MarkerFilterState BuildMarkerFilterState()
         {
             bool supportsBtr = CurrentMapSupportsBtr();
+            bool supportsCultists = CurrentMapSupportsCultists();
 
             return new MarkerFilterState
             {
@@ -535,6 +548,7 @@ namespace TarkovTracker
                 PmcSpawns = ShowPmcSpawnsCheckBox?.IsChecked == true,
                 ScavSpawns = ShowScavSpawnsCheckBox?.IsChecked == true,
                 BossSpawns = ShowBossSpawnsCheckBox?.IsChecked == true,
+                CultistSpawns = supportsCultists && ShowCultistSpawnsCheckBox?.IsChecked == true,
                 Labels = ShowLabelsCheckBox?.IsChecked == true,
                 QuestItems = ShowQuestItemsCheckBox?.IsChecked == true,
                 QuestObjectives = ShowQuestObjectivesCheckBox?.IsChecked == true,
@@ -552,6 +566,14 @@ namespace TarkovTracker
             return MapDataService.MapSupportsBtr(MapDataService.NormalizeMapName(_currentMapDisplayName));
         }
 
+        private bool CurrentMapSupportsCultists()
+        {
+            if (_currentMapConfig == null || string.IsNullOrWhiteSpace(_currentMapDisplayName))
+                return false;
+
+            return _mapData.MapHasCultistSpawns(MapDataService.NormalizeMapName(_currentMapDisplayName));
+        }
+
         private void UpdateBtrControlsVisibility()
         {
             bool supportsBtr = CurrentMapSupportsBtr();
@@ -564,6 +586,23 @@ namespace TarkovTracker
             if (!supportsBtr)
             {
                 ShowBtrStopsCheckBox.IsChecked = false;
+            }
+
+            _suppressMarkerFilterRefresh = false;
+        }
+
+        private void UpdateCultistControlsVisibility()
+        {
+            bool supportsCultists = CurrentMapSupportsCultists();
+            var visibility = supportsCultists ? Visibility.Visible : Visibility.Collapsed;
+
+            _suppressMarkerFilterRefresh = true;
+
+            ShowCultistSpawnsCheckBox.Visibility = visibility;
+
+            if (!supportsCultists)
+            {
+                ShowCultistSpawnsCheckBox.IsChecked = false;
             }
 
             _suppressMarkerFilterRefresh = false;
@@ -616,6 +655,11 @@ namespace TarkovTracker
             ShowScavSpawnsCheckBox.IsChecked = true;
             ShowBossSpawnsCheckBox.IsChecked = true;
 
+            if (CurrentMapSupportsCultists())
+            {
+                ShowCultistSpawnsCheckBox.IsChecked = true;
+            }
+
             if (CurrentMapSupportsBtr())
             {
                 ShowBtrStopsCheckBox.IsChecked = true;
@@ -641,6 +685,7 @@ namespace TarkovTracker
             ShowPmcSpawnsCheckBox.IsChecked = false;
             ShowScavSpawnsCheckBox.IsChecked = false;
             ShowBossSpawnsCheckBox.IsChecked = false;
+            ShowCultistSpawnsCheckBox.IsChecked = false;
             ShowBtrStopsCheckBox.IsChecked = false;
 
             _suppressMarkerFilterRefresh = false;
@@ -736,16 +781,51 @@ namespace TarkovTracker
 
             if (_mapData.SpawnsByMapName.TryGetValue(normalizedName, out var spawns))
             {
+                Dictionary<string, List<BossSpawnMarker>> bossesByZone = BuildBossMetadataByZone(normalizedName);
+
                 foreach (var spawn in spawns.Where(s => s.Position != null))
                 {
-                    string categories = spawn.Categories == null || spawn.Categories.Count == 0
-                        ? ""
-                        : string.Join(",", spawn.Categories).ToLowerInvariant();
+                    if (IsBossSpawn(spawn))
+                    {
+                        string zoneName = spawn.ZoneName ?? string.Empty;
 
-                    if (categories.Contains("boss"))
+                        if (!bossesByZone.TryGetValue(zoneName, out var bossesAtZone) || bossesAtZone.Count == 0)
+                        {
+                            if (IsScavBotSpawn(spawn))
+                            {
+                                var convertedScav = ConvertGameToNormalizedMap(spawn.Position!.X, spawn.Position!.Z);
+                                markers.Add(BuildSpawnMarker(spawn, convertedScav, "spawn-scav", "Scav Spawn", "spawn-scav"));
+                            }
+
+                            continue;
+                        }
+
+                        var converted = ConvertGameToNormalizedMap(spawn.Position!.X, spawn.Position!.Z);
+
+                        var cultistBosses = bossesAtZone
+                            .Where(boss => string.Equals(
+                                boss.NormalizedName,
+                                MapDataService.CultistPriestNormalizedName,
+                                StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+
+                        var otherBosses = bossesAtZone
+                            .Where(boss => !string.Equals(
+                                boss.NormalizedName,
+                                MapDataService.CultistPriestNormalizedName,
+                                StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+
+                        if (cultistBosses.Count > 0)
+                            markers.Add(BuildCultistSpawnMarker(cultistBosses, converted, spawn));
+
+                        if (otherBosses.Count > 0)
+                            markers.Add(BuildBossSpawnMarker(otherBosses, converted, spawn));
+
                         continue;
+                    }
 
-                    var converted = ConvertGameToNormalizedMap(spawn.Position!.X, spawn.Position.Z);
+                    var convertedSpawn = ConvertGameToNormalizedMap(spawn.Position!.X, spawn.Position!.Z);
 
                     string sides = spawn.Sides == null || spawn.Sides.Count == 0
                         ? ""
@@ -755,23 +835,9 @@ namespace TarkovTracker
                     bool isScav = sides.Contains("scav");
 
                     if (isPmc && !isScav)
-                        markers.Add(BuildSpawnMarker(spawn, converted, "spawn-pmc", "PMC Spawn", "spawn-pmc"));
+                        markers.Add(BuildSpawnMarker(spawn, convertedSpawn, "spawn-pmc", "PMC Spawn", "spawn-pmc"));
                     else if (isScav)
-                        markers.Add(BuildSpawnMarker(spawn, converted, "spawn-scav", "Scav Spawn", "spawn-scav"));
-                }
-            }
-
-            if (_mapData.BossSpawnMarkersByMapName.TryGetValue(normalizedName, out var bossSpawns))
-            {
-                var bossGroups = bossSpawns
-                    .Where(b => b.X != null && b.Z != null)
-                    .GroupBy(b => $"{b.ZoneName}|{Math.Round(b.X!.Value, 1)}|{Math.Round(b.Z!.Value, 1)}");
-
-                foreach (var group in bossGroups)
-                {
-                    var primary = group.First();
-                    var converted = ConvertGameToNormalizedMap(primary.X!.Value, primary.Z!.Value);
-                    markers.Add(BuildBossSpawnMarker(group.ToList(), converted));
+                        markers.Add(BuildSpawnMarker(spawn, convertedSpawn, "spawn-scav", "Scav Spawn", "spawn-scav"));
                 }
             }
 
@@ -1085,9 +1151,69 @@ namespace TarkovTracker
             return null;
         }
 
+        private Dictionary<string, List<BossSpawnMarker>> BuildBossMetadataByZone(string normalizedMapName)
+        {
+            var lookup = new Dictionary<string, List<BossSpawnMarker>>(StringComparer.OrdinalIgnoreCase);
+
+            if (!_mapData.BossSpawnMarkersByMapName.TryGetValue(normalizedMapName, out var bossMeta))
+                return lookup;
+
+            foreach (BossSpawnMarker boss in bossMeta)
+            {
+                if (string.IsNullOrWhiteSpace(boss.ZoneName))
+                    continue;
+
+                if (!lookup.TryGetValue(boss.ZoneName, out List<BossSpawnMarker>? bossesAtZone))
+                {
+                    bossesAtZone = new List<BossSpawnMarker>();
+                    lookup[boss.ZoneName] = bossesAtZone;
+                }
+
+                if (bossesAtZone.Any(existing =>
+                        string.Equals(existing.BossName, boss.BossName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                bossesAtZone.Add(boss);
+            }
+
+            return lookup;
+        }
+
+        private WebMapMarker BuildCultistSpawnMarker(
+            List<BossSpawnMarker> cultistsAtLocation,
+            (double normalizedX, double normalizedY) converted,
+            SpawnInfo spawn)
+        {
+            var primary = cultistsAtLocation[0];
+            string locations = string.Join(", ", cultistsAtLocation.Select(b => b.LocationName).Distinct());
+
+            string chanceText = cultistsAtLocation.Count == 1 && primary.SpawnChance > 0
+                ? $"\nSpawn chance: {primary.SpawnChance:P0}"
+                : "";
+
+            return new WebMapMarker
+            {
+                Name = "Cultist Priest",
+                MarkerType = "spawn-cultist",
+                Faction = "",
+                CssClass = "spawn-cultist",
+                Tooltip = $"Cultist Priest\n{locations}\nZone: {spawn.ZoneName}{chanceText}",
+                ZoneName = spawn.ZoneName ?? primary.ZoneName,
+                Categories = "cultist",
+                Conditions = "",
+                Position = $"X={spawn.Position!.X:0.##}, Y={spawn.Position.Y:0.##}, Z={spawn.Position.Z:0.##}",
+                NormalizedX = converted.normalizedX,
+                NormalizedY = converted.normalizedY,
+                GameY = spawn.Position.Y
+            };
+        }
+
         private WebMapMarker BuildBossSpawnMarker(
             List<BossSpawnMarker> bossesAtLocation,
-            (double normalizedX, double normalizedY) converted)
+            (double normalizedX, double normalizedY) converted,
+            SpawnInfo spawn)
         {
             var primary = bossesAtLocation[0];
             string bossNames = string.Join(", ", bossesAtLocation.Select(b => b.BossName).Distinct());
@@ -1103,14 +1229,32 @@ namespace TarkovTracker
                 MarkerType = "spawn-boss",
                 Faction = "",
                 CssClass = "spawn-boss",
-                Tooltip = $"{bossNames}\n{locations}\nZone: {primary.ZoneName}{chanceText}",
-                ZoneName = primary.ZoneName,
+                Tooltip = $"{bossNames}\n{locations}\nZone: {spawn.ZoneName}{chanceText}",
+                ZoneName = spawn.ZoneName ?? primary.ZoneName,
                 Categories = "boss",
                 Conditions = "",
-                Position = $"X={primary.X:0.##}, Y={primary.Y:0.##}, Z={primary.Z:0.##}",
+                Position = $"X={spawn.Position!.X:0.##}, Y={spawn.Position.Y:0.##}, Z={spawn.Position.Z:0.##}",
                 NormalizedX = converted.normalizedX,
-                NormalizedY = converted.normalizedY
+                NormalizedY = converted.normalizedY,
+                GameY = spawn.Position.Y
             };
+        }
+
+        private static bool IsBossSpawn(SpawnInfo spawn) =>
+            spawn.Categories?.Any(category =>
+                string.Equals(category, "boss", StringComparison.OrdinalIgnoreCase)) == true;
+
+        private static bool IsScavBotSpawn(SpawnInfo spawn)
+        {
+            bool isScav = spawn.Sides?.Any(side =>
+                string.Equals(side, "scav", StringComparison.OrdinalIgnoreCase)) == true;
+
+            if (!isScav)
+                return false;
+
+            return spawn.Categories?.Any(category =>
+                string.Equals(category, "bot", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(category, "all", StringComparison.OrdinalIgnoreCase)) == true;
         }
 
         private WebMapMarker BuildSpawnMarker(
@@ -1135,7 +1279,8 @@ namespace TarkovTracker
                 Conditions = "",
                 Position = $"X={spawn.Position!.X:0.##}, Y={spawn.Position.Y:0.##}, Z={spawn.Position.Z:0.##}",
                 NormalizedX = converted.normalizedX,
-                NormalizedY = converted.normalizedY
+                NormalizedY = converted.normalizedY,
+                GameY = spawn.Position.Y
             };
         }
 

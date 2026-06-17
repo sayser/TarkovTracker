@@ -80,6 +80,10 @@ html, body {
     clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
 }
 
+#markerLayer .mapMarker.off-level {
+    display: none;
+}
+
 .mapMarker {
     position: absolute;
     z-index: 9000;
@@ -153,6 +157,12 @@ html, body {
     width: 28px;
     height: 28px;
     background-image: url('https://{{MAP_ASSET_HOST}}/interactive/spawn_boss.png');
+}
+
+.spawn-cultist .markerDot {
+    width: 28px;
+    height: 28px;
+    background-image: url('https://{{MAP_ASSET_HOST}}/interactive/spawn_cultist-priest.png');
 }
 
 .quest-objective .markerDot {

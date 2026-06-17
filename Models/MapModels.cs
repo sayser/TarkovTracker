@@ -18,6 +18,21 @@ public class MapLevelStatePayload
 
     [JsonPropertyName("activeLevelIds")]
     public List<string> ActiveLevelIds { get; set; } = new();
+
+    [JsonPropertyName("levelExtents")]
+    public List<MapLevelExtent> LevelExtents { get; set; } = new();
+}
+
+public class MapLevelExtent
+{
+    [JsonPropertyName("svgLayer")]
+    public string SvgLayer { get; set; } = "";
+
+    [JsonPropertyName("minHeight")]
+    public double MinHeight { get; set; }
+
+    [JsonPropertyName("maxHeight")]
+    public double MaxHeight { get; set; }
 }
 
 public class MapLevelsConfig
@@ -39,6 +54,12 @@ public class MapLevelEntry
 
     [JsonPropertyName("defaultVisible")]
     public bool DefaultVisible { get; set; }
+
+    [JsonPropertyName("minHeight")]
+    public double? MinHeight { get; set; }
+
+    [JsonPropertyName("maxHeight")]
+    public double? MaxHeight { get; set; }
 }
 
 public class MapConfig

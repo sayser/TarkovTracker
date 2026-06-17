@@ -444,6 +444,19 @@
                                     </StackPanel>
                                 </CheckBox>
 
+                                <CheckBox x:Name="ShowCultistSpawnsCheckBox"
+                                          Style="{StaticResource TacticalMarkerTile}"
+                                          Visibility="Collapsed"
+                                          IsChecked="False"
+                                          Checked="MarkerFilter_Changed"
+                                          Unchecked="MarkerFilter_Changed">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <Image Width="24" Height="24"
+                                               Source="pack://siteoforigin:,,,/Maps/interactive/spawn_cultist-priest.png"/>
+                                        <TextBlock Text="Cultist" FontSize="8" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </CheckBox>
+
                                 <CheckBox x:Name="ShowBtrStopsCheckBox"
                                           Style="{StaticResource TacticalMarkerTile}"
                                           Visibility="Collapsed"

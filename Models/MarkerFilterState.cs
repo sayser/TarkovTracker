@@ -25,6 +25,9 @@ public class MarkerFilterState
     [JsonPropertyName("bossSpawns")]
     public bool BossSpawns { get; set; }
 
+    [JsonPropertyName("cultistSpawns")]
+    public bool CultistSpawns { get; set; }
+
     [JsonPropertyName("labels")]
     public bool Labels { get; set; }
 
