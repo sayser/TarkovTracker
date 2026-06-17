@@ -1,6 +1,6 @@
 # SayserTarkovTracker
 
-A Windows desktop map companion for **Escape from Tarkov**. It displays interactive tactical maps with live player tracking from in-game screenshots, plus extracts, quests, spawns, bosses, hazards, and more — styled with a tactical HUD interface.
+A Windows desktop map companion for **Escape from Tarkov**. It displays interactive tactical maps with live player tracking from in-game screenshots, raid exfil highlighting from the **O** key panel, plus extracts, quests, spawns, bosses, cultists, hazards, and more — styled with a tactical HUD interface.
 
 Built with **WPF** (.NET 10) and **WebView2**.
 
@@ -13,14 +13,8 @@ Built with **WPF** (.NET 10) and **WebView2**.
 - Pan and zoom the map with mouse drag and scroll wheel
 - Click any marker to view details (name, type, conditions, coordinates)
 
-### Live player tracking (screenshots)
-- Monitors your **Escape from Tarkov Screenshots** folder (or a custom folder you choose)
-- Parses coordinates and facing direction from screenshot filenames automatically
-- Plots your position and bearing on the map in real time
-- LCD-style readout for X, Y, Z, and bearing in the sidebar
-
 ### Map markers
-Toggle marker layers individually or with **Show All**:
+Toggle marker layers individually or with **Show All** / **Hide All**:
 
 | Category | Examples |
 |----------|----------|
@@ -28,11 +22,52 @@ Toggle marker layers individually or with **Show All**:
 | Extracts | PMC, Scav, Shared |
 | Transits | Map-to-map transit points |
 | Quests | Quest items and objectives |
-| Spawns | PMC, Scav, Boss spawn zones |
-| Hazards | Mortars, danger zones |
+| Spawns | PMC and Scav player spawn zones |
+| Bosses | Boss spawn locations (Tagilla, Reshala, Killa, etc.) |
+| **Cultists** | Cultist Priest spawn locations (separate from bosses) |
+| Hazards | Mortars, minefields, danger zones |
 | Switches | Power switches and similar |
+| BTR stops | BTR route stops (Woods, Streets of Tarkov only) |
 
 Markers use the same icon set as [tarkov.dev](https://tarkov.dev). Quest item markers can show the actual item icon when available.
+
+#### Boss and cultist spawns
+- **Boss** markers show where named bosses can spawn, using tarkov.dev zone and floor rules (only valid boss spawn points for the selected map level).
+- **Cultists** are a **separate layer** with their own icon and MARKERS toggle — they are not mixed into the boss skull markers.
+- Cultist markers appear only on maps that can have Cultist Priest spawns: **Customs**, **Woods**, **Shoreline**, **Ground Zero**, and **Factory**.
+- On **Factory**, cultist locations come from **Night Factory** raid data (cultists do not spawn on day Factory in-game, but the markers are shown on the single Factory map for night raids).
+
+#### BTR stops
+On **Woods** and **Streets of Tarkov**, a **BTR Stops** toggle appears in MARKERS for the armored vehicle route.
+
+### Raid exfil highlighting (in-game **O** key)
+During a raid, Escape from Tarkov lets you press **O** to open the **extraction / transit panel** in the top-right of the screen. It lists which extracts and transits are available to you this raid (PMC **EXFIL** lines, Scav **EXIT** lines, and orange **TRANSIT** entries).
+
+SayserTarkovTracker reads that panel from your screenshots and highlights the matching points on the tactical map:
+
+1. **Select the map** you are currently playing in the app dropdown.
+2. **In raid**, press **O** so the extract/transit list is visible on screen.
+3. **Take a screenshot** (same folder the app already watches — default: `Documents\Escape from Tarkov\Screenshots`).
+4. The app detects the green exfil panel, runs **OCR** on the text, and **matches** names against extract/transit data for that map (from tarkov.dev).
+5. On the map:
+   - **Matched extracts** pulse with a **green glow** and stay fully visible.
+   - **Matched transits** pulse with an **amber/gold** label style.
+   - **Other** extract and transit markers on that map are **dimmed** so your active options stand out.
+6. The **RAID EXFILS** panel in the sidebar lists the matched extract and transit names and shows **ACTIVE FOR THIS MAP** when highlighting is on.
+
+**Tips**
+- Set **Game Resolution** in the sidebar to your in-game resolution (or leave on Auto) — this improves OCR accuracy for the exfil panel.
+- You must have the **correct map selected** before the screenshot; otherwise the app reports `EXFIL PANEL FOUND - SELECT MAP`.
+- Highlights are cleared when you **change maps**; take a new screenshot after switching maps or starting a new raid.
+- Works in the **Overlay** window as well — highlights stay in sync with the main map.
+
+This feature does not read game memory; it only uses your screenshot image and public map data.
+
+### Live player tracking (screenshots)
+- Monitors your **Escape from Tarkov Screenshots** folder (or a custom folder you choose)
+- Parses coordinates and facing direction from screenshot filenames automatically
+- Plots your position and bearing on the map in real time with a **large, glowing** player marker for visibility on dark maps
+- LCD-style readout for X, Y, Z, and bearing in the sidebar
 
 ### Map levels (floors)
 - Per-map floor/layer toggles (e.g. Factory basement, Ground Floor, 2nd Floor)
@@ -43,7 +78,7 @@ Markers use the same icon set as [tarkov.dev](https://tarkov.dev). Quest item ma
 - Separate always-on-top **Glass HUD** overlay
 - Semi-transparent, resizable (drag edges/corners)
 - Adjustable opacity slider
-- Syncs map, markers, levels, filters, and player position with the main window
+- Syncs map, markers, levels, filters, player position, and raid exfil highlights with the main window
 
 ### UI
 - Dark tactical HUD theme (amber accents, monospace coordinates, terminal-style status bar)
@@ -76,8 +111,9 @@ Or open `TarkovTracker.sln` in Visual Studio and run (F5).
 2. **Set your screenshot folder** via **Screenshot Folder** (default: `Documents\Escape from Tarkov\Screenshots`).
 3. Take an in-game screenshot — the app watches the folder and updates your position automatically.
 4. Use **Read Latest** to manually parse the newest screenshot.
-5. Toggle **Markers** and **Levels** in the right sidebar.
-6. Open **Overlay** for a floating map on top of the game.
+5. Toggle **Markers** and **Levels** in the right sidebar (including **Boss**, **Cultist**, and **BTR Stops** where available).
+6. During a raid, press **O** in-game and screenshot with the exfil panel open to highlight your active extracts and transits on the map.
+7. Open **Overlay** for a floating map on top of the game.
 
 ---
 
@@ -113,7 +149,7 @@ We rely heavily on the tarkov.dev project and community data:
 | **SVG map graphics** | Interactive map backgrounds ([tarkov-dev-svg-maps](https://github.com/the-hideout/tarkov-dev-svg-maps)) |
 | **Map metadata & coordinates** | Bounds, transforms, floor/layer definitions |
 | **Game data API** | Extracts, spawns, transits, hazards, switches, labels, quests, boss spawns |
-| **Interactive marker icons** | Extract, spawn, quest, hazard, switch, transit, and boss icons (`Maps/interactive/`, from [tarkov-dev](https://github.com/the-hideout/tarkov-dev)) |
+| **Interactive marker icons** | Extract, spawn, quest, hazard, switch, transit, boss, cultist, and BTR icons (`Maps/interactive/`, from [tarkov-dev](https://github.com/the-hideout/tarkov-dev)) |
 | **Item icons** | Quest item marker images via `assets.tarkov.dev` |
 
 Thank you to the [tarkov.dev](https://tarkov.dev) team and contributors for maintaining maps and open game data.
@@ -126,13 +162,19 @@ Thank you to the [tarkov.dev](https://tarkov.dev) team and contributors for main
 
 ## Updating map data
 
-To refresh quest markers, boss spawns, or map levels from the latest tarkov.dev API:
+To refresh quest markers, boss/cultist spawns, or map levels from the latest tarkov.dev API:
 
 ```powershell
 cd tools
 .\build_quest_markers_from_api.ps1
 .\build_boss_spawn_markers.ps1
 .\build_map_levels.ps1
+```
+
+To refresh boss spawn metadata and raw spawn points (including Night Factory cultist data merged onto Factory):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File Tools\fetch-boss-data.ps1
 ```
 
 See [`tools/README.md`](tools/README.md) for the full list of scripts.
@@ -147,4 +189,4 @@ Personal use only.
 
 ## Disclaimer
 
-Use at your own risk. Map data may lag behind game patches. Screenshot parsing depends on Escape from Tarkov's screenshot filename format; game updates could break it.
+Use at your own risk. Map data may lag behind game patches. Screenshot parsing depends on Escape from Tarkov's screenshot filename format and the in-game exfil panel layout; game updates or OCR misreads could affect player position or raid exfil highlighting.
