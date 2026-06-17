@@ -2,6 +2,7 @@ let stage = document.getElementById('stage');
 let content = document.getElementById('content');
 let playerMarker = document.getElementById('playerMarker');
 let markerLayer = document.getElementById('markerLayer');
+let customMarkerLayer = document.getElementById('customMarkerLayer');
 let hazardOutlineLayer = document.getElementById('hazardOutlineLayer');
 let svg = content.querySelector('svg');
 
@@ -12,6 +13,9 @@ let isPanning = false;
 let lastX = 0;
 let lastY = 0;
 let playerMarkerData = null;
+let customPinsEnabled = false;
+let customPins = [];
+let customPinCounter = 0;
 
 function getViewBox() {
     let raw = svg.getAttribute('viewBox');
@@ -43,6 +47,7 @@ function applyTransform() {
     content.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
     updatePlayerMarkerVisual();
     updateMapMarkerVisuals();
+    updateCustomMarkerVisuals();
 }
 
 function resetView() {
@@ -173,9 +178,135 @@ function addMapMarkers(markers) {
 function updateMapMarkerVisuals() {
     let inverseScale = 1 / scale;
 
-    document.querySelectorAll('.mapMarker').forEach(function(marker) {
+    document.querySelectorAll('#markerLayer .mapMarker').forEach(function(marker) {
         marker.style.transform = `scale(${inverseScale})`;
     });
+}
+
+function updateCustomMarkerVisuals() {
+    if (!customMarkerLayer) return;
+
+    let inverseScale = 1 / scale;
+
+    customMarkerLayer.querySelectorAll('.custom-pin').forEach(function(marker) {
+        marker.style.transform = `scale(${inverseScale})`;
+    });
+}
+
+function notifyCustomPinsChanged() {
+    if (!window.chrome || !window.chrome.webview) return;
+
+    window.chrome.webview.postMessage({
+        messageType: 'customPinsChanged',
+        pins: customPins.map(function(pin) {
+            return {
+                id: pin.id,
+                normalizedX: pin.normalizedX,
+                normalizedY: pin.normalizedY
+            };
+        })
+    });
+}
+
+function clearCustomPins() {
+    customPins = [];
+    if (customMarkerLayer) {
+        customMarkerLayer.innerHTML = '';
+    }
+}
+
+function setCustomPinsMode(enabled) {
+    customPinsEnabled = !!enabled;
+    stage.classList.toggle('custom-pins-active', customPinsEnabled);
+
+    if (!customPinsEnabled) {
+        clearCustomPins();
+        notifyCustomPinsChanged();
+    }
+}
+
+function setCustomPins(pins) {
+    clearCustomPins();
+
+    for (let pin of pins || []) {
+        if (pin == null || pin.normalizedX == null || pin.normalizedY == null) continue;
+
+        let entry = {
+            id: pin.id || ('pin-' + (++customPinCounter)),
+            normalizedX: pin.normalizedX,
+            normalizedY: pin.normalizedY
+        };
+
+        customPins.push(entry);
+        renderCustomPin(entry);
+    }
+
+    updateCustomMarkerVisuals();
+}
+
+function screenToNormalizedMap(clientX, clientY) {
+    let rect = stage.getBoundingClientRect();
+    let stageX = clientX - rect.left;
+    let stageY = clientY - rect.top;
+    let vb = getViewBox();
+    let mapX = (stageX - panX) / scale;
+    let mapY = (stageY - panY) / scale;
+
+    return {
+        normalizedX: mapX / vb.w,
+        normalizedY: mapY / vb.h
+    };
+}
+
+function addCustomPinAtNormalized(normalizedX, normalizedY) {
+    let pin = {
+        id: 'pin-' + (++customPinCounter),
+        normalizedX: normalizedX,
+        normalizedY: normalizedY
+    };
+
+    customPins.push(pin);
+    renderCustomPin(pin);
+    updateCustomMarkerVisuals();
+    notifyCustomPinsChanged();
+}
+
+function removeCustomPinById(pinId) {
+    customPins = customPins.filter(function(pin) {
+        return pin.id !== pinId;
+    });
+
+    if (!customMarkerLayer) return;
+
+    let marker = customMarkerLayer.querySelector('[data-pin-id="' + pinId + '"]');
+    if (marker) marker.remove();
+
+    notifyCustomPinsChanged();
+}
+
+function renderCustomPin(pin) {
+    if (!customMarkerLayer) return;
+
+    let vb = getViewBox();
+    let marker = document.createElement('div');
+
+    marker.className = 'custom-pin';
+    marker.dataset.pinId = pin.id;
+    marker.dataset.markerType = 'custom-pin';
+    marker.title = 'Custom pin — left-click to remove';
+    marker.style.left = (pin.normalizedX * vb.w) + 'px';
+    marker.style.top = (pin.normalizedY * vb.h) + 'px';
+
+    let dot = document.createElement('div');
+    dot.className = 'customPinDot';
+    marker.appendChild(dot);
+
+    marker.addEventListener('click', function(e) {
+        e.stopPropagation();
+        removeCustomPinById(pin.id);
+    });
+
+    customMarkerLayer.appendChild(marker);
 }
 
 function setExtractFactionVisibility(faction, visible) {
@@ -255,6 +386,7 @@ function applyMarkerFilters(filters) {
     setHazardVisibility(!!filters.hazards);
     setSwitchVisibility(!!filters.switches);
     setBtrStopVisibility(!!filters.btrStops);
+    setCustomPinsMode(!!filters.customPins);
     refreshRaidExfilHighlights();
 }
 
@@ -444,10 +576,26 @@ stage.addEventListener('wheel', function(e) {
 });
 
 stage.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return;
+
     isPanning = true;
     lastX = e.clientX;
     lastY = e.clientY;
     stage.style.cursor = 'grabbing';
+});
+
+stage.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+
+    if (!customPinsEnabled) return;
+
+    let coords = screenToNormalizedMap(e.clientX, e.clientY);
+    if (coords.normalizedX < 0 || coords.normalizedX > 1 ||
+        coords.normalizedY < 0 || coords.normalizedY > 1) {
+        return;
+    }
+
+    addCustomPinAtNormalized(coords.normalizedX, coords.normalizedY);
 });
 
 window.addEventListener('mouseup', function() {

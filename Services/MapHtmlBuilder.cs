@@ -27,6 +27,7 @@ public static class MapHtmlBuilder
         {svg}
         <svg id='hazardOutlineLayer' xmlns='http://www.w3.org/2000/svg' style='position:absolute;left:0;top:0;pointer-events:none;z-index:8800;'></svg>
         <div id='markerLayer'></div>
+        <div id='customMarkerLayer'></div>
         <div id='playerMarker'>
             <div id='playerMarkerInner'></div>
         </div>

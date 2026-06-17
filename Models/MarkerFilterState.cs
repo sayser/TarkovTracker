@@ -45,4 +45,7 @@ public class MarkerFilterState
 
     [JsonPropertyName("btrStops")]
     public bool BtrStops { get; set; }
+
+    [JsonPropertyName("customPins")]
+    public bool CustomPins { get; set; }
 }

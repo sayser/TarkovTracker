@@ -43,7 +43,7 @@
                                    Foreground="{StaticResource TacticalTextPrimaryBrush}"
                                    FontSize="13"
                                    FontWeight="Bold"/>
-                        <TextBlock Text="TACTICAL MAP INTERFACE v2.2"
+                        <TextBlock Text="TACTICAL MAP INTERFACE v2.6.1"
                                    Foreground="{StaticResource TacticalTextMutedBrush}"
                                    FontSize="9"
                                    FontWeight="SemiBold"/>
@@ -67,12 +67,9 @@
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-                    <Button Content="SCREENSHOT FOLDER"
+                    <Button Content="SETTINGS"
                             Style="{StaticResource TacticalButton}"
-                            Click="SetScreenshotFolder_Click"/>
-                    <Button Content="OPEN FOLDER"
-                            Style="{StaticResource TacticalButton}"
-                            Click="OpenScreenshotFolder_Click"/>
+                            Click="OpenSettings_Click"/>
                     <Button Content="READ LATEST"
                             Style="{StaticResource TacticalButton}"
                             Click="ReadLatestScreenshot_Click"/>
@@ -200,19 +197,6 @@
                                        FontSize="14"
                                        Margin="0,0,0,8"/>
 
-                            <TextBlock Text="GAME RESOLUTION" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
-                            <ComboBox x:Name="GameResolutionComboBox"
-                                      Style="{StaticResource TacticalComboBox}"
-                                      Margin="0,0,0,8"
-                                      SelectionChanged="GameResolutionComboBox_SelectionChanged">
-                                <ComboBoxItem Content="Auto (from screenshot)" Tag="auto"/>
-                                <ComboBoxItem Content="1920 x 1080" Tag="1920x1080"/>
-                                <ComboBoxItem Content="2560 x 1440" Tag="2560x1440"/>
-                                <ComboBoxItem Content="3840 x 2160" Tag="3840x2160"/>
-                                <ComboBoxItem Content="2560 x 1080 (Ultrawide)" Tag="2560x1080"/>
-                                <ComboBoxItem Content="3440 x 1440 (Ultrawide)" Tag="3440x1440"/>
-                            </ComboBox>
-
                             <TextBlock Text="DETECTED RES" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
                             <TextBlock x:Name="DetectedResolutionText"
                                        Text="—"
@@ -296,7 +280,7 @@
                                 </StackPanel>
                             </Grid>
 
-                            <UniformGrid Columns="4" Rows="4">
+                            <UniformGrid Columns="4" Rows="5">
 
                                 <CheckBox x:Name="ShowLabelsCheckBox"
                                           Style="{StaticResource TacticalMarkerTile}"
@@ -467,6 +451,22 @@
                                         <Image Width="24" Height="24"
                                                Source="pack://siteoforigin:,,,/Maps/interactive/btr_stop.png"/>
                                         <TextBlock Text="BTR Stops" FontSize="8" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </CheckBox>
+
+                                <CheckBox x:Name="ShowCustomPinsCheckBox"
+                                          Style="{StaticResource TacticalMarkerTile}"
+                                          IsChecked="False"
+                                          Checked="MarkerFilter_Changed"
+                                          Unchecked="MarkerFilter_Changed">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <Viewbox Width="20" Height="20" Margin="0,2,0,0">
+                                            <Polygon Points="12,2 22,12 12,22 2,12"
+                                                     Fill="#FFB300"
+                                                     Stroke="#FFF3E0"
+                                                     StrokeThickness="1.5"/>
+                                        </Viewbox>
+                                        <TextBlock Text="Custom Pin" FontSize="8" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                     </StackPanel>
                                 </CheckBox>
 

@@ -33,6 +33,7 @@ namespace TarkovTracker
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _lastPlayerMarker;
 
         private readonly RaidExfilHighlightState _raidExfilHighlights = new();
+        private readonly List<CustomPinEntry> _customPins = new();
 
         private string _screenshotFolder;
         private MapConfig? _currentMapConfig;
@@ -50,9 +51,20 @@ namespace TarkovTracker
         private bool _suppressMapLevelRefresh = false;
         private bool _webMessageHooked = false;
         private bool _mapWebViewHostMapped = false;
-        private bool _suppressGameResolutionRefresh = false;
 
         private UserAppSettings _userSettings = new();
+
+        internal string ScreenshotFolderPath => _screenshotFolder;
+
+        internal string CurrentGameResolutionPreset =>
+            string.IsNullOrWhiteSpace(_userSettings.GameResolutionPreset)
+                ? "auto"
+                : _userSettings.GameResolutionPreset;
+
+        internal bool IsScreenshotParsingEnabled => _userSettings.ScreenshotParsingEnabled;
+
+        internal double OverlayDefaultOpacityPercent =>
+            Math.Clamp(_userSettings.OverlayDefaultOpacityPercent, 20, 100);
 
         public MainWindow()
         {
@@ -75,14 +87,12 @@ namespace TarkovTracker
                     "Screenshots");
             }
 
-            InitializeGameResolutionComboBox();
-
             _mapData.LoadAll();
             if (!string.IsNullOrWhiteSpace(_mapData.LastStatusMessage))
                 StatusText.Text = _mapData.LastStatusMessage;
 
             LoadMapsDropdown();
-            StartScreenshotMonitoring();
+            UpdateScreenshotMonitoringStatus();
         }
 
         private string LoadSavedScreenshotFolder()
@@ -119,52 +129,114 @@ namespace TarkovTracker
                 JsonSerializer.Serialize(_userSettings, new JsonSerializerOptions { WriteIndented = true }));
         }
 
-        private void InitializeGameResolutionComboBox()
+        private void SaveScreenshotFolder(string folder)
         {
-            _suppressGameResolutionRefresh = true;
+            _userSettings.ScreenshotFolder = folder;
+            SaveUserSettings();
+        }
 
-            string preset = string.IsNullOrWhiteSpace(_userSettings.GameResolutionPreset)
-                ? "auto"
-                : _userSettings.GameResolutionPreset;
+        internal void ApplyGameResolutionPreset(string preset)
+        {
+            _userSettings.GameResolutionPreset = string.IsNullOrWhiteSpace(preset) ? "auto" : preset;
+            SaveUserSettings();
+        }
 
-            bool matched = false;
-            foreach (var item in GameResolutionComboBox.Items.OfType<ComboBoxItem>())
+        internal void ApplyOverlayDefaultOpacityPercent(double percent)
+        {
+            _userSettings.OverlayDefaultOpacityPercent = Math.Clamp(percent, 20, 100);
+            SaveUserSettings();
+            _overlayWindow?.ApplyDefaultOpacityPercent(_userSettings.OverlayDefaultOpacityPercent);
+        }
+
+        internal void ApplyScreenshotParsingEnabled(bool enabled)
+        {
+            _userSettings.ScreenshotParsingEnabled = enabled;
+            SaveUserSettings();
+            UpdateScreenshotMonitoringStatus();
+        }
+
+        internal void ClearRaidExfilHighlights()
+        {
+            _raidExfilHighlights.Clear();
+            UpdateRaidExfilUi();
+            _ = ApplyRaidExfilHighlightsAsync();
+        }
+
+        internal bool PromptForScreenshotFolder()
+        {
+            var dialog = new Microsoft.Win32.OpenFolderDialog
             {
-                if (string.Equals(item.Tag as string, preset, StringComparison.OrdinalIgnoreCase))
+                Title = "Select Escape from Tarkov Screenshots Folder",
+                InitialDirectory = Directory.Exists(_screenshotFolder)
+                    ? _screenshotFolder
+                    : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (dialog.ShowDialog() != true)
+                return false;
+
+            _screenshotFolder = dialog.FolderName;
+            SaveScreenshotFolder(_screenshotFolder);
+
+            _screenshotWatcher?.Dispose();
+            UpdateScreenshotMonitoringStatus();
+
+            StatusText.Text = $"FOLDER: {_screenshotFolder}";
+            SetParserStatus("FOLDER UPDATED");
+            return true;
+        }
+
+        internal void OpenScreenshotFolder()
+        {
+            if (!Directory.Exists(_screenshotFolder))
+            {
+                MessageBox.Show($"Folder not found:\n{_screenshotFolder}");
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = _screenshotFolder,
+                UseShellExecute = true
+            });
+        }
+
+        internal int DeleteAllScreenshots()
+        {
+            if (string.IsNullOrWhiteSpace(_screenshotFolder) || !Directory.Exists(_screenshotFolder))
+                return 0;
+
+            int deleted = 0;
+
+            foreach (string file in Directory.GetFiles(_screenshotFolder, "*.png"))
+            {
+                try
                 {
-                    GameResolutionComboBox.SelectedItem = item;
-                    matched = true;
-                    break;
+                    File.Delete(file);
+                    deleted++;
+                }
+                catch
+                {
+                    // Skip files that are locked or otherwise unavailable.
                 }
             }
 
-            if (!matched)
-                GameResolutionComboBox.SelectedIndex = 0;
+            _lastProcessedTime = DateTime.MinValue;
+            LastScreenshotText.Text = "NONE";
+            SetParserStatus("SCREENSHOTS CLEARED");
 
-            _suppressGameResolutionRefresh = false;
+            return deleted;
         }
 
-        private void GameResolutionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OpenSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (_suppressGameResolutionRefresh)
-                return;
-
-            if (GameResolutionComboBox.SelectedItem is not ComboBoxItem item)
-                return;
-
-            _userSettings.GameResolutionPreset = item.Tag as string ?? "auto";
-            SaveUserSettings();
+            var settingsWindow = new SettingsWindow(this);
+            settingsWindow.ShowDialog();
         }
 
         private (int width, int height) GetConfiguredGameResolution()
         {
             return ScreenshotResolutionHelper.ParsePreset(_userSettings.GameResolutionPreset);
-        }
-
-        private void SaveScreenshotFolder(string folder)
-        {
-            _userSettings.ScreenshotFolder = folder;
-            SaveUserSettings();
         }
 
         private void SetParserStatus(string message, bool isError = false)
@@ -175,29 +247,6 @@ namespace TarkovTracker
             ParserStatusText.Foreground = isError
                 ? (Brush)FindResource("TacticalTerminalRedBrush")
                 : (Brush)FindResource("TacticalTerminalGreenBrush");
-        }
-
-        private void SetScreenshotFolder_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Microsoft.Win32.OpenFolderDialog
-            {
-                Title = "Select Escape from Tarkov Screenshots Folder",
-                InitialDirectory = Directory.Exists(_screenshotFolder)
-                    ? _screenshotFolder
-                    : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                _screenshotFolder = dialog.FolderName;
-                SaveScreenshotFolder(_screenshotFolder);
-
-                _screenshotWatcher?.Dispose();
-                StartScreenshotMonitoring();
-
-                StatusText.Text = $"FOLDER: {_screenshotFolder}";
-                SetParserStatus("FOLDER UPDATED");
-            }
         }
 
 
@@ -260,7 +309,8 @@ namespace TarkovTracker
                     ? _currentMapConfig.Locale.En
                     : mapFileName;
 
-            ClearRaidExfilHighlights();
+            ClearRaidExfilHighlightsForMapChange();
+            ClearCustomPinsForMapChange();
 
             await LoadSvgMapInWebView(mapPath);
             LoadLayersPanel(mapPath);
@@ -329,11 +379,34 @@ namespace TarkovTracker
         {
             try
             {
+                using JsonDocument document = JsonDocument.Parse(e.WebMessageAsJson);
+                if (!document.RootElement.TryGetProperty("messageType", out JsonElement messageTypeElement))
+                    return;
+
+                string messageType = messageTypeElement.GetString() ?? string.Empty;
+
+                if (string.Equals(messageType, "customPinsChanged", StringComparison.OrdinalIgnoreCase))
+                {
+                    var pinsMessage = JsonSerializer.Deserialize<CustomPinsChangedMessage>(
+                        e.WebMessageAsJson,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    _customPins.Clear();
+                    if (pinsMessage?.Pins != null)
+                        _customPins.AddRange(pinsMessage.Pins);
+
+                    _ = SyncCustomPinsToOverlayAsync();
+                    return;
+                }
+
+                if (!string.Equals(messageType, "markerClicked", StringComparison.OrdinalIgnoreCase))
+                    return;
+
                 var marker = JsonSerializer.Deserialize<WebMarkerClickMessage>(
                     e.WebMessageAsJson,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                if (marker == null || marker.MessageType != "markerClicked")
+                if (marker == null)
                     return;
 
                 SelectedMarkerNameText.Text = marker.Name;
@@ -554,8 +627,27 @@ namespace TarkovTracker
                 QuestObjectives = ShowQuestObjectivesCheckBox?.IsChecked == true,
                 Hazards = ShowHazardsCheckBox?.IsChecked == true,
                 Switches = ShowSwitchesCheckBox?.IsChecked == true,
-                BtrStops = supportsBtr && ShowBtrStopsCheckBox?.IsChecked == true
+                BtrStops = supportsBtr && ShowBtrStopsCheckBox?.IsChecked == true,
+                CustomPins = ShowCustomPinsCheckBox?.IsChecked == true
             };
+        }
+
+        private void ClearCustomPinsForMapChange()
+        {
+            _customPins.Clear();
+
+            _suppressMarkerFilterRefresh = true;
+            ShowCustomPinsCheckBox.IsChecked = false;
+            _suppressMarkerFilterRefresh = false;
+        }
+
+        private async System.Threading.Tasks.Task SyncCustomPinsToOverlayAsync()
+        {
+            if (_overlayWindow == null)
+                return;
+
+            string pinsJson = JsonSerializer.Serialize(_customPins);
+            await _overlayWindow.SetCustomPinsAsync(pinsJson);
         }
 
         private bool CurrentMapSupportsBtr()
@@ -687,6 +779,7 @@ namespace TarkovTracker
             ShowBossSpawnsCheckBox.IsChecked = false;
             ShowCultistSpawnsCheckBox.IsChecked = false;
             ShowBtrStopsCheckBox.IsChecked = false;
+            ShowCustomPinsCheckBox.IsChecked = false;
 
             _suppressMarkerFilterRefresh = false;
             _ = ApplyMarkerVisibility();
@@ -1420,6 +1513,20 @@ namespace TarkovTracker
             return (rotatedLat, rotatedLng);
         }
 
+        private void UpdateScreenshotMonitoringStatus()
+        {
+            _screenshotWatcher?.Dispose();
+            _screenshotWatcher = null;
+
+            if (!_userSettings.ScreenshotParsingEnabled)
+            {
+                SetParserStatus("PARSING DISABLED");
+                return;
+            }
+
+            StartScreenshotMonitoring();
+        }
+
         private void StartScreenshotMonitoring()
         {
             if (!Directory.Exists(_screenshotFolder))
@@ -1443,6 +1550,9 @@ namespace TarkovTracker
 
         private void ScreenshotWatcher_Changed(object sender, FileSystemEventArgs e)
         {
+            if (!_userSettings.ScreenshotParsingEnabled)
+                return;
+
             Dispatcher.InvokeAsync(async () =>
             {
                 await System.Threading.Tasks.Task.Delay(500);
@@ -1465,6 +1575,16 @@ namespace TarkovTracker
         {
             try
             {
+                if (!_userSettings.ScreenshotParsingEnabled)
+                {
+                    MessageBox.Show(
+                        "Screenshot parsing is disabled. Enable it in Settings to use Read Latest.",
+                        "Parsing Disabled",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                    return;
+                }
+
                 if (!Directory.Exists(_screenshotFolder))
                 {
                     MessageBox.Show($"Screenshot folder not found:\n{_screenshotFolder}");
@@ -1493,6 +1613,9 @@ namespace TarkovTracker
 
         private async System.Threading.Tasks.Task ProcessScreenshotAsync(string filePath)
         {
+            if (!_userSettings.ScreenshotParsingEnabled)
+                return;
+
             ParseScreenshotFilename(Path.GetFileName(filePath));
 
             try
@@ -1563,7 +1686,7 @@ namespace TarkovTracker
             DetectedResolutionText.Text = detected;
         }
 
-        private void ClearRaidExfilHighlights()
+        private void ClearRaidExfilHighlightsForMapChange()
         {
             _raidExfilHighlights.Clear();
             UpdateRaidExfilUi();
@@ -1711,26 +1834,11 @@ namespace TarkovTracker
                 _lastDirection.Value);
         }
 
-        private void OpenScreenshotFolder_Click(object sender, RoutedEventArgs e)
-        {
-            if (!Directory.Exists(_screenshotFolder))
-            {
-                MessageBox.Show($"Folder not found:\n{_screenshotFolder}");
-                return;
-            }
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = _screenshotFolder,
-                UseShellExecute = true
-            });
-        }
-
         private async void OpenOverlayButton_Click(object sender, RoutedEventArgs e)
         {
             if (_overlayWindow == null)
             {
-                _overlayWindow = new OverlayWindow();
+                _overlayWindow = new OverlayWindow(_userSettings.OverlayDefaultOpacityPercent);
                 _overlayWindow.Closed += (_, _) => _overlayWindow = null;
                 _overlayWindow.Show();
             }
@@ -1768,6 +1876,7 @@ namespace TarkovTracker
             }
 
             await SyncOverlayLayersAndFiltersAsync();
+            await SyncCustomPinsToOverlayAsync();
         }
 
         private async System.Threading.Tasks.Task SyncOverlayLayersAndFiltersAsync()

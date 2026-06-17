@@ -132,6 +132,33 @@
         <Setter Property="Margin" Value="0"/>
     </Style>
 
+    <Style x:Key="TacticalTextBox" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource TacticalMonoFont}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource TacticalAmberBrightBrush}"/>
+        <Setter Property="Background" Value="{StaticResource TacticalBgInsetBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource TacticalAmberDimBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="MinHeight" Value="32"/>
+    </Style>
+
+    <Style x:Key="TacticalDangerButton" TargetType="Button" BasedOn="{StaticResource TacticalButton}">
+        <Setter Property="Foreground" Value="{StaticResource TacticalTerminalRedBrush}"/>
+        <Setter Property="BorderBrush" Value="#804030"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
+
+    <Style x:Key="TacticalSettingsCheckBox" TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{StaticResource TacticalFont}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource TacticalTextPrimaryBrush}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
     <!-- ComboBox -->
     <Style x:Key="TacticalComboBox" TargetType="ComboBox">
         <Setter Property="FontFamily" Value="{StaticResource TacticalFont}"/>

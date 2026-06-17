@@ -1,0 +1,189 @@
+<Window x:Class="TarkovTracker.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings"
+        Width="480"
+        MaxHeight="720"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource TacticalBgDarkBrush}"
+        FontFamily="{StaticResource TacticalFont}">
+
+    <Border Style="{StaticResource TacticalPanel}" Margin="12">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="SETTINGS" Style="{StaticResource TacticalSectionHeader}" FontSize="13"/>
+
+                <!-- Screenshot folder -->
+                <TextBlock Text="SCREENSHOT FOLDER" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <Border Style="{StaticResource TacticalLcdBox}" Margin="0,0,0,8">
+                    <TextBlock x:Name="ScreenshotFolderText"
+                               Text="—"
+                               FontFamily="{StaticResource TacticalMonoFont}"
+                               FontSize="11"
+                               Foreground="{StaticResource TacticalTextPrimaryBrush}"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <Button Content="BROWSE..."
+                            Style="{StaticResource TacticalButton}"
+                            Click="BrowseScreenshotFolder_Click"/>
+                    <Button Content="OPEN FOLDER"
+                            Style="{StaticResource TacticalButton}"
+                            Margin="0"
+                            Click="OpenScreenshotFolder_Click"/>
+                </StackPanel>
+
+                <CheckBox x:Name="ScreenshotParsingCheckBox"
+                          Style="{StaticResource TacticalSettingsCheckBox}"
+                          Content="Enable screenshot parsing (auto-watch + Read Latest)"
+                          Margin="0,0,0,16"
+                          Checked="ScreenshotParsingCheckBox_Changed"
+                          Unchecked="ScreenshotParsingCheckBox_Changed"/>
+
+                <!-- Game resolution -->
+                <TextBlock Text="GAME RESOLUTION" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <TextBlock Text="Used to tune EXFIL panel OCR when Auto detection is off."
+                           Style="{StaticResource TacticalBody}"
+                           FontSize="10"
+                           Foreground="{StaticResource TacticalTextMutedBrush}"
+                           Margin="0,0,0,8"/>
+
+                <ComboBox x:Name="GameResolutionComboBox"
+                          Style="{StaticResource TacticalComboBox}"
+                          Margin="0,0,0,8"
+                          SelectionChanged="GameResolutionComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Auto (from screenshot)" Tag="auto"/>
+                    <ComboBoxItem Content="1920 x 1080" Tag="1920x1080"/>
+                    <ComboBoxItem Content="2560 x 1440" Tag="2560x1440"/>
+                    <ComboBoxItem Content="3840 x 2160" Tag="3840x2160"/>
+                    <ComboBoxItem Content="2560 x 1080 (Ultrawide)" Tag="2560x1080"/>
+                    <ComboBoxItem Content="3440 x 1440 (Ultrawide)" Tag="3440x1440"/>
+                </ComboBox>
+
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="ResolutionWidthTextBox"
+                             Grid.Column="0"
+                             Style="{StaticResource TacticalTextBox}"
+                             MaxLength="5"/>
+
+                    <TextBlock Grid.Column="1"
+                               Text="X"
+                               VerticalAlignment="Center"
+                               Margin="8,0"
+                               Foreground="{StaticResource TacticalTextMutedBrush}"
+                               FontWeight="Bold"/>
+
+                    <TextBox x:Name="ResolutionHeightTextBox"
+                             Grid.Column="2"
+                             Style="{StaticResource TacticalTextBox}"
+                             MaxLength="5"/>
+
+                    <Button Grid.Column="3"
+                            Content="SET"
+                            Style="{StaticResource TacticalSmallButton}"
+                            Width="52"
+                            Margin="8,0,0,0"
+                            Click="SetCustomResolution_Click"/>
+                </Grid>
+
+                <!-- Overlay -->
+                <TextBlock Text="OVERLAY DEFAULT OPACITY" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <TextBlock Text="Applied when the overlay window opens. Adjust live opacity on the overlay itself."
+                           Style="{StaticResource TacticalBody}"
+                           FontSize="10"
+                           Foreground="{StaticResource TacticalTextMutedBrush}"
+                           Margin="0,0,0,8"/>
+
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Slider x:Name="OverlayOpacitySlider"
+                            Grid.Column="0"
+                            Minimum="20"
+                            Maximum="100"
+                            VerticalAlignment="Center"
+                            ValueChanged="OverlayOpacitySlider_ValueChanged"/>
+
+                    <TextBlock x:Name="OverlayOpacityValueText"
+                               Grid.Column="1"
+                               Width="42"
+                               Text="80%"
+                               FontFamily="{StaticResource TacticalMonoFont}"
+                               FontSize="12"
+                               Foreground="{StaticResource TacticalAmberBrightBrush}"
+                               VerticalAlignment="Center"
+                               TextAlignment="Right"/>
+                </Grid>
+
+                <!-- Map actions -->
+                <TextBlock Text="MAP ACTIONS" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <Button Content="CLEAR RAID EXFIL HIGHLIGHTS"
+                        Style="{StaticResource TacticalButton}"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,0,0,16"
+                        Click="ClearRaidExfilHighlights_Click"/>
+
+                <!-- Screenshot maintenance -->
+                <TextBlock Text="SCREENSHOT MAINTENANCE" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <Button x:Name="DeleteAllScreenshotsButton"
+                        Content="DELETE ALL SCREENSHOTS"
+                        Style="{StaticResource TacticalDangerButton}"
+                        Margin="0,0,0,16"
+                        Click="DeleteAllScreenshots_Click"/>
+
+                <!-- About -->
+                <TextBlock Text="ABOUT" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <Border Style="{StaticResource TacticalLcdBox}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock x:Name="AboutProductText"
+                                   Text="SayserTarkovTracker"
+                                   FontWeight="Bold"
+                                   FontSize="13"
+                                   Foreground="{StaticResource TacticalAmberBrightBrush}"
+                                   Margin="0,0,0,6"/>
+                        <TextBlock x:Name="AboutVersionText"
+                                   FontFamily="{StaticResource TacticalMonoFont}"
+                                   FontSize="11"
+                                   Foreground="{StaticResource TacticalTextPrimaryBrush}"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock x:Name="AboutDescriptionText"
+                                   Style="{StaticResource TacticalBody}"
+                                   FontSize="10"
+                                   Foreground="{StaticResource TacticalTextMutedBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,6"/>
+                        <TextBlock x:Name="AboutDataCreditText"
+                                   Style="{StaticResource TacticalBody}"
+                                   FontSize="10"
+                                   Foreground="{StaticResource TacticalTextMutedBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,6"/>
+                        <TextBlock x:Name="AboutDisclaimerText"
+                                   Style="{StaticResource TacticalBody}"
+                                   FontSize="10"
+                                   Foreground="{StaticResource TacticalTextMutedBrush}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <Button Content="CLOSE"
+                        Style="{StaticResource TacticalButton}"
+                        HorizontalAlignment="Right"
+                        Margin="0"
+                        Click="Close_Click"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</Window>

@@ -19,17 +19,32 @@ namespace TarkovTracker
         private string? _pendingRaidExfilHighlightsJson;
         private string? _pendingMapLevelStateJson;
         private string? _pendingMarkerFiltersJson;
+        private string? _pendingCustomPinsJson;
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _pendingPlayerMarker;
         private double _overlayOpacity = 0.80;
+        private bool _suppressOpacitySliderRefresh;
 
-        public OverlayWindow()
+        public OverlayWindow(double defaultOpacityPercent = 80)
         {
             InitializeComponent();
+            ApplyDefaultOpacityPercent(defaultOpacityPercent);
 
             Loaded += async (_, _) =>
             {
                 await ApplyOverlayOpacityAsync();
             };
+        }
+
+        public void ApplyDefaultOpacityPercent(double percent)
+        {
+            percent = Math.Clamp(percent, 20, 100);
+            _overlayOpacity = percent / 100.0;
+
+            _suppressOpacitySliderRefresh = true;
+            OpacitySlider.Value = percent;
+            _suppressOpacitySliderRefresh = false;
+
+            _ = ApplyOverlayOpacityAsync();
         }
 
         public void ConfigureMapAssetHost(string mapsFolder)
@@ -94,6 +109,9 @@ namespace TarkovTracker
             if (!string.IsNullOrWhiteSpace(_pendingMarkerFiltersJson))
                 await ApplyMarkerFiltersAsync(_pendingMarkerFiltersJson);
 
+            if (!string.IsNullOrWhiteSpace(_pendingCustomPinsJson))
+                await SetCustomPinsAsync(_pendingCustomPinsJson);
+
             if (_pendingPlayerMarker != null)
             {
                 await SetPlayerMarkerAsync(
@@ -142,6 +160,11 @@ namespace TarkovTracker
                         const markerLayer = document.getElementById('markerLayer');
                         if (markerLayer) {
                             markerLayer.style.opacity = '1';
+                        }
+
+                        const customMarkerLayer = document.getElementById('customMarkerLayer');
+                        if (customMarkerLayer) {
+                            customMarkerLayer.style.opacity = '1';
                         }
 
                         const playerMarker = document.getElementById('playerMarker');
@@ -234,6 +257,19 @@ namespace TarkovTracker
             await OverlayMapView.ExecuteScriptAsync($"applyMarkerFilters({filtersJson});");
         }
 
+        public async Task SetCustomPinsAsync(string pinsJson)
+        {
+            if (string.IsNullOrWhiteSpace(pinsJson))
+                pinsJson = "[]";
+
+            _pendingCustomPinsJson = pinsJson;
+
+            if (!_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync($"setCustomPins({pinsJson});");
+        }
+
         public async Task ResetViewAsync()
         {
             if (!_webViewReady)
@@ -244,6 +280,9 @@ namespace TarkovTracker
 
         private async void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (_suppressOpacitySliderRefresh)
+                return;
+
             _overlayOpacity = Math.Max(0.05, Math.Min(1.0, e.NewValue / 100.0));
             await ApplyOverlayOpacityAsync();
         }
