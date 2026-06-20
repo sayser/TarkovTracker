@@ -43,7 +43,7 @@
                                    Foreground="{StaticResource TacticalTextPrimaryBrush}"
                                    FontSize="13"
                                    FontWeight="Bold"/>
-                        <TextBlock Text="TACTICAL MAP INTERFACE v2.6.1"
+                        <TextBlock Text="TACTICAL MAP INTERFACE v2.7"
                                    Foreground="{StaticResource TacticalTextMutedBrush}"
                                    FontSize="9"
                                    FontWeight="SemiBold"/>
@@ -279,6 +279,13 @@
                                             Click="HideAllMarkers_Click"/>
                                 </StackPanel>
                             </Grid>
+
+                            <CheckBox x:Name="SaveMarkerFiltersCheckBox"
+                                      Style="{StaticResource TacticalSettingsCheckBox}"
+                                      Content="Save marker selection between sessions"
+                                      Margin="0,0,0,10"
+                                      Checked="SaveMarkerFilters_Changed"
+                                      Unchecked="SaveMarkerFilters_Changed"/>
 
                             <UniformGrid Columns="4" Rows="5">
 

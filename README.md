@@ -44,26 +44,37 @@ Toggle marker layers individually or with **Show All** / **Hide All**:
 | **Custom Pin** | User-placed amber waypoint pins (see below) |
 | Hazards | Mortars, minefields, danger zones |
 | Switches | Power switches and similar |
-| BTR stops | BTR route stops (Woods, Streets of Tarkov only) |
+| BTR stops | BTR route stops (Lighthouse, Streets of Tarkov only) |
 
 Markers use the same icon set as [tarkov.dev](https://tarkov.dev). Quest item markers can show the actual item icon when available.
+
+#### Saving marker selection
+By default, marker toggles reset to the built-in defaults each time you open the app. Check **Save marker selection between sessions** in the **MARKERS** panel to remember your choices across restarts.
+
+| When save is **off** (default) | When save is **on** |
+|--------------------------------|---------------------|
+| Marker toggles reset on each launch | Your last marker selection is restored on launch |
+| Changes apply for the current session only | Changes are written to `settings.json` and persist |
+| Defaults: Location Names, PMC/Scav/Shared extracts, Transits, Hazards, and Switches **on**; everything else **off** | Whatever you last selected is saved (including **Show All** / **Hide All**) |
+
+The **Save marker selection** setting itself is always stored in `settings.json`. Only the individual marker toggles are optional to persist.
 
 #### Custom pins
 - Enable **Custom Pin** in the **MARKERS** panel to enter placement mode (map cursor becomes a crosshair).
 - **Right-click** on the map to drop an amber tactical pin.
 - **Left-click** a pin to remove it.
-- **Turn off** the Custom Pin toggle to clear **all** pins and exit placement mode.
-- Pins are cleared automatically when you **change or reload** the map.
+- **Turn off** the Custom Pin toggle to hide pins and exit placement mode (pins are kept).
+- Pins are saved **per map** and restored when you reopen the app or switch back to that map.
 - Custom pins sync to the **Overlay** window when it is open.
 
 #### Boss and cultist spawns
 - **Boss** markers show where named bosses can spawn, using tarkov.dev zone and floor rules (only valid boss spawn points for the selected map level).
 - **Cultists** are a **separate layer** with their own icon and MARKERS toggle — they are not mixed into the boss skull markers.
-- Cultist markers appear only on maps that can have Cultist Priest spawns: **Customs**, **Woods**, **Shoreline**, **Ground Zero**, and **Factory**.
+- Cultist markers appear only on maps that can have Cultist Priest spawns: **Customs**, **Lighthouse**, **Shoreline**, **Ground Zero**, and **Factory**.
 - On **Factory**, cultist locations come from **Night Factory** raid data (cultists do not spawn on day Factory in-game, but the markers are shown on the single Factory map for night raids).
 
 #### BTR stops
-On **Woods** and **Streets of Tarkov**, a **BTR Stops** toggle appears in MARKERS for the armored vehicle route.
+On **Lighthouse** and **Streets of Tarkov**, a **BTR Stops** toggle appears in MARKERS for the armored vehicle route.
 
 ### Settings
 Open **SETTINGS** from the top bar (replaces the old screenshot-folder buttons on the main toolbar).
@@ -74,11 +85,12 @@ Open **SETTINGS** from the top bar (replaces the old screenshot-folder buttons o
 | **Screenshot parsing** | Enable/disable auto-watch and **Read Latest** |
 | **Game resolution** | Preset dropdown + custom **Width × Height** with **SET** (tunes EXFIL OCR) |
 | **Overlay default opacity** | Default transparency when the overlay opens (20–100%) |
+| **Overlay follow player** | When enabled, each new screenshot recenters the overlay on your position without changing zoom |
 | **Map actions** | **Clear raid exfil highlights** for the current map |
 | **Screenshot maintenance** | **Delete all screenshots** in the configured folder (with confirmation) |
 | **About** | App name and version (**2.6.1**) |
 
-Settings are saved to `%AppData%\SayserTarkovTracker\settings.json`.
+User preferences are stored in **`settings.json`** next to the executable (not in `%AppData%`). This includes screenshot folder, game resolution, overlay options, last selected map, custom pins per map, and the **Save marker selection** flag. Marker toggle states are saved only when that option is enabled in the **MARKERS** panel.
 
 ### Raid exfil highlighting (in-game **O** key)
 During a raid, Escape from Tarkov lets you press **O** to open the **extraction / transit panel** in the top-right of the screen. It lists which extracts and transits are available to you this raid (PMC **EXFIL** lines, Scav **EXIT** lines, and orange **TRANSIT** entries).
@@ -118,6 +130,7 @@ This feature does not read game memory; it only uses your screenshot image and p
 - Separate always-on-top **Glass HUD** overlay
 - Semi-transparent, resizable (drag edges/corners)
 - Adjustable opacity slider (default level set in **SETTINGS**)
+- Optional **center on player** when a new screenshot is parsed (overlay only; keeps your current zoom)
 - Syncs map, markers, levels, filters, custom pins, player position, and raid exfil highlights with the main window
 
 ### UI
@@ -151,7 +164,7 @@ Or open `TarkovTracker.sln` in Visual Studio and run (F5).
 2. Open **SETTINGS** and set your **screenshot folder** (default: `Documents\Escape from Tarkov\Screenshots`).
 3. Take an in-game screenshot — the app watches the folder and updates your position automatically (if parsing is enabled).
 4. Use **Read Latest** to manually parse the newest screenshot.
-5. Toggle **Markers** and **Levels** in the right sidebar (including **Boss**, **Cultist**, **Custom Pin**, and **BTR Stops** where available).
+5. Toggle **Markers** and **Levels** in the right sidebar (including **Boss**, **Cultist**, **Custom Pin**, and **BTR Stops** where available). Optionally check **Save marker selection between sessions** to keep your marker toggles for the next launch.
 6. Enable **Custom Pin**, then **right-click** the map to mark locations; **left-click** a pin to remove it.
 7. During a raid, press **O** in-game and screenshot with the exfil panel open to highlight your active extracts and transits on the map.
 8. Open **Overlay** for a floating map on top of the game.

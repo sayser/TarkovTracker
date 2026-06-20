@@ -53,6 +53,15 @@ namespace TarkovTracker
         private bool _mapWebViewHostMapped = false;
 
         private UserAppSettings _userSettings = new();
+        private bool _markerFiltersHaveSavedState;
+        private bool _suppressMapSelectionPersistence;
+        private bool _isInitializing;
+
+        private static readonly JsonSerializerOptions UserSettingsJsonOptions = new()
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never
+        };
 
         internal string ScreenshotFolderPath => _screenshotFolder;
 
@@ -66,18 +75,21 @@ namespace TarkovTracker
         internal double OverlayDefaultOpacityPercent =>
             Math.Clamp(_userSettings.OverlayDefaultOpacityPercent, 20, 100);
 
+        internal bool OverlayCenterOnPlayer => _userSettings.OverlayCenterOnPlayer;
+
         public MainWindow()
         {
-            InitializeComponent();
+            _isInitializing = true;
+            _suppressMarkerFilterRefresh = true;
 
             _mapsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Maps");
-            _userSettingsFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "SayserTarkovTracker",
-                "settings.json");
+            _userSettingsFile = AppInfo.SettingsFilePath;
 
-            _screenshotFolder = LoadSavedScreenshotFolder();
+            InitializeComponent();
+
+            TryMigrateLegacySettingsFile();
             _userSettings = LoadUserSettings();
+            _screenshotFolder = _userSettings.ScreenshotFolder;
 
             if (string.IsNullOrWhiteSpace(_screenshotFolder))
             {
@@ -91,42 +103,150 @@ namespace TarkovTracker
             if (!string.IsNullOrWhiteSpace(_mapData.LastStatusMessage))
                 StatusText.Text = _mapData.LastStatusMessage;
 
+            ApplySaveMarkerFiltersSettingToUi();
+            ApplyMarkerFiltersForSession();
+
+            _suppressMarkerFilterRefresh = false;
+            _isInitializing = false;
+
             LoadMapsDropdown();
+            RestoreLastSelectedMap();
             UpdateScreenshotMonitoringStatus();
+
+            Closing += (_, _) => SaveUserSettings();
         }
 
         private string LoadSavedScreenshotFolder()
         {
-            return LoadUserSettings().ScreenshotFolder;
+            return _userSettings.ScreenshotFolder;
+        }
+
+        private void TryMigrateLegacySettingsFile()
+        {
+            string localPath = GetUserSettingsPath();
+            if (File.Exists(localPath))
+                return;
+
+            string legacyPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "SayserTarkovTracker",
+                "settings.json");
+
+            if (!File.Exists(legacyPath))
+                return;
+
+            try
+            {
+                string? legacyDirectory = Path.GetDirectoryName(localPath);
+                if (!string.IsNullOrWhiteSpace(legacyDirectory))
+                    Directory.CreateDirectory(legacyDirectory);
+
+                File.Copy(legacyPath, localPath);
+            }
+            catch
+            {
+                // Best-effort migration only.
+            }
         }
 
         private UserAppSettings LoadUserSettings()
         {
             try
             {
-                if (!File.Exists(_userSettingsFile))
+                string settingsPath = GetUserSettingsPath();
+                if (!File.Exists(settingsPath))
+                {
+                    _markerFiltersHaveSavedState = false;
                     return new UserAppSettings();
+                }
+
+                string json = File.ReadAllText(settingsPath);
+                _markerFiltersHaveSavedState =
+                    json.Contains("\"MarkerFilters\"", StringComparison.OrdinalIgnoreCase);
 
                 var settings = JsonSerializer.Deserialize<UserAppSettings>(
-                    File.ReadAllText(_userSettingsFile),
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    json,
+                    UserSettingsJsonOptions);
 
-                return settings ?? new UserAppSettings();
+                settings ??= new UserAppSettings();
+                settings.MarkerFilters ??= new MarkerFilterPreferences();
+                return settings;
             }
             catch
             {
+                _markerFiltersHaveSavedState = false;
                 return new UserAppSettings();
             }
         }
 
+        private string GetUserSettingsPath()
+        {
+            if (!string.IsNullOrWhiteSpace(_userSettingsFile))
+                return _userSettingsFile;
+
+            return AppInfo.SettingsFilePath;
+        }
+
         private void SaveUserSettings()
         {
-            string dir = Path.GetDirectoryName(_userSettingsFile)!;
-            Directory.CreateDirectory(dir);
+            if (_isInitializing)
+                return;
+
+            SyncMarkerFiltersFromUiIfReady();
+
+            string settingsPath = GetUserSettingsPath();
+            string? directory = Path.GetDirectoryName(settingsPath);
+            if (!string.IsNullOrWhiteSpace(directory))
+                Directory.CreateDirectory(directory);
 
             File.WriteAllText(
-                _userSettingsFile,
-                JsonSerializer.Serialize(_userSettings, new JsonSerializerOptions { WriteIndented = true }));
+                settingsPath,
+                JsonSerializer.Serialize(_userSettings, UserSettingsJsonOptions));
+        }
+
+        private void SyncMarkerFiltersFromUiIfReady()
+        {
+            if (_isInitializing || !_userSettings.SaveMarkerFilters || !AreMarkerFilterControlsReady())
+                return;
+
+            _userSettings.MarkerFilters = ReadMarkerFiltersFromUi();
+            _markerFiltersHaveSavedState = true;
+        }
+
+        private void RestoreLastSelectedMap()
+        {
+            if (string.IsNullOrWhiteSpace(_userSettings.LastSelectedMap))
+                return;
+
+            string target = _userSettings.LastSelectedMap.Trim();
+
+            foreach (ComboBoxItem item in MapComboBox.Items.OfType<ComboBoxItem>())
+            {
+                if (item.Tag is not string mapPath)
+                    continue;
+
+                if (!string.Equals(
+                        Path.GetFileNameWithoutExtension(mapPath),
+                        target,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                _suppressMapSelectionPersistence = true;
+                MapComboBox.SelectedItem = item;
+                _suppressMapSelectionPersistence = false;
+                return;
+            }
+        }
+
+        private void PersistLastSelectedMap(string mapFileName)
+        {
+            if (_suppressMapSelectionPersistence)
+                return;
+
+            _userSettings.LastSelectedMap = mapFileName;
+            SaveUserSettings();
         }
 
         private void SaveScreenshotFolder(string folder)
@@ -146,6 +266,12 @@ namespace TarkovTracker
             _userSettings.OverlayDefaultOpacityPercent = Math.Clamp(percent, 20, 100);
             SaveUserSettings();
             _overlayWindow?.ApplyDefaultOpacityPercent(_userSettings.OverlayDefaultOpacityPercent);
+        }
+
+        internal void ApplyOverlayCenterOnPlayer(bool enabled)
+        {
+            _userSettings.OverlayCenterOnPlayer = enabled;
+            SaveUserSettings();
         }
 
         internal void ApplyScreenshotParsingEnabled(bool enabled)
@@ -295,6 +421,7 @@ namespace TarkovTracker
             _currentMapPath = mapPath;
 
             CurrentMapText.Text = mapFileName.ToUpperInvariant();
+            PersistLastSelectedMap(mapFileName);
 
             if (!_mapData.TryResolveMapConfig(mapFileName, out _currentMapConfig))
             {
@@ -310,7 +437,7 @@ namespace TarkovTracker
                     : mapFileName;
 
             ClearRaidExfilHighlightsForMapChange();
-            ClearCustomPinsForMapChange();
+            LoadCustomPinsForCurrentMap();
 
             await LoadSvgMapInWebView(mapPath);
             LoadLayersPanel(mapPath);
@@ -319,6 +446,7 @@ namespace TarkovTracker
             UpdateBtrControlsVisibility();
             UpdateCultistControlsVisibility();
             DrawMapMarkersForCurrentMap();
+            await ApplyCustomPinsToMapAsync();
             RedrawLastMarker();
             _ = SyncOverlayToCurrentMapAsync();
 
@@ -395,6 +523,7 @@ namespace TarkovTracker
                     if (pinsMessage?.Pins != null)
                         _customPins.AddRange(pinsMessage.Pins);
 
+                    SaveCustomPinsForCurrentMap();
                     _ = SyncCustomPinsToOverlayAsync();
                     return;
                 }
@@ -632,13 +761,146 @@ namespace TarkovTracker
             };
         }
 
-        private void ClearCustomPinsForMapChange()
+        private string? GetCurrentMapStorageKey()
+        {
+            if (!string.IsNullOrWhiteSpace(_currentMapDisplayName))
+                return MapDataService.NormalizeMapName(_currentMapDisplayName);
+
+            if (!string.IsNullOrWhiteSpace(_currentMapPath))
+                return MapDataService.NormalizeMapName(Path.GetFileNameWithoutExtension(_currentMapPath));
+
+            return null;
+        }
+
+        private void LoadCustomPinsForCurrentMap()
         {
             _customPins.Clear();
 
+            string? mapKey = GetCurrentMapStorageKey();
+            if (string.IsNullOrWhiteSpace(mapKey))
+                return;
+
+            if (_userSettings.CustomPinsByMap.TryGetValue(mapKey, out List<CustomPinEntry>? savedPins) &&
+                savedPins != null)
+            {
+                _customPins.AddRange(savedPins);
+            }
+        }
+
+        private void SaveCustomPinsForCurrentMap()
+        {
+            string? mapKey = GetCurrentMapStorageKey();
+            if (string.IsNullOrWhiteSpace(mapKey))
+                return;
+
+            _userSettings.CustomPinsByMap[mapKey] = _customPins
+                .Select(pin => new CustomPinEntry
+                {
+                    Id = pin.Id,
+                    NormalizedX = pin.NormalizedX,
+                    NormalizedY = pin.NormalizedY
+                })
+                .ToList();
+
+            SaveUserSettings();
+        }
+
+        private async System.Threading.Tasks.Task ApplyCustomPinsToMapAsync()
+        {
+            if (!_webViewReady)
+                return;
+
+            string pinsJson = JsonSerializer.Serialize(_customPins);
+            await MapWebView.ExecuteScriptAsync($"setCustomPins({pinsJson});");
+            await ApplyMarkerVisibility();
+            await SyncCustomPinsToOverlayAsync();
+        }
+
+        private static bool IsMarkerCheckBoxChecked(CheckBox? checkBox) =>
+            checkBox?.IsChecked == true;
+
+        private bool AreMarkerFilterControlsReady() =>
+            ShowLabelsCheckBox != null &&
+            ShowQuestItemsCheckBox != null &&
+            ShowPmcExtractsCheckBox != null;
+
+        private void ApplySaveMarkerFiltersSettingToUi()
+        {
+            if (SaveMarkerFiltersCheckBox == null)
+                return;
+
+            SaveMarkerFiltersCheckBox.IsChecked = _userSettings.SaveMarkerFilters;
+        }
+
+        private void ApplyMarkerFiltersForSession()
+        {
+            if (!AreMarkerFilterControlsReady())
+                return;
+
+            MarkerFilterPreferences filters =
+                _userSettings.SaveMarkerFilters && _markerFiltersHaveSavedState
+                    ? _userSettings.MarkerFilters ?? new MarkerFilterPreferences()
+                    : new MarkerFilterPreferences();
+
+            ApplyMarkerFilterPreferencesToUi(filters);
+        }
+
+        private void ApplyMarkerFilterPreferencesToUi(MarkerFilterPreferences filters)
+        {
             _suppressMarkerFilterRefresh = true;
-            ShowCustomPinsCheckBox.IsChecked = false;
+
+            if (ShowLabelsCheckBox != null) ShowLabelsCheckBox.IsChecked = filters.Labels;
+            if (ShowQuestItemsCheckBox != null) ShowQuestItemsCheckBox.IsChecked = filters.QuestItems;
+            if (ShowQuestObjectivesCheckBox != null) ShowQuestObjectivesCheckBox.IsChecked = filters.QuestObjectives;
+            if (ShowPmcExtractsCheckBox != null) ShowPmcExtractsCheckBox.IsChecked = filters.PmcExtracts;
+            if (ShowScavExtractsCheckBox != null) ShowScavExtractsCheckBox.IsChecked = filters.ScavExtracts;
+            if (ShowSharedExtractsCheckBox != null) ShowSharedExtractsCheckBox.IsChecked = filters.SharedExtracts;
+            if (ShowTransitsCheckBox != null) ShowTransitsCheckBox.IsChecked = filters.Transits;
+            if (ShowHazardsCheckBox != null) ShowHazardsCheckBox.IsChecked = filters.Hazards;
+            if (ShowSwitchesCheckBox != null) ShowSwitchesCheckBox.IsChecked = filters.Switches;
+            if (ShowPmcSpawnsCheckBox != null) ShowPmcSpawnsCheckBox.IsChecked = filters.PmcSpawns;
+            if (ShowScavSpawnsCheckBox != null) ShowScavSpawnsCheckBox.IsChecked = filters.ScavSpawns;
+            if (ShowBossSpawnsCheckBox != null) ShowBossSpawnsCheckBox.IsChecked = filters.BossSpawns;
+            if (ShowCultistSpawnsCheckBox != null) ShowCultistSpawnsCheckBox.IsChecked = filters.CultistSpawns;
+            if (ShowBtrStopsCheckBox != null) ShowBtrStopsCheckBox.IsChecked = filters.BtrStops;
+            if (ShowCustomPinsCheckBox != null) ShowCustomPinsCheckBox.IsChecked = filters.CustomPins;
+
             _suppressMarkerFilterRefresh = false;
+
+            if (_webViewReady)
+                _ = ApplyMarkerVisibility();
+        }
+
+        private void PersistMarkerFiltersFromUi()
+        {
+            SaveUserSettings();
+        }
+
+        private MarkerFilterPreferences ReadMarkerFiltersFromUi()
+        {
+            MarkerFilterPreferences fallback = _userSettings.MarkerFilters ?? new MarkerFilterPreferences();
+
+            if (!AreMarkerFilterControlsReady())
+                return fallback;
+
+            return new MarkerFilterPreferences
+            {
+                Labels = IsMarkerCheckBoxChecked(ShowLabelsCheckBox),
+                QuestItems = IsMarkerCheckBoxChecked(ShowQuestItemsCheckBox),
+                QuestObjectives = IsMarkerCheckBoxChecked(ShowQuestObjectivesCheckBox),
+                PmcExtracts = IsMarkerCheckBoxChecked(ShowPmcExtractsCheckBox),
+                ScavExtracts = IsMarkerCheckBoxChecked(ShowScavExtractsCheckBox),
+                SharedExtracts = IsMarkerCheckBoxChecked(ShowSharedExtractsCheckBox),
+                Transits = IsMarkerCheckBoxChecked(ShowTransitsCheckBox),
+                Hazards = IsMarkerCheckBoxChecked(ShowHazardsCheckBox),
+                Switches = IsMarkerCheckBoxChecked(ShowSwitchesCheckBox),
+                PmcSpawns = IsMarkerCheckBoxChecked(ShowPmcSpawnsCheckBox),
+                ScavSpawns = IsMarkerCheckBoxChecked(ShowScavSpawnsCheckBox),
+                BossSpawns = IsMarkerCheckBoxChecked(ShowBossSpawnsCheckBox),
+                CultistSpawns = IsMarkerCheckBoxChecked(ShowCultistSpawnsCheckBox),
+                BtrStops = IsMarkerCheckBoxChecked(ShowBtrStopsCheckBox),
+                CustomPins = IsMarkerCheckBoxChecked(ShowCustomPinsCheckBox)
+            };
         }
 
         private async System.Threading.Tasks.Task SyncCustomPinsToOverlayAsync()
@@ -675,7 +937,13 @@ namespace TarkovTracker
 
             ShowBtrStopsCheckBox.Visibility = visibility;
 
-            if (!supportsBtr)
+            if (supportsBtr)
+            {
+                ShowBtrStopsCheckBox.IsChecked = _userSettings.SaveMarkerFilters
+                    ? _userSettings.MarkerFilters.BtrStops
+                    : ShowBtrStopsCheckBox.IsChecked == true;
+            }
+            else
             {
                 ShowBtrStopsCheckBox.IsChecked = false;
             }
@@ -692,7 +960,13 @@ namespace TarkovTracker
 
             ShowCultistSpawnsCheckBox.Visibility = visibility;
 
-            if (!supportsCultists)
+            if (supportsCultists)
+            {
+                ShowCultistSpawnsCheckBox.IsChecked = _userSettings.SaveMarkerFilters
+                    ? _userSettings.MarkerFilters.CultistSpawns
+                    : ShowCultistSpawnsCheckBox.IsChecked == true;
+            }
+            else
             {
                 ShowCultistSpawnsCheckBox.IsChecked = false;
             }
@@ -759,6 +1033,7 @@ namespace TarkovTracker
 
             _suppressMarkerFilterRefresh = false;
             _ = ApplyMarkerVisibility();
+            SaveUserSettings();
         }
 
         private void HideAllMarkers_Click(object sender, RoutedEventArgs e)
@@ -783,14 +1058,29 @@ namespace TarkovTracker
 
             _suppressMarkerFilterRefresh = false;
             _ = ApplyMarkerVisibility();
+            SaveUserSettings();
         }
 
         private async void MarkerFilter_Changed(object sender, RoutedEventArgs e)
         {
-            if (_suppressMarkerFilterRefresh)
+            if (_isInitializing || _suppressMarkerFilterRefresh || !AreMarkerFilterControlsReady())
                 return;
 
             await ApplyMarkerVisibility();
+            SaveUserSettings();
+        }
+
+        private void SaveMarkerFilters_Changed(object sender, RoutedEventArgs e)
+        {
+            if (_isInitializing || SaveMarkerFiltersCheckBox == null)
+                return;
+
+            _userSettings.SaveMarkerFilters = SaveMarkerFiltersCheckBox.IsChecked == true;
+
+            if (_userSettings.SaveMarkerFilters)
+                SyncMarkerFiltersFromUiIfReady();
+
+            SaveUserSettings();
         }
 
         private async System.Threading.Tasks.Task ApplyMarkerVisibility()
@@ -1657,7 +1947,8 @@ namespace TarkovTracker
                 await ApplyRaidExfilHighlightsAsync();
 
                 SetParserStatus(
-                    $"RAID EXFILS: {matchResult.ExtractNames.Count} EXT / {matchResult.TransitNames.Count} TRANSIT");
+                    $"RAID EXFILS: {matchResult.ExtractNames.Count} EXT / {matchResult.TransitNames.Count} TRANSIT " +
+                    $"(OCR {parseResult.ExfilNames.Count}/{parseResult.TransitNames.Count})");
             }
             catch (Exception ex)
             {
@@ -1769,7 +2060,7 @@ namespace TarkovTracker
 
             StatusText.Text = $"X={gameX:0.00} Y={gameY:0.00} Z={gameZ:0.00} DIR={direction:0.00}";
 
-            DrawPlayerMarkerFromGameCoordinates(gameX, gameZ, direction);
+            DrawPlayerMarkerFromGameCoordinates(gameX, gameZ, direction, _userSettings.OverlayCenterOnPlayer);
         }
 
         private double GetYawFromQuaternion(double x, double y, double z, double w)
@@ -1797,17 +2088,26 @@ namespace TarkovTracker
             return direction;
         }
 
-        private void DrawPlayerMarkerFromGameCoordinates(double gameX, double gameZ, double directionDegrees)
+        private void DrawPlayerMarkerFromGameCoordinates(
+            double gameX,
+            double gameZ,
+            double directionDegrees,
+            bool centerOverlayOnPlayer = false)
         {
             var converted = ConvertGameToNormalizedMap(gameX, gameZ);
 
             SetPlayerMarkerInWebView(
                 converted.normalizedX,
                 converted.normalizedY,
-                directionDegrees);
+                directionDegrees,
+                centerOverlayOnPlayer);
         }
 
-        private async void SetPlayerMarkerInWebView(double normalizedX, double normalizedY, double directionDegrees)
+        private async void SetPlayerMarkerInWebView(
+            double normalizedX,
+            double normalizedY,
+            double directionDegrees,
+            bool centerOverlayOnPlayer = false)
         {
             _lastPlayerMarker = (normalizedX, normalizedY, directionDegrees);
 
@@ -1820,7 +2120,13 @@ namespace TarkovTracker
             }
 
             if (_overlayWindow != null)
-                await _overlayWindow.SetPlayerMarkerAsync(normalizedX, normalizedY, directionDegrees);
+            {
+                await _overlayWindow.SetPlayerMarkerAsync(
+                    normalizedX,
+                    normalizedY,
+                    directionDegrees,
+                    centerOverlayOnPlayer);
+            }
         }
 
         private void RedrawLastMarker()

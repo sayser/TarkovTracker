@@ -58,7 +58,7 @@ public static class ScreenshotResolutionHelper
             {
                 Name = "Ultrawide",
                 PanelWidthRatio = 0.36,
-                PanelHeightRatio = 0.44,
+                PanelHeightRatio = 0.58,
                 HeaderHeightRatio = 0.075,
                 HeaderScanStartRatio = 0.58,
                 GreenHitThreshold = 0.10,
@@ -72,7 +72,7 @@ public static class ScreenshotResolutionHelper
             {
                 Name = "4K",
                 PanelWidthRatio = 0.52,
-                PanelHeightRatio = 0.40,
+                PanelHeightRatio = 0.56,
                 HeaderHeightRatio = 0.065,
                 HeaderScanStartRatio = 0.50,
                 GreenHitThreshold = 0.12,
@@ -86,7 +86,7 @@ public static class ScreenshotResolutionHelper
             {
                 Name = "1440p",
                 PanelWidthRatio = 0.52,
-                PanelHeightRatio = 0.42,
+                PanelHeightRatio = 0.58,
                 HeaderHeightRatio = 0.07,
                 HeaderScanStartRatio = 0.50,
                 GreenHitThreshold = 0.12,
@@ -98,7 +98,7 @@ public static class ScreenshotResolutionHelper
         {
             Name = "1080p",
             PanelWidthRatio = 0.52,
-            PanelHeightRatio = 0.44,
+            PanelHeightRatio = 0.58,
             HeaderHeightRatio = 0.08,
             HeaderScanStartRatio = 0.48,
             GreenHitThreshold = 0.12,

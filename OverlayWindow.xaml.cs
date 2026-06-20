@@ -218,17 +218,22 @@ namespace TarkovTracker
             await OverlayMapView.ExecuteScriptAsync($"setRaidExfilHighlights({payloadJson});");
         }
 
-        public async Task SetPlayerMarkerAsync(double normalizedX, double normalizedY, double directionDegrees)
+        public async Task SetPlayerMarkerAsync(
+            double normalizedX,
+            double normalizedY,
+            double directionDegrees,
+            bool centerOnPlayer = false)
         {
             _pendingPlayerMarker = (normalizedX, normalizedY, directionDegrees);
 
             if (!_webViewReady)
                 return;
 
+            string centerArg = centerOnPlayer ? "true" : "false";
             await OverlayMapView.ExecuteScriptAsync(
                 $"setPlayerMarkerNormalized({normalizedX.ToString(CultureInfo.InvariantCulture)}, " +
                 $"{normalizedY.ToString(CultureInfo.InvariantCulture)}, " +
-                $"{directionDegrees.ToString(CultureInfo.InvariantCulture)});");
+                $"{directionDegrees.ToString(CultureInfo.InvariantCulture)}, {centerArg});");
         }
 
         public async Task ApplyMapLevelStateAsync(string stateJson)

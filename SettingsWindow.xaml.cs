@@ -13,6 +13,7 @@ public partial class SettingsWindow : Window
     private readonly MainWindow _owner;
     private bool _suppressResolutionRefresh;
     private bool _suppressOverlayOpacityRefresh;
+    private bool _suppressOverlayCenterRefresh;
     private bool _isLoadingSettings;
 
     public SettingsWindow(MainWindow owner)
@@ -21,6 +22,7 @@ public partial class SettingsWindow : Window
         Owner = owner;
         _isLoadingSettings = true;
         _suppressOverlayOpacityRefresh = true;
+        _suppressOverlayCenterRefresh = true;
         _suppressResolutionRefresh = true;
         InitializeComponent();
         LoadCurrentValues();
@@ -60,6 +62,10 @@ public partial class SettingsWindow : Window
         OverlayOpacitySlider.Value = _owner.OverlayDefaultOpacityPercent;
         OverlayOpacityValueText.Text = $"{_owner.OverlayDefaultOpacityPercent:0}%";
         _suppressOverlayOpacityRefresh = false;
+
+        _suppressOverlayCenterRefresh = true;
+        OverlayCenterOnPlayerCheckBox.IsChecked = _owner.OverlayCenterOnPlayer;
+        _suppressOverlayCenterRefresh = false;
 
         AboutProductText.Text = AppInfo.ProductName;
         AboutVersionText.Text = $"Version {AppInfo.VersionLabel}";
@@ -159,6 +165,14 @@ public partial class SettingsWindow : Window
         double percent = Math.Round(e.NewValue);
         OverlayOpacityValueText.Text = $"{percent:0}%";
         _owner.ApplyOverlayDefaultOpacityPercent(percent);
+    }
+
+    private void OverlayCenterOnPlayerCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isLoadingSettings || _suppressOverlayCenterRefresh)
+            return;
+
+        _owner.ApplyOverlayCenterOnPlayer(OverlayCenterOnPlayerCheckBox.IsChecked == true);
     }
 
     private void ClearRaidExfilHighlights_Click(object sender, RoutedEventArgs e)

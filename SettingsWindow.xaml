@@ -127,6 +127,20 @@
                                TextAlignment="Right"/>
                 </Grid>
 
+                <CheckBox x:Name="OverlayCenterOnPlayerCheckBox"
+                          Style="{StaticResource TacticalSettingsCheckBox}"
+                          Content="Center overlay on player when screenshot updates"
+                          Margin="0,0,0,4"
+                          Checked="OverlayCenterOnPlayerCheckBox_Changed"
+                          Unchecked="OverlayCenterOnPlayerCheckBox_Changed"/>
+
+                <TextBlock Text="Keeps the current overlay zoom and pans to your latest screenshot position."
+                           Style="{StaticResource TacticalBody}"
+                           FontSize="10"
+                           Foreground="{StaticResource TacticalTextMutedBrush}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,16"/>
+
                 <!-- Map actions -->
                 <TextBlock Text="MAP ACTIONS" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
                 <Button Content="CLEAR RAID EXFIL HIGHLIGHTS"

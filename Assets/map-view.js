@@ -64,7 +64,19 @@ function resetView() {
     applyTransform();
 }
 
-function setPlayerMarkerNormalized(nx, ny, directionDegrees) {
+function centerMapOnPlayer() {
+    if (!playerMarkerData) return;
+
+    let stageWidth = stage.clientWidth;
+    let stageHeight = stage.clientHeight;
+
+    panX = (stageWidth / 2) - (playerMarkerData.x * scale);
+    panY = (stageHeight / 2) - (playerMarkerData.y * scale);
+
+    applyTransform();
+}
+
+function setPlayerMarkerNormalized(nx, ny, directionDegrees, centerOnPlayer) {
     let vb = getViewBox();
 
     playerMarkerData = {
@@ -74,6 +86,10 @@ function setPlayerMarkerNormalized(nx, ny, directionDegrees) {
     };
 
     updatePlayerMarkerVisual();
+
+    if (centerOnPlayer) {
+        centerMapOnPlayer();
+    }
 }
 
 function updatePlayerMarkerVisual() {
@@ -215,14 +231,18 @@ function clearCustomPins() {
     }
 }
 
+function setCustomPinsVisibility(visible) {
+    if (!customMarkerLayer) return;
+
+    customMarkerLayer.querySelectorAll('.custom-pin').forEach(function(marker) {
+        marker.style.display = visible ? 'block' : 'none';
+    });
+}
+
 function setCustomPinsMode(enabled) {
     customPinsEnabled = !!enabled;
     stage.classList.toggle('custom-pins-active', customPinsEnabled);
-
-    if (!customPinsEnabled) {
-        clearCustomPins();
-        notifyCustomPinsChanged();
-    }
+    setCustomPinsVisibility(!!enabled);
 }
 
 function setCustomPins(pins) {
@@ -237,11 +257,17 @@ function setCustomPins(pins) {
             normalizedY: pin.normalizedY
         };
 
+        let idMatch = /^pin-(\d+)$/.exec(entry.id);
+        if (idMatch) {
+            customPinCounter = Math.max(customPinCounter, parseInt(idMatch[1], 10));
+        }
+
         customPins.push(entry);
         renderCustomPin(entry);
     }
 
     updateCustomMarkerVisuals();
+    setCustomPinsVisibility(customPinsEnabled);
 }
 
 function screenToNormalizedMap(clientX, clientY) {

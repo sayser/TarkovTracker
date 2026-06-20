@@ -13,21 +13,20 @@ namespace TarkovTracker.Services;
 
 public class ScreenshotExfilParser
 {
-    // PMC raids show "EXFIL01 ..."; Scav raids show "EXIT01 ...".
     private static readonly Regex ExfilLineRegex = new(
-        @"(?:EXFIL|EXIT|EXI\s*T|EX1T)\s*0?\d{1,2}\s*(.+?)(?:\s+\?{1,2}:\?{1,2}:\?{1,2})?$",
+        @"(?:EXFIL|EXIT|EXI\s*T|EX1T|EXFILO|EXITO)\s*0?(\d{1,2})\s*(.+?)(?:\s+\d{1,2}:\d{2}(?::\d{2})?|\s+\?{1,2}:\?{1,2}:\?{1,2})?(?:\s*$|\s+(?:EXFIL|EXIT|TRANSIT))",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex TransitLineRegex = new(
-        @"TRANSIT\s*0?\d{1,2}\s*(.+)$",
+        @"TRANSIT\s*0?\d{1,2}\s*(.+?)(?:\s+\d{1,2}:\d{2}(?::\d{2})?|\s+\?{1,2}:\?{1,2}:\?{1,2})?(?:\s*$|\s+TRANSIT)",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex ExfilInlineRegex = new(
-        @"(?:EXFIL|EXI\s*T|EX1T|EXIT)\s*0?\d{1,2}\s*(.+?)(?=\s+(?:EXFIL|EXI\s*T|EX1T|EXIT)|\s+TRANSIT|$)",
+        @"(?:EXFIL|EXI\s*T|EX1T|EXIT|EXFILO|EXITO)\s*0?\d{1,2}\s*(.+?)(?=\s+(?:EXFIL|EXI\s*T|EX1T|EXIT|EXFILO|EXITO)\s*0?\d|\s+TRANSIT\s*0?\d|$)",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex TransitInlineRegex = new(
-        @"TRANSIT\s*0?\d{1,2}\s*(.+?)(?=\s+(?:EXFIL|EXI\s*T|EX1T|EXIT)|\s+TRANSIT|$)",
+        @"TRANSIT\s*0?\d{1,2}\s*(.+?)(?=\s+(?:EXFIL|EXI\s*T|EX1T|EXIT|EXFILO|EXITO)\s*0?\d|\s+TRANSIT\s*0?\d|$)",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex NumberedExtractLineRegex = new(
@@ -64,15 +63,39 @@ public class ScreenshotExfilParser
 
         result.PanelDetected = true;
 
-        using Bitmap panelCrop = CropPanelRegion(bitmap, resolution.Profile);
+        int panelBottom = DetectPanelBottom(bitmap, resolution.Profile);
+        using Bitmap panelCrop = CropPanelRegion(bitmap, resolution.Profile, panelBottom);
         using Bitmap ocrBitmap = PrepareForOcr(panelCrop, resolution.Profile.OcrScaleFactor);
         using Bitmap enhancedBitmap = EnhancePanelForOcr(ocrBitmap);
 
-        string ocrText = await RecognizeTextAsync(ocrBitmap);
-        string enhancedOcrText = await RecognizeTextAsync(enhancedBitmap);
-        result.RawOcrText = MergeOcrText(ocrText, enhancedOcrText);
+        var primaryOcr = await RecognizeTextDetailedAsync(ocrBitmap);
+        var enhancedOcr = await RecognizeTextDetailedAsync(enhancedBitmap);
+        result.RawOcrText = MergeOcrText(primaryOcr.Text, enhancedOcr.Text);
 
-        ParseExfilAndTransitNames(result.RawOcrText, result);
+        ParseExfilAndTransitNames(result.RawOcrText, result, MergeOcrLines(primaryOcr.Lines, enhancedOcr.Lines));
+
+        int initialCount = result.ExfilNames.Count + result.TransitNames.Count;
+        if (initialCount <= 3)
+        {
+            int tallBottom = Math.Max(panelBottom, (int)(bitmap.Height * 0.68));
+            if (tallBottom > panelBottom + 8)
+            {
+                using Bitmap tallCrop = CropPanelRegion(bitmap, resolution.Profile, tallBottom);
+                using Bitmap tallOcrBitmap = PrepareForOcr(tallCrop, resolution.Profile.OcrScaleFactor);
+                using Bitmap tallEnhancedBitmap = EnhancePanelForOcr(tallOcrBitmap);
+
+                var tallPrimary = await RecognizeTextDetailedAsync(tallOcrBitmap);
+                var tallEnhanced = await RecognizeTextDetailedAsync(tallEnhancedBitmap);
+                string tallText = MergeOcrText(tallPrimary.Text, tallEnhanced.Text);
+                result.RawOcrText = MergeOcrText(result.RawOcrText, tallText);
+
+                ParseExfilAndTransitNames(
+                    tallText,
+                    result,
+                    MergeOcrLines(tallPrimary.Lines, tallEnhanced.Lines));
+            }
+        }
+
         return result;
     }
 
@@ -91,6 +114,23 @@ public class ScreenshotExfilParser
             return secondary;
 
         return primary + Environment.NewLine + secondary;
+    }
+
+    private static List<string> MergeOcrLines(IEnumerable<string> primary, IEnumerable<string> secondary)
+    {
+        var merged = new List<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string line in primary.Concat(secondary))
+        {
+            string trimmed = line.Trim();
+            if (trimmed.Length == 0 || !seen.Add(trimmed))
+                continue;
+
+            merged.Add(trimmed);
+        }
+
+        return merged;
     }
 
     private static Bitmap LoadBitmap(string imagePath)
@@ -134,10 +174,54 @@ public class ScreenshotExfilParser
                color.G >= color.B + 10;
     }
 
-    private static Bitmap CropPanelRegion(Bitmap bitmap, ScreenshotResolutionProfile profile)
+    private static int DetectPanelBottom(Bitmap bitmap, ScreenshotResolutionProfile profile)
+    {
+        int panelX = Math.Max(0, (int)(bitmap.Width * (1.0 - profile.PanelWidthRatio)));
+        int minHeight = Math.Max(1, (int)(bitmap.Height * profile.PanelHeightRatio));
+        int scanLimit = Math.Min(bitmap.Height, (int)(bitmap.Height * 0.72));
+        int lastTextRow = Math.Max(24, (int)(bitmap.Height * profile.HeaderHeightRatio));
+        int blankRows = 0;
+
+        for (int y = 0; y < scanLimit; y++)
+        {
+            bool rowHasText = false;
+
+            for (int x = panelX; x < bitmap.Width - 2; x += Math.Max(2, (bitmap.Width - panelX) / 80))
+            {
+                Color color = bitmap.GetPixel(x, y);
+                if (IsLikelyPanelText(color) || IsExfilHeaderGreen(color) || IsPanelBackground(color))
+                {
+                    rowHasText = true;
+                    break;
+                }
+            }
+
+            if (rowHasText)
+            {
+                lastTextRow = y;
+                blankRows = 0;
+                continue;
+            }
+
+            blankRows++;
+            if (blankRows >= 28 && y > minHeight)
+                break;
+        }
+
+        return Math.Min(bitmap.Height, Math.Max(minHeight, lastTextRow + 28));
+    }
+
+    private static bool IsPanelBackground(Color color)
+    {
+        int max = Math.Max(color.R, Math.Max(color.G, color.B));
+        int min = Math.Min(color.R, Math.Min(color.G, color.B));
+        return max <= 95 && max - min <= 35;
+    }
+
+    private static Bitmap CropPanelRegion(Bitmap bitmap, ScreenshotResolutionProfile profile, int? bottomY = null)
     {
         int width = Math.Max(1, (int)(bitmap.Width * profile.PanelWidthRatio));
-        int height = Math.Max(1, (int)(bitmap.Height * profile.PanelHeightRatio));
+        int height = bottomY ?? Math.Max(1, (int)(bitmap.Height * profile.PanelHeightRatio));
         int x = Math.Max(0, bitmap.Width - width);
         const int y = 0;
 
@@ -189,28 +273,25 @@ public class ScreenshotExfilParser
         int max = Math.Max(color.R, Math.Max(color.G, color.B));
         int min = Math.Min(color.R, Math.Min(color.G, color.B));
 
-        // White/gray EXIT labels
         if (max >= 165 && max - min <= 90)
             return true;
 
-        // Green header text
         if (color.G >= 140 && color.G >= color.R + 25 && color.G >= color.B + 10)
             return true;
 
-        // Red/orange TRANSIT labels
         if (color.R >= 145 && color.R >= color.G + 25 && color.R >= color.B + 20)
             return true;
 
         return false;
     }
 
-    private static async Task<string> RecognizeTextAsync(Bitmap bitmap)
+    private static async Task<(string Text, List<string> Lines)> RecognizeTextDetailedAsync(Bitmap bitmap)
     {
         OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages()
             ?? OcrEngine.TryCreateFromLanguage(new Windows.Globalization.Language("en"));
 
         if (engine == null)
-            return string.Empty;
+            return (string.Empty, new List<string>());
 
         using var memoryStream = new MemoryStream();
         bitmap.Save(memoryStream, ImageFormat.Png);
@@ -223,32 +304,37 @@ public class ScreenshotExfilParser
             BitmapAlphaMode.Premultiplied);
 
         OcrResult ocrResult = await engine.RecognizeAsync(softwareBitmap);
-        return ocrResult?.Text ?? string.Empty;
+        string text = ocrResult?.Text ?? string.Empty;
+        var lines = ocrResult?.Lines?
+            .Select(line => line.Text?.Trim() ?? string.Empty)
+            .Where(line => line.Length > 0)
+            .ToList() ?? new List<string>();
+
+        return (text, lines);
     }
 
-    private static void ParseExfilAndTransitNames(string ocrText, ScreenshotExfilParseResult result)
+    private static void ParseExfilAndTransitNames(
+        string ocrText,
+        ScreenshotExfilParseResult result,
+        IReadOnlyList<string>? structuredLines = null)
     {
-        if (string.IsNullOrWhiteSpace(ocrText))
+        if (string.IsNullOrWhiteSpace(ocrText) && (structuredLines == null || structuredLines.Count == 0))
             return;
 
         string normalizedText = NormalizeOcrText(ocrText);
 
-        foreach (string line in normalizedText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        IEnumerable<string> lines = structuredLines != null && structuredLines.Count > 0
+            ? structuredLines.Select(NormalizeOcrText)
+            : normalizedText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string line in lines)
         {
             string trimmed = CleanOcrName(line.Trim());
             if (trimmed.Length == 0 || IsIgnoredPanelLine(trimmed))
                 continue;
 
-            Match exfilMatch = ExfilLineRegex.Match(trimmed);
-            if (exfilMatch.Success)
-            {
-                AddUnique(result.ExfilNames, CleanOcrName(exfilMatch.Groups[1].Value));
-                continue;
-            }
-
-            Match transitMatch = TransitLineRegex.Match(trimmed);
-            if (transitMatch.Success)
-                AddUnique(result.TransitNames, CleanOcrName(transitMatch.Groups[1].Value));
+            TryAddExfilFromLine(trimmed, result);
+            TryAddTransitFromLine(trimmed, result);
         }
 
         foreach (Match match in ExfilInlineRegex.Matches(normalizedText))
@@ -257,8 +343,29 @@ public class ScreenshotExfilParser
         foreach (Match match in TransitInlineRegex.Matches(normalizedText))
             AddUnique(result.TransitNames, CleanOcrName(match.Groups[1].Value));
 
-        if (result.ExfilNames.Count == 0)
-            ParseUnlabeledExtractLines(normalizedText, result);
+        ParseUnlabeledExtractLines(normalizedText, result);
+        ParseTransitSectionLines(normalizedText, result);
+    }
+
+    private static void TryAddExfilFromLine(string trimmed, ScreenshotExfilParseResult result)
+    {
+        Match exfilMatch = ExfilLineRegex.Match(trimmed);
+        if (exfilMatch.Success)
+        {
+            AddUnique(result.ExfilNames, CleanOcrName(exfilMatch.Groups[2].Value));
+            return;
+        }
+
+        Match numbered = NumberedExtractLineRegex.Match(trimmed);
+        if (numbered.Success && !trimmed.Contains("TRANSIT", StringComparison.OrdinalIgnoreCase))
+            AddUnique(result.ExfilNames, CleanOcrName(numbered.Groups[2].Value));
+    }
+
+    private static void TryAddTransitFromLine(string trimmed, ScreenshotExfilParseResult result)
+    {
+        Match transitMatch = TransitLineRegex.Match(trimmed);
+        if (transitMatch.Success)
+            AddUnique(result.TransitNames, CleanOcrName(transitMatch.Groups[1].Value));
     }
 
     private static string NormalizeOcrText(string ocrText)
@@ -269,7 +376,11 @@ public class ScreenshotExfilParser
             .Replace("EXI T", "EXIT", StringComparison.OrdinalIgnoreCase)
             .Replace("EX1T", "EXIT", StringComparison.OrdinalIgnoreCase)
             .Replace("EXI1", "EXIT", StringComparison.OrdinalIgnoreCase)
-            .Replace("EX IT", "EXIT", StringComparison.OrdinalIgnoreCase);
+            .Replace("EX IT", "EXIT", StringComparison.OrdinalIgnoreCase)
+            .Replace("EXFILO", "EXFIL0", StringComparison.OrdinalIgnoreCase)
+            .Replace("EXITO", "EXIT0", StringComparison.OrdinalIgnoreCase)
+            .Replace("TRANSI T", "TRANSIT", StringComparison.OrdinalIgnoreCase)
+            .Replace("TRANSI1", "TRANSIT", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsIgnoredPanelLine(string line)
@@ -283,46 +394,83 @@ public class ScreenshotExfilParser
         if (line.Contains("keycard required", StringComparison.OrdinalIgnoreCase))
             return true;
 
-        return line.StartsWith("Find an", StringComparison.OrdinalIgnoreCase);
+        if (line.StartsWith("Find an", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return line.Equals("TRANSIT", StringComparison.OrdinalIgnoreCase) ||
+               line.Equals("EXFIL", StringComparison.OrdinalIgnoreCase) ||
+               line.Equals("EXIT", StringComparison.OrdinalIgnoreCase);
     }
 
     private static void ParseUnlabeledExtractLines(string normalizedText, ScreenshotExfilParseResult result)
     {
         int transitIndex = normalizedText.IndexOf("TRANSIT", StringComparison.OrdinalIgnoreCase);
-        if (transitIndex <= 0)
-            return;
+        string extractSection = transitIndex > 0 ? normalizedText[..transitIndex] : normalizedText;
 
-        string extractSection = normalizedText[..transitIndex];
         foreach (string line in extractSection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
         {
             string trimmed = CleanOcrName(line.Trim());
             if (trimmed.Length == 0 || IsIgnoredPanelLine(trimmed))
                 continue;
 
-            if (ExfilLineRegex.IsMatch(trimmed))
+            if (ExfilLineRegex.IsMatch(trimmed) || NumberedExtractLineRegex.IsMatch(trimmed))
                 continue;
-
-            Match numbered = NumberedExtractLineRegex.Match(trimmed);
-            if (numbered.Success)
-            {
-                AddUnique(result.ExfilNames, CleanOcrName(numbered.Groups[2].Value));
-                continue;
-            }
 
             if (trimmed.Contains("TRANSIT", StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            AddUnique(result.ExfilNames, trimmed);
+            if (LooksLikeExtractName(trimmed))
+                AddUnique(result.ExfilNames, trimmed);
         }
+    }
+
+    private static void ParseTransitSectionLines(string normalizedText, ScreenshotExfilParseResult result)
+    {
+        int transitIndex = normalizedText.IndexOf("TRANSIT", StringComparison.OrdinalIgnoreCase);
+        if (transitIndex < 0)
+            return;
+
+        string transitSection = normalizedText[transitIndex..];
+        foreach (string line in transitSection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            string trimmed = CleanOcrName(line.Trim());
+            if (trimmed.Length == 0 || IsIgnoredPanelLine(trimmed))
+                continue;
+
+            if (TransitLineRegex.IsMatch(trimmed))
+                continue;
+
+            if (trimmed.StartsWith("Transit to ", StringComparison.OrdinalIgnoreCase))
+                AddUnique(result.TransitNames, trimmed);
+
+            if (trimmed.Contains(" to ", StringComparison.OrdinalIgnoreCase) &&
+                trimmed.Contains("Transit", StringComparison.OrdinalIgnoreCase))
+            {
+                AddUnique(result.TransitNames, trimmed);
+            }
+        }
+    }
+
+    private static bool LooksLikeExtractName(string value)
+    {
+        if (value.Length < 3)
+            return false;
+
+        if (!char.IsLetter(value[0]))
+            return false;
+
+        return !value.StartsWith("EXFIL", StringComparison.OrdinalIgnoreCase) &&
+               !value.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string CleanOcrName(string value)
     {
         string cleaned = value.Trim();
         cleaned = Regex.Replace(cleaned, @"^\*+|\*+$", "");
+        cleaned = Regex.Replace(cleaned, @"\s+\d{1,2}:\d{2}(?::\d{2})?.*$", "");
         cleaned = Regex.Replace(cleaned, @"\s+\?{1,2}:\?{1,2}:\?{1,2}.*$", "");
         cleaned = Regex.Replace(cleaned, @"\s{2,}", " ");
-        return cleaned.Trim(' ', '-', ':', '.', ',', '*');
+        return cleaned.Trim(' ', '-', ':', '.', ',', '*', '|');
     }
 
     private static void AddUnique(List<string> names, string value)
