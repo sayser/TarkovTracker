@@ -65,6 +65,7 @@ namespace TarkovTracker
         private static readonly JsonSerializerOptions UserSettingsJsonOptions = new()
         {
             WriteIndented = true,
+            PropertyNameCaseInsensitive = true,
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never
         };
 
@@ -193,6 +194,7 @@ namespace TarkovTracker
             if (_isInitializing)
                 return;
 
+            SyncSaveMarkerFiltersFromUiIfReady();
             SyncMarkerFiltersFromUiIfReady();
 
             string settingsPath = GetUserSettingsPath();
@@ -203,6 +205,14 @@ namespace TarkovTracker
             File.WriteAllText(
                 settingsPath,
                 JsonSerializer.Serialize(_userSettings, UserSettingsJsonOptions));
+        }
+
+        private void SyncSaveMarkerFiltersFromUiIfReady()
+        {
+            if (SaveMarkerFiltersCheckBox == null)
+                return;
+
+            _userSettings.SaveMarkerFilters = SaveMarkerFiltersCheckBox.IsChecked == true;
         }
 
         private void SyncMarkerFiltersFromUiIfReady()
@@ -451,6 +461,7 @@ namespace TarkovTracker
 
             UpdateBtrControlsVisibility();
             UpdateCultistControlsVisibility();
+            ApplyMapSpecificMarkerFiltersFromSaved();
             DrawMapMarkersForCurrentMap();
             PopulateQuestFilterOptions();
             await ApplySearchAndQuestFiltersAsync();
@@ -890,10 +901,9 @@ namespace TarkovTracker
             if (!AreMarkerFilterControlsReady())
                 return;
 
-            MarkerFilterPreferences filters =
-                _userSettings.SaveMarkerFilters && _markerFiltersHaveSavedState
-                    ? _userSettings.MarkerFilters ?? new MarkerFilterPreferences()
-                    : new MarkerFilterPreferences();
+            MarkerFilterPreferences filters = _userSettings.SaveMarkerFilters
+                ? _userSettings.MarkerFilters ?? new MarkerFilterPreferences()
+                : new MarkerFilterPreferences();
 
             ApplyMarkerFilterPreferencesToUi(filters);
         }
@@ -932,6 +942,9 @@ namespace TarkovTracker
             if (!AreMarkerFilterControlsReady())
                 return fallback;
 
+            bool supportsBtr = CurrentMapSupportsBtr();
+            bool supportsCultists = CurrentMapSupportsCultists();
+
             return new MarkerFilterPreferences
             {
                 Labels = IsMarkerCheckBoxChecked(ShowLabelsCheckBox),
@@ -947,10 +960,35 @@ namespace TarkovTracker
                 PmcSpawns = IsMarkerCheckBoxChecked(ShowPmcSpawnsCheckBox),
                 ScavSpawns = IsMarkerCheckBoxChecked(ShowScavSpawnsCheckBox),
                 BossSpawns = IsMarkerCheckBoxChecked(ShowBossSpawnsCheckBox),
-                CultistSpawns = IsMarkerCheckBoxChecked(ShowCultistSpawnsCheckBox),
-                BtrStops = IsMarkerCheckBoxChecked(ShowBtrStopsCheckBox),
+                CultistSpawns = supportsCultists
+                    ? IsMarkerCheckBoxChecked(ShowCultistSpawnsCheckBox)
+                    : fallback.CultistSpawns,
+                BtrStops = supportsBtr
+                    ? IsMarkerCheckBoxChecked(ShowBtrStopsCheckBox)
+                    : fallback.BtrStops,
                 CustomPins = IsMarkerCheckBoxChecked(ShowCustomPinsCheckBox)
             };
+        }
+
+        /// <summary>
+        /// Re-applies saved BTR/cultist toggles after map-specific visibility changes (startup or map switch).
+        /// </summary>
+        private void ApplyMapSpecificMarkerFiltersFromSaved()
+        {
+            if (!_userSettings.SaveMarkerFilters)
+                return;
+
+            MarkerFilterPreferences filters = _userSettings.MarkerFilters ?? new MarkerFilterPreferences();
+
+            _suppressMarkerFilterRefresh = true;
+
+            if (CurrentMapSupportsBtr())
+                ShowBtrStopsCheckBox.IsChecked = filters.BtrStops;
+
+            if (CurrentMapSupportsCultists())
+                ShowCultistSpawnsCheckBox.IsChecked = filters.CultistSpawns;
+
+            _suppressMarkerFilterRefresh = false;
         }
 
         private async System.Threading.Tasks.Task SyncCustomPinsToOverlayAsync()
