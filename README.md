@@ -1,6 +1,6 @@
 # SayserTarkovTracker
 
-A Windows desktop map companion for **Escape from Tarkov**. It displays interactive tactical maps with live player tracking from in-game screenshots, raid exfil highlighting from the **O** key panel, plus extracts, quests, spawns, bosses, cultists, custom pins, hazards, and more — styled with a tactical HUD interface (**v2.6.1**).
+A Windows desktop map companion for **Escape from Tarkov**. It displays interactive tactical maps with live player tracking from in-game screenshots, raid exfil highlighting from the **O** key panel, plus extracts, quests, spawns, bosses, cultists, custom pins, hazards, and more — styled with a tactical HUD interface (**v2.7.2**).
 
 Built with **WPF** (.NET 10) and **WebView2**.
 
@@ -10,7 +10,7 @@ Built with **WPF** (.NET 10) and **WebView2**.
 
 | Main window (Factory) | Settings |
 |-----------------------|----------|
-| ![Main window — map, MARKERS panel, SETTINGS in top bar](docs/screenshots/main-window.png) | ![Settings — screenshot folder, resolution, overlay opacity, About v2.6.1](docs/screenshots/settings.png) |
+| ![Main window — map, MARKERS panel, SETTINGS in top bar](docs/screenshots/main-window.png) | ![Settings — screenshot folder, resolution, overlay opacity, About v2.7.2](docs/screenshots/settings.png) |
 
 | Custom pins | Raid exfil highlights |
 |-------------|------------------------|
@@ -88,7 +88,7 @@ Open **SETTINGS** from the top bar (replaces the old screenshot-folder buttons o
 | **Overlay follow player** | When enabled, each new screenshot recenters the overlay on your position without changing zoom |
 | **Map actions** | **Clear raid exfil highlights** for the current map |
 | **Screenshot maintenance** | **Delete all screenshots** in the configured folder (with confirmation) |
-| **About** | App name and version (**2.6.1**) |
+| **About** | App name and version (**2.7.2**) |
 
 User preferences are stored in **`settings.json`** next to the executable (not in `%AppData%`). This includes screenshot folder, game resolution, overlay options, last selected map, custom pins per map, and the **Save marker selection** flag. Marker toggle states are saved only when that option is enabled in the **MARKERS** panel.
 

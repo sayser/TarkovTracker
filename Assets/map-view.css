@@ -242,6 +242,43 @@ html, body {
     stroke-width: 2;
 }
 
+.hazardOutline-sniper {
+    fill: rgba(255, 87, 34, 0.22);
+    stroke: rgba(255, 87, 34, 0.85);
+}
+
+.hazardOutline-minefield {
+    fill: rgba(255, 193, 7, 0.18);
+    stroke: rgba(255, 193, 7, 0.85);
+}
+
+.mapMarker.search-dimmed {
+    opacity: 0.2;
+}
+
+.mapMarker.search-match {
+    opacity: 1;
+    z-index: 9600;
+}
+
+.mapMarker.search-match .markerLabel {
+    color: #fff9c4;
+    box-shadow: 0 0 8px rgba(255, 249, 196, 0.8);
+}
+
+polygon.search-dimmed {
+    opacity: 0.15;
+}
+
+polygon.search-match {
+    opacity: 1;
+    stroke-width: 3;
+}
+
+.mapMarker.quest-filter-hidden {
+    display: none !important;
+}
+
 @keyframes raidExfilPulse {
     0%, 100% {
         filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px #00e599) drop-shadow(0 0 18px #00e599);
@@ -269,6 +306,31 @@ html, body {
 
 .mapMarker.raid-dimmed {
     opacity: 0.28;
+}
+
+@keyframes switchLinkPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 4px #ffd54f) drop-shadow(0 0 10px #ffb300);
+    }
+    50% {
+        filter: drop-shadow(0 0 8px #ffe082) drop-shadow(0 0 18px #ff9800);
+    }
+}
+
+.mapMarker.switch-linked {
+    z-index: 9600;
+    opacity: 1 !important;
+}
+
+.mapMarker.switch-linked .markerDot {
+    animation: switchLinkPulse 1.2s ease-in-out infinite;
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.mapMarker.switch-linked .markerLabel {
+    color: #ffd54f;
+    background: rgba(90, 60, 0, 0.92);
+    box-shadow: 0 0 10px rgba(255, 213, 79, 0.85);
 }
 
 .mapMarker.transit.raid-available .markerLabel {

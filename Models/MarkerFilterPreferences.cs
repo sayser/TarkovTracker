@@ -10,6 +10,7 @@ public class MarkerFilterPreferences
     public bool SharedExtracts { get; set; } = true;
     public bool Transits { get; set; } = true;
     public bool Hazards { get; set; } = true;
+    public bool HazardZones { get; set; } = true;
     public bool Switches { get; set; } = true;
     public bool PmcSpawns { get; set; }
     public bool ScavSpawns { get; set; }

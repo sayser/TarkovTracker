@@ -75,6 +75,18 @@ public class WebMapMarker
 
     [JsonPropertyName("outline")]
     public List<WebMapOutlinePoint>? Outline { get; set; }
+
+    [JsonPropertyName("switchId")]
+    public string SwitchId { get; set; } = "";
+
+    [JsonPropertyName("linkedSwitchIds")]
+    public List<string> LinkedSwitchIds { get; set; } = new();
+
+    [JsonPropertyName("questSlug")]
+    public string QuestSlug { get; set; } = "";
+
+    [JsonPropertyName("extractId")]
+    public string ExtractId { get; set; } = "";
 }
 
 public class WebMapOutlinePoint
@@ -84,6 +96,15 @@ public class WebMapOutlinePoint
 
     [JsonPropertyName("normalizedY")]
     public double NormalizedY { get; set; }
+}
+
+public class WebQuestFilterPayload
+{
+    [JsonPropertyName("questName")]
+    public string QuestName { get; set; } = "";
+
+    [JsonPropertyName("trader")]
+    public string Trader { get; set; } = "all";
 }
 
 public class WebMarkerClickMessage
@@ -111,4 +132,10 @@ public class WebMarkerClickMessage
 
     [JsonPropertyName("position")]
     public string Position { get; set; } = "";
+
+    [JsonPropertyName("questSlug")]
+    public string QuestSlug { get; set; } = "";
+
+    [JsonPropertyName("linkedSwitchIds")]
+    public List<string> LinkedSwitchIds { get; set; } = new();
 }

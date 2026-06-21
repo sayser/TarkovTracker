@@ -8,13 +8,16 @@
                                                        "id":  "ffb8b37a6390d2c3b00baeee3295492ea1e19a93",
                                                        "name":  "Cellars",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
                                                        "transferItem":  null,
                                                        "position":  {
                                                                         "x":  73.89422,
-                                                                        "y":  -3.2876668,
+                                                                        "y":  -3.2876667999999998,
                                                                         "z":  -29.0818882
                                                                     }
                                                    },
@@ -22,6 +25,9 @@
                                                        "id":  "a11f20d1f462bc4c8f39699e8a59fc0b58b71299",
                                                        "name":  "Gate 3",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -36,6 +42,9 @@
                                                        "id":  "7ae0a08942ce71d8d713ef3628c86619598160f4",
                                                        "name":  "Gate 3",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -50,6 +59,9 @@
                                                        "id":  "7e582daaf3ef18c90132998441c217f246387a06",
                                                        "name":  "Camera Bunker Door",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -64,6 +76,9 @@
                                                        "id":  "cbe6ccd60767142298488227e57ab554cf47cd2e",
                                                        "name":  "Office Window",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -78,6 +93,9 @@
                                                        "id":  "4f953558d3d7bca7bd7b4d40a6429adc34cc1834",
                                                        "name":  "Gate 0",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -92,6 +110,9 @@
                                                        "id":  "7bb46d641d59983a58440a7a58d65933d981c211",
                                                        "name":  "Med Tent Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -106,6 +127,9 @@
                                                        "id":  "1846030b40983ab096b3d1e39f72da5697f39154",
                                                        "name":  "Courtyard Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -120,6 +144,7 @@
                                                        "id":  "3faf0c5c7f9dfe2c4ec9cf029fbe14ede9720cc1",
                                                        "name":  "Smugglers\u0027 Passage",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Ark",
                                                        "switches":  [
 
                                                                     ],
@@ -145,8 +170,10 @@
                                                        "id":  "d0781374be523027a2a8e1edf6fe08449c45c382",
                                                        "name":  "ZB-013",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires switch: ZB-013 Power Switch",
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "ae4bdfc1fc5b30100701158b56ae4d20840e0550",
                                                                             "name":  "ZB-013 Power Switch"
                                                                         }
                                                                     ],
@@ -161,6 +188,7 @@
                                                        "id":  "feafaf9787defedcb6b7ea3da97f342870bc8073",
                                                        "name":  "Dorms V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -181,6 +209,9 @@
                                                        "id":  "02cdf102e32c481d3b5fabcf1dcf3df3962522bb",
                                                        "name":  "ZB-1011",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -195,6 +226,9 @@
                                                        "id":  "7c993e82fe52ccedbdf9591f92e3bf9fe4352a4e",
                                                        "name":  "Crossroads",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -209,6 +243,9 @@
                                                        "id":  "e0e61c2ed23ae5387b02dfc1acb88dab0c83ff95",
                                                        "name":  "Old Gas Station",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -223,6 +260,9 @@
                                                        "id":  "0df2e62edcfb6e0f1c36fd7be585a5850dd83eed",
                                                        "name":  "Trailer Park",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -237,6 +277,9 @@
                                                        "id":  "b113904d09c836e3b6fb937ebd1201f30a5900e6",
                                                        "name":  "RUAF Roadblock",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -251,6 +294,9 @@
                                                        "id":  "372308f8ae6c385c1a1397bf925af53847545a7d",
                                                        "name":  "Military Base CP",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -265,6 +311,9 @@
                                                        "id":  "de953d179a503c836b89f8497600c448b1d7067d",
                                                        "name":  "Passage Between Rocks",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -279,6 +328,9 @@
                                                        "id":  "7097325dad6b074566fc1e7744d8490151b001e7",
                                                        "name":  "Railroad to Military Base",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -293,6 +345,9 @@
                                                        "id":  "977d435f5b1510a2fe4d662a8fc30d7cc19bd90c",
                                                        "name":  "Old Road Gate",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -307,6 +362,9 @@
                                                        "id":  "d048daa472b3806f452fdb3d4991032bab4366d5",
                                                        "name":  "Sniper Roadblock",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -321,6 +379,9 @@
                                                        "id":  "90ab07a4eacd76a88ae6a51bf8c2f17c92828691",
                                                        "name":  "Railroad to Port",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -335,6 +396,9 @@
                                                        "id":  "606fa68466f40d1d349f443bd89df5934097ceaa",
                                                        "name":  "Trailer Park Workers\u0027 Shack",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -349,6 +413,9 @@
                                                        "id":  "299a91e6562ad4d55747ac15f15c9e8608cff9d4",
                                                        "name":  "Railroad to Tarkov",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -363,6 +430,9 @@
                                                        "id":  "8574c32eb626a3e230f454d65b9262d4f9e9fbf8",
                                                        "name":  "RUAF Roadblock",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -377,6 +447,9 @@
                                                        "id":  "1bcdc243701067f1469ee4d177ddde7c53aaecb6",
                                                        "name":  "Warehouse 17",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -391,6 +464,9 @@
                                                        "id":  "8194ee54571a0670e4d5bd0a02bdcb1cbb77a03e",
                                                        "name":  "Factory Shacks",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -405,6 +481,9 @@
                                                        "id":  "3fd0602903f1971d6930874e8f6cd4d754bceb58",
                                                        "name":  "Warehouse 4",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -419,6 +498,9 @@
                                                        "id":  "00e4ba8e84314ddf6878090f2e7d3aaddcb43f53",
                                                        "name":  "Old Gas Station Gate",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -433,6 +515,9 @@
                                                        "id":  "f162159cfa266422af986074b4397587616effcb",
                                                        "name":  "Factory Far Corner",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -447,6 +532,9 @@
                                                        "id":  "988603509e1d1a6d59642e9b6c4514386416053f",
                                                        "name":  "Administration Gate",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -461,6 +549,9 @@
                                                        "id":  "b051486cb850a811e354ac34b2ec5790bd2a12c5",
                                                        "name":  "Railroad Passage (Flare)",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -475,6 +566,9 @@
                                                        "id":  "cbb161149bdb3062b2a27447fbc804385948f671",
                                                        "name":  "Scav Checkpoint",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -489,6 +583,9 @@
                                                        "id":  "88192ee8ec04e9844e35f327d441b74987a182bd",
                                                        "name":  "Boiler Room Basement (Co-op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -503,6 +600,7 @@
                                                        "id":  "311ae28f72d9c9fe3be801b2d503088167e325c3",
                                                        "name":  "Smugglers\u0027 Boat",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Voron",
                                                        "switches":  [
 
                                                                     ],
@@ -523,6 +621,7 @@
                                                        "id":  "908b7d419bb7152858c973b561a1ee7ed5f55a81",
                                                        "name":  "Smugglers\u0027 Bunker (ZB-1012)",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Voron",
                                                        "switches":  [
 
                                                                     ],
@@ -548,6 +647,9 @@
                                                        "id":  "742010f4b5dde77d692c99991e2576fb6c90f351",
                                                        "name":  "Friendship Bridge (Co-Op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -562,6 +664,9 @@
                                                        "id":  "3f08df8a92b8d58e1011741f86a65c317180fef0",
                                                        "name":  "RUAF Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -576,6 +681,9 @@
                                                        "id":  "3c768283f1012c72aa4140252f44c538448eafa7",
                                                        "name":  "ZB-016",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -590,6 +698,9 @@
                                                        "id":  "96ddc4bf8688f90f215226fd5788e1291ed13bfd",
                                                        "name":  "ZB-014",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -604,6 +715,9 @@
                                                        "id":  "e6fd5a732d1fd0662221d75f31f0e2e8021ef4ca",
                                                        "name":  "UN Roadblock",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -618,6 +732,7 @@
                                                        "id":  "64f88a7c564eb38938c7b679f89ff265dfbf2685",
                                                        "name":  "Bridge V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -638,6 +753,9 @@
                                                        "id":  "c0a4ba6cf6476b99f2dcba3a85b21018c4853fe9",
                                                        "name":  "Outskirts",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -652,6 +770,9 @@
                                                        "id":  "9916015e766588eaefa49e1928e2967bd1f53ff8",
                                                        "name":  "Dead Man\u0027s Place",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -666,6 +787,9 @@
                                                        "id":  "46ce7e8018a7220ce3d109ca393afa9c5178bf2e",
                                                        "name":  "Boat",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -680,6 +804,9 @@
                                                        "id":  "cee75741135c2ca663d183991ae86431eb7f4573",
                                                        "name":  "Scav House",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -694,6 +821,9 @@
                                                        "id":  "3a795d4c8fdd97e5166373147d64c6598dfb4488",
                                                        "name":  "Scav Bunker",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -708,6 +838,9 @@
                                                        "id":  "10c4727b4cf24e04f2ea6c6b61242684936e0d98",
                                                        "name":  "Mountain Stash",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -722,6 +855,9 @@
                                                        "id":  "ef2fa5721c6f52097f0cb55ff938b631d241d63c",
                                                        "name":  "Eastern Rocks",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -736,6 +872,9 @@
                                                        "id":  "f5b3db451be4709e1742f7d377f4536ef9c0640e",
                                                        "name":  "Old Railway Depot",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -750,6 +889,9 @@
                                                        "id":  "0f7b5f228a32ab1dbd8544277419521ba1cc5e3b",
                                                        "name":  "UN Roadblock",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -764,6 +906,9 @@
                                                        "id":  "2766656887b738cb1b0a1fcaedf163e30f98b0c9",
                                                        "name":  "RUAF Roadblock",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -778,6 +923,9 @@
                                                        "id":  "e70d314d202e673b96671e810e54cef5657c16ca",
                                                        "name":  "Outskirts",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -792,6 +940,9 @@
                                                        "id":  "98dfbaebc7bedea817c9ea5ec2e36f42a36b7ebf",
                                                        "name":  "Northern UN Roadblock",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -806,6 +957,9 @@
                                                        "id":  "e0dbb9eb8a01eadb9e4610d53ecd65ccd320336c",
                                                        "name":  "Power Line Passage (Flare)",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -820,6 +974,7 @@
                                                        "id":  "6145baca210bf473bb0ce242a54ce1fe82df9bfe",
                                                        "name":  "Railway Bridge to Tarkov",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Minefield map (Woods)",
                                                        "switches":  [
 
                                                                     ],
@@ -845,6 +1000,9 @@
                                                        "id":  "3a8cfedc77147d2e438f8a2c55a01ae3d6defb25",
                                                        "name":  "Armored Train",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -859,6 +1017,7 @@
                                                        "id":  "39a8452ee1c2a3b68737781843c98e69ed1a59aa",
                                                        "name":  "Road to Military Base V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -879,6 +1038,9 @@
                                                        "id":  "a04ce346b08f0cea9faebb65d86a7b7797e2f25d",
                                                        "name":  "Side Tunnel (Co-Op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -893,6 +1055,9 @@
                                                        "id":  "d76677800a142f800df6709b3b22946aeff43253",
                                                        "name":  "Mountain Pass",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -907,6 +1072,9 @@
                                                        "id":  "2cdd9d1604ebe77b3fa8bf1461530ca5b3551d8f",
                                                        "name":  "Path to Shoreline",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -921,6 +1089,9 @@
                                                        "id":  "5c81e25f20e4784c348357ce1a0eb1100ad0a417",
                                                        "name":  "Path to Shoreline",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -935,6 +1106,9 @@
                                                        "id":  "000e0a2d35821648d27c6479d9358b0d227c6804",
                                                        "name":  "Northern Checkpoint",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -949,6 +1123,9 @@
                                                        "id":  "7d6c864aa862997ba573be0fcf47b118e253d1e1",
                                                        "name":  "Southern Road",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -963,6 +1140,9 @@
                                                        "id":  "6298212fb861936bdc49e266e741b5675324642f",
                                                        "name":  "Southern Road Landslide",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -977,6 +1157,9 @@
                                                        "id":  "e10a9500d83d8ccb3cc0b466179237aab352f4b3",
                                                        "name":  "Hideout Under the Landing Stage",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -991,6 +1174,9 @@
                                                        "id":  "91f4f4548a1dbad8913ad4178a008efa7b68a28f",
                                                        "name":  "Scav Hideout at the Grotto",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1005,6 +1191,9 @@
                                                        "id":  "cc4bb53226a9cc3578662bac1a6b9dc9a0fba3bc",
                                                        "name":  "Industrial Zone Gates",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1019,6 +1208,7 @@
                                                        "id":  "86689a1e06268028c220b923fd7c676d7f9497dd",
                                                        "name":  "Passage by the Lake",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Minefield map (Lighthouse)",
                                                        "switches":  [
 
                                                                     ],
@@ -1044,6 +1234,7 @@
                                                        "id":  "e95d3547939574dfb73ce20064c5aff811bf02ea",
                                                        "name":  "Road to North V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -1064,6 +1255,9 @@
                                                        "id":  "97440eb4ab5a337942dc616f5dde5905adadd627",
                                                        "name":  "Road to Customs",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1078,6 +1272,9 @@
                                                        "id":  "57d9c15c96a8221867b52676d889e26a994b9512",
                                                        "name":  "Railway Bridge",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1092,6 +1289,9 @@
                                                        "id":  "5c32b0d555293798312b3a4bd805b34987b5f576",
                                                        "name":  "Tunnel",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1106,6 +1306,9 @@
                                                        "id":  "11890c73b821b558b2198881ae9659c426a6b289",
                                                        "name":  "Path to Lighthouse",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1120,6 +1323,9 @@
                                                        "id":  "5111952a9fb5c265a38886216302756c2b2b819f",
                                                        "name":  "Road to Customs",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1134,6 +1340,9 @@
                                                        "id":  "52b4672a43e470435ec4722b09571d0bf7724f7e",
                                                        "name":  "Lighthouse",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1148,6 +1357,9 @@
                                                        "id":  "a3cd7a839e550508ed301f4bc1725c2e2f33a0b7",
                                                        "name":  "Ruined Road",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1162,6 +1374,9 @@
                                                        "id":  "175520fd8ce745c377fea12ac3b38690e371ab24",
                                                        "name":  "East Wing Gym Entrance",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1176,6 +1391,9 @@
                                                        "id":  "8ef2d534d0db570a392ebc4486fad51eefdfa2d6",
                                                        "name":  "Admin Basement",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1190,6 +1408,9 @@
                                                        "id":  "c5ae90597356b707d9d1d9522efe7a24fe7d4b71",
                                                        "name":  "Smugglers\u0027 Path (Co-op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1204,6 +1425,9 @@
                                                        "id":  "d21fd4e674ea08152c99c97fbe031b71269c58d6",
                                                        "name":  "Pier Boat",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1218,6 +1442,9 @@
                                                        "id":  "efc0e77c1e0a83ff35aa27d8a091e31e770338ec",
                                                        "name":  "Climber\u0027s Trail",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1232,6 +1459,7 @@
                                                        "id":  "b4ff87efb1c1450520552d27addab7793688d475",
                                                        "name":  "Mountain Bunker",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Heartbeat",
                                                        "switches":  [
 
                                                                     ],
@@ -1257,6 +1485,9 @@
                                                        "id":  "c5a30892ba8b44107663736aaeca1a3f7ff61391",
                                                        "name":  "Armored Train",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1271,11 +1502,17 @@
                                                        "id":  "6b678e71f8042cf7af291a87bcd1e6b629ff8b5a",
                                                        "name":  "D-2",
                                                        "faction":  "pmc",
+                                                       "requirements":  [
+                                                                            "Requires switch: D-2 Door Switch",
+                                                                            "Requires switch: D-2 Power Switch"
+                                                                        ],
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "fa1f22e776e4724582eb1dbb18ae864a9303cc5a",
                                                                             "name":  "D-2 Door Switch"
                                                                         },
                                                                         {
+                                                                            "id":  "9cad024bc31223f02f7296c3cb1834c5f6fa2fe2",
                                                                             "name":  "D-2 Power Switch"
                                                                         }
                                                                     ],
@@ -1290,8 +1527,10 @@
                                                        "id":  "bf8015e63fa543ce72fe16f5c3476be29ba80fcc",
                                                        "name":  "Bunker Hermetic Door",
                                                        "faction":  "shared",
+                                                       "requirements":  "Requires switch: Bunker Hermetic Door Power Switch",
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "2c4a9ff1d031afefbd0965b189f58e3834cdb367",
                                                                             "name":  "Bunker Hermetic Door Power Switch"
                                                                         }
                                                                     ],
@@ -1306,6 +1545,9 @@
                                                        "id":  "6eb9d336eb71fbf68c7d809b55dec62ec89e7627",
                                                        "name":  "Cliff Descent",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1320,6 +1562,9 @@
                                                        "id":  "acd6a6b60241f90925084d8f608b89ba7a459fdb",
                                                        "name":  "Scav Lands (Co-Op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1334,6 +1579,9 @@
                                                        "id":  "4cd3f8f23a3092756fb509287ccc5332aeea6453",
                                                        "name":  "Sewer Manhole",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1348,6 +1596,9 @@
                                                        "id":  "e50b50945f4e27556cec43815504e61ef26493d1",
                                                        "name":  "Hole in the Wall by the Mountains",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1362,6 +1613,9 @@
                                                        "id":  "adfd835074e6d2abf54127650c036eb1975e0c40",
                                                        "name":  "Heating Pipe",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1376,6 +1630,9 @@
                                                        "id":  "fe060ae84e549f3a3d04647f866c5286f29f966d",
                                                        "name":  "Depot Hermetic Door",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1390,6 +1647,9 @@
                                                        "id":  "a61497fa1b52d87d04036733c44b8477f92e1332",
                                                        "name":  "Checkpoint Fence",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1404,6 +1664,7 @@
                                                        "id":  "870fee41d9fe39a659dc9d79008e3965629bbba0",
                                                        "name":  "Exit to Woods",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Minefield map (Reserve)",
                                                        "switches":  [
 
                                                                     ],
@@ -1429,6 +1690,9 @@
                                                        "id":  "2a589e01386c564a296894e93a3aaf18ec53207d",
                                                        "name":  "Emercom Checkpoint",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1443,6 +1707,9 @@
                                                        "id":  "fdc29c48395f3b30a7b2ba8ed645cbebfe69e539",
                                                        "name":  "Railway Exfil",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1457,6 +1724,7 @@
                                                        "id":  "1abefb699e1a8304defcd8b41dcbbeee14adde52",
                                                        "name":  "Power Station V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -1477,6 +1745,9 @@
                                                        "id":  "0c3fb47380ded5e2af6a0fc90611ee0abda60f69",
                                                        "name":  "Scav Camp (Co-Op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1491,6 +1762,9 @@
                                                        "id":  "9685be261b82bedb2d9298cc69cd1f282e250096",
                                                        "name":  "Hole in the Fence",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1505,8 +1779,10 @@
                                                        "id":  "9570d4e280d97bd1a43756135036f3212eb6d8a8",
                                                        "name":  "Saferoom Exfil",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires switch: Saferoom Exfil Switch",
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "42d13e53ae13417e3ee1dab2606e9b2fa4ff6147",
                                                                             "name":  "Saferoom Exfil Switch"
                                                                         }
                                                                     ],
@@ -1526,6 +1802,9 @@
                                                        "id":  "8fcf0902c03e68a2201173fc1fb9ba62376353a7",
                                                        "name":  "Entrance to Catacombs",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1540,6 +1819,9 @@
                                                        "id":  "14828b7f158d3d3c623ad25f7a21f59bebb15e68",
                                                        "name":  "Ventilation Shaft",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1554,6 +1836,9 @@
                                                        "id":  "81520cac6bc2000d30eb8d1adc403774d8e6ec93",
                                                        "name":  "Sewer Manhole",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1568,6 +1853,9 @@
                                                        "id":  "62b57ca54c93d9004db81f424db031efa2b0e7a9",
                                                        "name":  "Near Kamchatskaya Arch",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1582,6 +1870,9 @@
                                                        "id":  "a92c7dcc94b188316921781856aa7a15fb4a4ebc",
                                                        "name":  "Cardinal Apartment Complex Parking",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1596,6 +1887,9 @@
                                                        "id":  "2f79c92d99215405c202d8b7f1e6eace137f9b5f",
                                                        "name":  "Klimov Shopping Mall Exfil",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1610,6 +1904,9 @@
                                                        "id":  "65f6067829924e26e0cb31d4ac24fee1870ec944",
                                                        "name":  "Courtyard",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1624,6 +1921,7 @@
                                                        "id":  "264ee7ea338658549942113cbbf0a6ea31402975",
                                                        "name":  "Primorsky Ave Taxi V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -1644,6 +1942,9 @@
                                                        "id":  "cb867ea360a89dbc48694c43d193553d564529f9",
                                                        "name":  "Stylobate Building Elevator",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1658,6 +1959,9 @@
                                                        "id":  "99e05bbf5d6f6dad97773774af735e37ae3edd44",
                                                        "name":  "Crash Site",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1672,6 +1976,9 @@
                                                        "id":  "974e40db5a7ac4d1937688eb6415b2333f9a3766",
                                                        "name":  "Sewer River",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1686,6 +1993,9 @@
                                                        "id":  "29cd42c5025edb6a619dd961fbc20ad639127189",
                                                        "name":  "Damaged House",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1700,6 +2010,9 @@
                                                        "id":  "59f13279288d9ac630955c14dc3368b492061e7c",
                                                        "name":  "Collapsed Crane",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1714,6 +2027,9 @@
                                                        "id":  "19b2c9157d56629da496df0bc42dbe5c49439e4c",
                                                        "name":  "Klimov Street (Flare)",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1728,6 +2044,9 @@
                                                        "id":  "d830108cdf0fcd33b785ca39d380255658905371",
                                                        "name":  "Pinewood Basement (Co-Op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1742,6 +2061,9 @@
                                                        "id":  "b17b3bec8b22bdd99d6e9589ed0d9a41f2f6aac8",
                                                        "name":  "Expo Checkpoint",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1756,6 +2078,7 @@
                                                        "id":  "787c7f07f2b19b39ad8ba5a14ae69c10088191fd",
                                                        "name":  "Smugglers\u0027 Basement",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Onyx",
                                                        "switches":  [
 
                                                                     ],
@@ -1781,13 +2104,16 @@
                                                        "id":  "643d074d8a95529177d383c0e27e059d2a254c70",
                                                        "name":  "Cellars",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
                                                        "transferItem":  null,
                                                        "position":  {
                                                                         "x":  73.89422,
-                                                                        "y":  -3.2876668,
+                                                                        "y":  -3.2876667999999998,
                                                                         "z":  -29.0818882
                                                                     }
                                                    },
@@ -1795,6 +2121,9 @@
                                                        "id":  "6ddb0a6e31ac100768fe60b943a91dbd3964add9",
                                                        "name":  "Gate 3",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1809,6 +2138,9 @@
                                                        "id":  "63a28bc225fda155ccb1296183390a66f5ec1656",
                                                        "name":  "Gate 3",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1823,6 +2155,9 @@
                                                        "id":  "34ca47a2a65d86c7f01e869fe2defe64472ec3a1",
                                                        "name":  "Camera Bunker Door",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1837,6 +2172,9 @@
                                                        "id":  "bf04ff7aa3750cb911270683229e040c1ccb332f",
                                                        "name":  "Office Window",
                                                        "faction":  "scav",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1851,6 +2189,9 @@
                                                        "id":  "10676217239aba7a443a63588b6b2db412698686",
                                                        "name":  "Gate 0",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1865,6 +2206,9 @@
                                                        "id":  "5419b6a16b3634cd53c4d73360342ad4e2b3e28d",
                                                        "name":  "Med Tent Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1879,6 +2223,9 @@
                                                        "id":  "e4d3c8e8140d23aa0c481adb309495cf8ec7b0c9",
                                                        "name":  "Courtyard Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1893,6 +2240,7 @@
                                                        "id":  "3ce3124fcf5a3093c8004c903dd1eb7f6669c23c",
                                                        "name":  "Smugglers\u0027 Passage",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Ark",
                                                        "switches":  [
 
                                                                     ],
@@ -1918,14 +2266,22 @@
                                                        "id":  "ed029f26c9d60bf00d926b4d7e7876b0591b411a",
                                                        "name":  "Medical Block Elevator",
                                                        "faction":  "shared",
+                                                       "requirements":  [
+                                                                            "Requires switch: Med Elevator Extract Button",
+                                                                            "Requires switch: Med Elevator Call Button",
+                                                                            "Requires switch: Med Elevator Power Button"
+                                                                        ],
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "5077fd224eb1bb588b65e4d3c0b4b5719bdebb66",
                                                                             "name":  "Med Elevator Extract Button"
                                                                         },
                                                                         {
+                                                                            "id":  "d1d16f043cea7be35b2729c5e1e1dd648c6dee13",
                                                                             "name":  "Med Elevator Call Button"
                                                                         },
                                                                         {
+                                                                            "id":  "014e9122e0fad99bcff6f93161712c3c6e1a2a75",
                                                                             "name":  "Med Elevator Power Button"
                                                                         }
                                                                     ],
@@ -1940,14 +2296,22 @@
                                                        "id":  "4cfc8fb5003e428d6cb9f8492690068afba50c71",
                                                        "name":  "Cargo Elevator",
                                                        "faction":  "shared",
+                                                       "requirements":  [
+                                                                            "Requires switch: Cargo Elevator Extract Button",
+                                                                            "Requires switch: Cargo Elevator Call Button",
+                                                                            "Requires switch: Cargo Elevator Power Button"
+                                                                        ],
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "558a518a272f611d2e6879b917adb407f428977f",
                                                                             "name":  "Cargo Elevator Extract Button"
                                                                         },
                                                                         {
+                                                                            "id":  "8e6aa12e37d1b09a56e1ae19ab203832b0e78df9",
                                                                             "name":  "Cargo Elevator Call Button"
                                                                         },
                                                                         {
+                                                                            "id":  "c39cf1e7caac3b830c00b539ee12dfddeb061e2b",
                                                                             "name":  "Cargo Elevator Power Button"
                                                                         }
                                                                     ],
@@ -1962,14 +2326,22 @@
                                                        "id":  "1a5ae89d5401d277f8b317c18951dfe0e1bfd695",
                                                        "name":  "Main Elevator",
                                                        "faction":  "shared",
+                                                       "requirements":  [
+                                                                            "Requires switch: Main Elevator Extract Button",
+                                                                            "Requires switch: Main Elevator Call Button",
+                                                                            "Requires switch: Main Elevator Power Button"
+                                                                        ],
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "89170f110a27deb607f63b2382f28c25ba75e861",
                                                                             "name":  "Main Elevator Extract Button"
                                                                         },
                                                                         {
+                                                                            "id":  "72848c177c54e2913e7d0259f23fba929d14ebf5",
                                                                             "name":  "Main Elevator Call Button"
                                                                         },
                                                                         {
+                                                                            "id":  "911ef57b76415c1d42fdba3b5c8fdb587dd229a7",
                                                                             "name":  "Main Elevator Power Button"
                                                                         }
                                                                     ],
@@ -1984,6 +2356,9 @@
                                                        "id":  "761dedf3fefaf3526e0ce19c7d7b1a3d494fce8a",
                                                        "name":  "Ventilation Shaft",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -1998,11 +2373,17 @@
                                                        "id":  "c846e13f4bf7afe28c0cf214bd9e7b4685ba592f",
                                                        "name":  "Sewage Conduit",
                                                        "faction":  "pmc",
+                                                       "requirements":  [
+                                                                            "Requires switch: Water Level Switch",
+                                                                            "Requires switch: Sewage Conduit Pump Button"
+                                                                        ],
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "e7096cec97efb58f59f78f048792235f89318a94",
                                                                             "name":  "Water Level Switch"
                                                                         },
                                                                         {
+                                                                            "id":  "a948c3ba250ffcaaa508230d0b3392bf09cb6964",
                                                                             "name":  "Sewage Conduit Pump Button"
                                                                         }
                                                                     ],
@@ -2017,8 +2398,10 @@
                                                        "id":  "c5c6f818755ac844b4723b1a2cf057569da410ee",
                                                        "name":  "Parking Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires switch: Parking Gate Switch",
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "07fe694c3915c1363b5fa1faa604c68fe5849aba",
                                                                             "name":  "Parking Gate Switch"
                                                                         }
                                                                     ],
@@ -2033,8 +2416,10 @@
                                                        "id":  "6499ac7374cd238366b977944e305a08afd2e9e3",
                                                        "name":  "Hangar Gate",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires switch: Hangar Gate Switch",
                                                        "switches":  [
                                                                         {
+                                                                            "id":  "40ec0101fbf68e6d1b762a72080b9b9b9c91f6f1",
                                                                             "name":  "Hangar Gate Switch"
                                                                         }
                                                                     ],
@@ -2054,6 +2439,7 @@
                                                        "id":  "d6870dda31937ff93662ce903afe1099b24011a1",
                                                        "name":  "Police Cordon V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -2074,6 +2460,9 @@
                                                        "id":  "549ceec177747468ebe86bcfd5a486d1dce9ed64",
                                                        "name":  "Emercom Checkpoint",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2088,6 +2477,9 @@
                                                        "id":  "118fa7e3eae47190871eb4ea20d4f3ca2718b73f",
                                                        "name":  "Scav Checkpoint (Co-op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2102,6 +2494,9 @@
                                                        "id":  "ab623005251ffcd3603a5df2610917a998d9a17e",
                                                        "name":  "Nakatani Basement Stairs",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2116,6 +2511,9 @@
                                                        "id":  "89ff19116feeafdf4a2b4e538cafb5364ffbe862",
                                                        "name":  "Mira Ave (Flare)",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2130,6 +2528,7 @@
                                                        "id":  "122676fe448d426d085e9516114534966a69c3ff",
                                                        "name":  "Tartowers Sales Office",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Adaptation",
                                                        "switches":  [
 
                                                                     ],
@@ -2155,6 +2554,7 @@
                                                        "id":  "78b945ec320190d896a16bda3066892d9368bf17",
                                                        "name":  "Police Cordon V-Ex",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Roubles (x20000)",
                                                        "switches":  [
 
                                                                     ],
@@ -2175,6 +2575,9 @@
                                                        "id":  "c812e0bac1d630c34af374428e34cf10dc344e9b",
                                                        "name":  "Emercom Checkpoint",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2189,6 +2592,9 @@
                                                        "id":  "4fdf4eeb9e65607d68760103109e9e72dd5d816e",
                                                        "name":  "Scav Checkpoint (Co-op)",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2203,6 +2609,9 @@
                                                        "id":  "1bb328c35dbf9c2127defe6df5a48c630ece92a1",
                                                        "name":  "Nakatani Basement Stairs",
                                                        "faction":  "shared",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2217,6 +2626,9 @@
                                                        "id":  "d9e23573110e4fe1dbe4a47bc3ba7e316e09cfbc",
                                                        "name":  "Mira Ave (Flare)",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2231,6 +2643,7 @@
                                                        "id":  "695d24d4deca922cbc5d82636c6c227d310a03e5",
                                                        "name":  "Tartowers Sales Office",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Note with code word Adaptation",
                                                        "switches":  [
 
                                                                     ],
@@ -2256,6 +2669,9 @@
                                                        "id":  "145db8cb7d81891137f780e183901f601a461127",
                                                        "name":  "The Way Up",
                                                        "faction":  "pmc",
+                                                       "requirements":  {
+
+                                                                        },
                                                        "switches":  [
 
                                                                     ],
@@ -2270,6 +2686,7 @@
                                                        "id":  "7c1c38af52a07d10fbcbc9a811db636d36e9818b",
                                                        "name":  "Ariadne\u0027s Path",
                                                        "faction":  "pmc",
+                                                       "requirements":  "Requires item: Ariadne symbol key",
                                                        "switches":  [
 
                                                                     ],

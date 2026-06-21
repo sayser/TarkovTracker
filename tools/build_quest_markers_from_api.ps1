@@ -34,6 +34,7 @@ $query = @'
 query {
   tasks {
     name
+    normalizedName
     trader { name }
     minPlayerLevel
     objectives {
@@ -73,6 +74,7 @@ $byMap = @{}
 foreach ($task in $response.data.tasks) {
     $trader = if ($task.trader.name) { [string]$task.trader.name } else { '' }
     $level = [int]$task.minPlayerLevel
+    $questSlug = if ($task.normalizedName) { [string]$task.normalizedName } else { '' }
 
     foreach ($obj in $task.objectives) {
         $objectiveType = [string]$obj.__typename
@@ -125,6 +127,7 @@ foreach ($task in $response.data.tasks) {
             $y = if ($null -ne $loc.position.y) { [double]$loc.position.y } else { 0.0 }
             $marker = [ordered]@{
                 quest          = $task.name
+                questSlug      = $questSlug
                 objectiveType  = $objectiveType
                 category       = $category
                 iconType       = $category

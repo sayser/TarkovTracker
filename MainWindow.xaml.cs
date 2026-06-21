@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using TarkovTracker.Models;
 using TarkovTracker.Services;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -44,8 +45,10 @@ namespace TarkovTracker
         private DateTime _lastProcessedTime = DateTime.MinValue;
 
         private double? _lastGameX;
+        private double? _lastGameY;
         private double? _lastGameZ;
         private double? _lastDirection;
+        private bool _suppressQuestFilterRefresh;
 
         private bool _webViewReady = false;
         private bool _suppressMapLevelRefresh = false;
@@ -56,6 +59,8 @@ namespace TarkovTracker
         private bool _markerFiltersHaveSavedState;
         private bool _suppressMapSelectionPersistence;
         private bool _isInitializing;
+        private string? _lastQuestTarkovDevUrl;
+        private string? _lastQuestWikiUrl;
 
         private static readonly JsonSerializerOptions UserSettingsJsonOptions = new()
         {
@@ -104,6 +109,7 @@ namespace TarkovTracker
                 StatusText.Text = _mapData.LastStatusMessage;
 
             ApplySaveMarkerFiltersSettingToUi();
+            ApplyAutoSelectFloorSettingToUi();
             ApplyMarkerFiltersForSession();
 
             _suppressMarkerFilterRefresh = false;
@@ -114,11 +120,6 @@ namespace TarkovTracker
             UpdateScreenshotMonitoringStatus();
 
             Closing += (_, _) => SaveUserSettings();
-        }
-
-        private string LoadSavedScreenshotFolder()
-        {
-            return _userSettings.ScreenshotFolder;
         }
 
         private void TryMigrateLegacySettingsFile()
@@ -246,38 +247,38 @@ namespace TarkovTracker
                 return;
 
             _userSettings.LastSelectedMap = mapFileName;
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         private void SaveScreenshotFolder(string folder)
         {
             _userSettings.ScreenshotFolder = folder;
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         internal void ApplyGameResolutionPreset(string preset)
         {
             _userSettings.GameResolutionPreset = string.IsNullOrWhiteSpace(preset) ? "auto" : preset;
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         internal void ApplyOverlayDefaultOpacityPercent(double percent)
         {
             _userSettings.OverlayDefaultOpacityPercent = Math.Clamp(percent, 20, 100);
-            SaveUserSettings();
+              SaveUserSettings();
             _overlayWindow?.ApplyDefaultOpacityPercent(_userSettings.OverlayDefaultOpacityPercent);
         }
 
         internal void ApplyOverlayCenterOnPlayer(bool enabled)
         {
             _userSettings.OverlayCenterOnPlayer = enabled;
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         internal void ApplyScreenshotParsingEnabled(bool enabled)
         {
             _userSettings.ScreenshotParsingEnabled = enabled;
-            SaveUserSettings();
+              SaveUserSettings();
             UpdateScreenshotMonitoringStatus();
         }
 
@@ -409,6 +410,11 @@ namespace TarkovTracker
 
         private async void MapComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            await RunSafeAsync(LoadSelectedMapAsync, "Map load");
+        }
+
+        private async Task LoadSelectedMapAsync()
+        {
             if (MapComboBox.SelectedItem is not ComboBoxItem item)
                 return;
 
@@ -446,9 +452,11 @@ namespace TarkovTracker
             UpdateBtrControlsVisibility();
             UpdateCultistControlsVisibility();
             DrawMapMarkersForCurrentMap();
+            PopulateQuestFilterOptions();
+            await ApplySearchAndQuestFiltersAsync();
             await ApplyCustomPinsToMapAsync();
             RedrawLastMarker();
-            _ = SyncOverlayToCurrentMapAsync();
+            await SyncOverlayToCurrentMapAsync();
 
             StatusText.Text = _currentMapConfig == null
                 ? $"Loaded map: {mapFileName}. No config found."
@@ -560,12 +568,48 @@ namespace TarkovTracker
                 if (!string.IsNullOrWhiteSpace(marker.Position))
                     details.Add($"Position: {marker.Position}");
 
+                if (string.Equals(marker.MarkerType, "extract", StringComparison.OrdinalIgnoreCase) &&
+                    marker.LinkedSwitchIds is { Count: > 0 })
+                {
+                    details.Add("Linked switches highlighted on map");
+                }
+
                 SelectedMarkerDetailsText.Text = string.Join(Environment.NewLine, details);
+
+                if (string.Equals(marker.MarkerType, "quest", StringComparison.OrdinalIgnoreCase))
+                {
+                    string questDisplayName = !string.IsNullOrWhiteSpace(marker.ZoneName)
+                        ? marker.ZoneName
+                        : marker.Name;
+
+                    _lastQuestTarkovDevUrl = !string.IsNullOrWhiteSpace(marker.QuestSlug)
+                        ? TarkovDevLinks.BuildTaskUrlFromSlug(marker.QuestSlug)
+                        : TarkovDevLinks.BuildTaskUrl(questDisplayName);
+                    _lastQuestWikiUrl = TarkovDevLinks.BuildWikiUrl(questDisplayName);
+                    QuestLinkPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    _lastQuestTarkovDevUrl = null;
+                    _lastQuestWikiUrl = null;
+                    QuestLinkPanel.Visibility = Visibility.Collapsed;
+                }
+
+                if (string.Equals(marker.MarkerType, "extract", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (marker.LinkedSwitchIds is { Count: > 0 })
+                        _ = HighlightLinkedSwitchesAsync(marker.LinkedSwitchIds);
+                    else
+                        _ = ClearLinkedSwitchHighlightsAsync();
+                }
             }
             catch (Exception ex)
             {
                 SelectedMarkerNameText.Text = "Marker read error";
                 SelectedMarkerDetailsText.Text = ex.Message;
+                _lastQuestTarkovDevUrl = null;
+                _lastQuestWikiUrl = null;
+                QuestLinkPanel.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -755,6 +799,7 @@ namespace TarkovTracker
                 QuestItems = ShowQuestItemsCheckBox?.IsChecked == true,
                 QuestObjectives = ShowQuestObjectivesCheckBox?.IsChecked == true,
                 Hazards = ShowHazardsCheckBox?.IsChecked == true,
+                HazardZones = ShowHazardZonesCheckBox?.IsChecked == true,
                 Switches = ShowSwitchesCheckBox?.IsChecked == true,
                 BtrStops = supportsBtr && ShowBtrStopsCheckBox?.IsChecked == true,
                 CustomPins = ShowCustomPinsCheckBox?.IsChecked == true
@@ -802,7 +847,7 @@ namespace TarkovTracker
                 })
                 .ToList();
 
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         private async System.Threading.Tasks.Task ApplyCustomPinsToMapAsync()
@@ -832,6 +877,14 @@ namespace TarkovTracker
             SaveMarkerFiltersCheckBox.IsChecked = _userSettings.SaveMarkerFilters;
         }
 
+        private void ApplyAutoSelectFloorSettingToUi()
+        {
+            if (AutoSelectFloorCheckBox == null)
+                return;
+
+            AutoSelectFloorCheckBox.IsChecked = _userSettings.AutoSelectFloorFromPlayerHeight;
+        }
+
         private void ApplyMarkerFiltersForSession()
         {
             if (!AreMarkerFilterControlsReady())
@@ -857,6 +910,7 @@ namespace TarkovTracker
             if (ShowSharedExtractsCheckBox != null) ShowSharedExtractsCheckBox.IsChecked = filters.SharedExtracts;
             if (ShowTransitsCheckBox != null) ShowTransitsCheckBox.IsChecked = filters.Transits;
             if (ShowHazardsCheckBox != null) ShowHazardsCheckBox.IsChecked = filters.Hazards;
+            if (ShowHazardZonesCheckBox != null) ShowHazardZonesCheckBox.IsChecked = filters.HazardZones;
             if (ShowSwitchesCheckBox != null) ShowSwitchesCheckBox.IsChecked = filters.Switches;
             if (ShowPmcSpawnsCheckBox != null) ShowPmcSpawnsCheckBox.IsChecked = filters.PmcSpawns;
             if (ShowScavSpawnsCheckBox != null) ShowScavSpawnsCheckBox.IsChecked = filters.ScavSpawns;
@@ -869,11 +923,6 @@ namespace TarkovTracker
 
             if (_webViewReady)
                 _ = ApplyMarkerVisibility();
-        }
-
-        private void PersistMarkerFiltersFromUi()
-        {
-            SaveUserSettings();
         }
 
         private MarkerFilterPreferences ReadMarkerFiltersFromUi()
@@ -893,6 +942,7 @@ namespace TarkovTracker
                 SharedExtracts = IsMarkerCheckBoxChecked(ShowSharedExtractsCheckBox),
                 Transits = IsMarkerCheckBoxChecked(ShowTransitsCheckBox),
                 Hazards = IsMarkerCheckBoxChecked(ShowHazardsCheckBox),
+                HazardZones = IsMarkerCheckBoxChecked(ShowHazardZonesCheckBox),
                 Switches = IsMarkerCheckBoxChecked(ShowSwitchesCheckBox),
                 PmcSpawns = IsMarkerCheckBoxChecked(ShowPmcSpawnsCheckBox),
                 ScavSpawns = IsMarkerCheckBoxChecked(ShowScavSpawnsCheckBox),
@@ -1016,6 +1066,7 @@ namespace TarkovTracker
             ShowSharedExtractsCheckBox.IsChecked = true;
             ShowTransitsCheckBox.IsChecked = true;
             ShowHazardsCheckBox.IsChecked = true;
+            ShowHazardZonesCheckBox.IsChecked = true;
             ShowSwitchesCheckBox.IsChecked = true;
             ShowPmcSpawnsCheckBox.IsChecked = true;
             ShowScavSpawnsCheckBox.IsChecked = true;
@@ -1033,7 +1084,7 @@ namespace TarkovTracker
 
             _suppressMarkerFilterRefresh = false;
             _ = ApplyMarkerVisibility();
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         private void HideAllMarkers_Click(object sender, RoutedEventArgs e)
@@ -1048,6 +1099,7 @@ namespace TarkovTracker
             ShowSharedExtractsCheckBox.IsChecked = false;
             ShowTransitsCheckBox.IsChecked = false;
             ShowHazardsCheckBox.IsChecked = false;
+            ShowHazardZonesCheckBox.IsChecked = false;
             ShowSwitchesCheckBox.IsChecked = false;
             ShowPmcSpawnsCheckBox.IsChecked = false;
             ShowScavSpawnsCheckBox.IsChecked = false;
@@ -1058,7 +1110,7 @@ namespace TarkovTracker
 
             _suppressMarkerFilterRefresh = false;
             _ = ApplyMarkerVisibility();
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         private async void MarkerFilter_Changed(object sender, RoutedEventArgs e)
@@ -1066,8 +1118,11 @@ namespace TarkovTracker
             if (_isInitializing || _suppressMarkerFilterRefresh || !AreMarkerFilterControlsReady())
                 return;
 
-            await ApplyMarkerVisibility();
-            SaveUserSettings();
+            await RunSafeAsync(async () =>
+            {
+                await ApplyMarkerVisibility();
+                SaveUserSettings();
+            }, "Marker filters");
         }
 
         private void SaveMarkerFilters_Changed(object sender, RoutedEventArgs e)
@@ -1080,7 +1135,7 @@ namespace TarkovTracker
             if (_userSettings.SaveMarkerFilters)
                 SyncMarkerFiltersFromUiIfReady();
 
-            SaveUserSettings();
+              SaveUserSettings();
         }
 
         private async System.Threading.Tasks.Task ApplyMarkerVisibility()
@@ -1096,12 +1151,18 @@ namespace TarkovTracker
 
         private async void ResetView_Click(object sender, RoutedEventArgs e)
         {
-            if (!_webViewReady)
-                return;
+            await RunSafeAsync(async () =>
+            {
+                if (!_webViewReady)
+                    return;
 
-            await MapWebView.ExecuteScriptAsync("resetView();");
-            RedrawLastMarker();
-            DrawMapMarkersForCurrentMap();
+                await MapWebView.ExecuteScriptAsync("resetView();");
+                RedrawLastMarker();
+                DrawMapMarkersForCurrentMap();
+
+                if (_overlayWindow != null)
+                    await _overlayWindow.ResetViewAsync();
+            }, "Reset view");
         }
 
         private void DrawMapMarkersForCurrentMap()
@@ -1125,6 +1186,7 @@ namespace TarkovTracker
                         Name = extract.Name,
                         MarkerType = "extract",
                         Faction = faction,
+                        ExtractId = extract.Id,
                         CssClass = "extract-" + faction,
                         Tooltip = $"{extract.Name} ({faction.ToUpperInvariant()} Extract)\nConditions: {conditions}",
                         ZoneName = "",
@@ -1132,7 +1194,11 @@ namespace TarkovTracker
                         Conditions = conditions,
                         Position = $"X={extract.Position.X:0.##}, Y={extract.Position.Y:0.##}, Z={extract.Position.Z:0.##}",
                         NormalizedX = converted.normalizedX,
-                        NormalizedY = converted.normalizedY
+                        NormalizedY = converted.normalizedY,
+                        LinkedSwitchIds = extract.Switches
+                            .Select(s => s.Id)
+                            .Where(id => !string.IsNullOrWhiteSpace(id))
+                            .ToList()
                     });
                 }
             }
@@ -1275,7 +1341,8 @@ namespace TarkovTracker
                         QuestItemIconLink = questMarker.ItemIconLink,
                         QuestTrader = questMarker.Trader,
                         QuestMinPlayerLevel = questMarker.MinPlayerLevel,
-                        QuestOptional = questMarker.Optional
+                        QuestOptional = questMarker.Optional,
+                        QuestSlug = ResolveQuestSlug(questMarker)
                     });
                 }
             }
@@ -1302,7 +1369,8 @@ namespace TarkovTracker
                         Position = $"X={hazard.Position.X:0.##}, Y={hazard.Position.Y:0.##}, Z={hazard.Position.Z:0.##}",
                         NormalizedX = converted.normalizedX,
                         NormalizedY = converted.normalizedY,
-                        HideLabel = hideLabel
+                        HideLabel = hideLabel,
+                        Outline = BuildNormalizedOutline(hazard.Outline)
                     });
                 }
             }
@@ -1326,7 +1394,8 @@ namespace TarkovTracker
                         Conditions = "",
                         Position = $"X={mapSwitch.Position.X:0.##}, Y={mapSwitch.Position.Y:0.##}, Z={mapSwitch.Position.Z:0.##}",
                         NormalizedX = converted.normalizedX,
-                        NormalizedY = converted.normalizedY
+                        NormalizedY = converted.normalizedY,
+                        SwitchId = mapSwitch.Id
                     });
                 }
             }
@@ -1385,11 +1454,224 @@ namespace TarkovTracker
             _ = MapWebView.ExecuteScriptAsync($"addMapMarkers({json});");
             _ = ApplyMarkerVisibility();
             _ = ApplyRaidExfilHighlightsAsync();
+            _ = ApplySearchAndQuestFiltersAsync();
 
             if (_overlayWindow != null)
                 _ = _overlayWindow.SetMapMarkersAsync(json);
 
             SetParserStatus($"LOADED {markers.Count} MARKERS");
+        }
+
+        private void ApplyAutoFloorFromPlayerHeight(double gameY)
+        {
+            if (!_userSettings.AutoSelectFloorFromPlayerHeight)
+                return;
+
+            if (_currentMapLevelsConfig == null || _currentMapLevelsConfig.Levels.Count == 0)
+                return;
+
+            if (LayersPanel.Children.Count == 0)
+                return;
+
+            string? matchingLayer = null;
+
+            foreach (var level in _currentMapLevelsConfig.Levels)
+            {
+                if (string.IsNullOrWhiteSpace(level.SvgLayer))
+                    continue;
+
+                if (!level.MinHeight.HasValue || !level.MaxHeight.HasValue)
+                    continue;
+
+                if (gameY >= level.MinHeight.Value && gameY < level.MaxHeight.Value)
+                {
+                    matchingLayer = level.SvgLayer;
+                    break;
+                }
+            }
+
+            _suppressMapLevelRefresh = true;
+
+            foreach (var child in LayersPanel.Children)
+            {
+                if (child is not CheckBox checkBox || IsBaseLayerCheckbox(checkBox))
+                    continue;
+
+                checkBox.IsChecked = checkBox.Tag is string svgLayer &&
+                                     !string.IsNullOrWhiteSpace(matchingLayer) &&
+                                     string.Equals(svgLayer, matchingLayer, StringComparison.OrdinalIgnoreCase);
+            }
+
+            _suppressMapLevelRefresh = false;
+            _ = ApplyMapLevelStateAsync();
+        }
+
+        private void PopulateQuestFilterOptions()
+        {
+            if (QuestNameFilterComboBox == null || QuestTraderFilterComboBox == null)
+                return;
+
+            _suppressQuestFilterRefresh = true;
+
+            string? currentQuest = QuestNameFilterComboBox.Text;
+            string? currentTrader = (QuestTraderFilterComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
+
+            QuestNameFilterComboBox.Items.Clear();
+            QuestTraderFilterComboBox.Items.Clear();
+
+            QuestTraderFilterComboBox.Items.Add(new ComboBoxItem { Content = "All", Tag = "all" });
+
+            if (string.IsNullOrWhiteSpace(_currentMapDisplayName))
+            {
+                QuestTraderFilterComboBox.SelectedIndex = 0;
+                _suppressQuestFilterRefresh = false;
+                return;
+            }
+
+            string normalizedName = MapDataService.NormalizeMapName(_currentMapDisplayName);
+
+            var questNames = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            var traders = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            if (_mapData.QuestMarkersByMapName.TryGetValue(normalizedName, out List<QuestMarker>? questMarkers) &&
+                questMarkers != null)
+            {
+                foreach (QuestMarker questMarker in questMarkers)
+                {
+                    if (!string.IsNullOrWhiteSpace(questMarker.Quest))
+                        questNames.Add(questMarker.Quest.Trim());
+
+                    if (!string.IsNullOrWhiteSpace(questMarker.Trader))
+                        traders.Add(questMarker.Trader.Trim());
+                }
+            }
+
+            foreach (string questName in questNames)
+                QuestNameFilterComboBox.Items.Add(questName);
+
+            foreach (string trader in traders)
+                QuestTraderFilterComboBox.Items.Add(new ComboBoxItem { Content = trader, Tag = trader });
+
+            if (!string.IsNullOrWhiteSpace(currentQuest))
+                QuestNameFilterComboBox.Text = currentQuest;
+
+            bool traderRestored = false;
+            if (!string.IsNullOrWhiteSpace(currentTrader))
+            {
+                foreach (ComboBoxItem item in QuestTraderFilterComboBox.Items.OfType<ComboBoxItem>())
+                {
+                    if (!string.Equals(item.Content?.ToString(), currentTrader, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    QuestTraderFilterComboBox.SelectedItem = item;
+                    traderRestored = true;
+                    break;
+                }
+            }
+
+            if (!traderRestored)
+                QuestTraderFilterComboBox.SelectedIndex = 0;
+
+            _suppressQuestFilterRefresh = false;
+        }
+
+        private WebQuestFilterPayload BuildQuestFilterPayload()
+        {
+            string trader = "all";
+
+            if (QuestTraderFilterComboBox?.SelectedItem is ComboBoxItem traderItem)
+            {
+                trader = traderItem.Tag?.ToString()
+                         ?? traderItem.Content?.ToString()
+                         ?? "all";
+            }
+
+            return new WebQuestFilterPayload
+            {
+                QuestName = QuestNameFilterComboBox?.Text?.Trim() ?? "",
+                Trader = trader
+            };
+        }
+
+        private async System.Threading.Tasks.Task ApplySearchAndQuestFiltersAsync()
+        {
+            if (!_webViewReady)
+                return;
+
+            string searchQuery = MarkerSearchTextBox?.Text ?? string.Empty;
+            string escapedSearch = searchQuery
+                .Replace("\\", "\\\\", StringComparison.Ordinal)
+                .Replace("'", "\\'", StringComparison.Ordinal);
+
+            WebQuestFilterPayload questFilter = BuildQuestFilterPayload();
+            string questFilterJson =JsonSerializer.Serialize(questFilter);
+
+            await MapWebView.ExecuteScriptAsync($"applyMarkerSearch('{escapedSearch}');");
+            await MapWebView.ExecuteScriptAsync($"applyQuestFilters({questFilterJson});");
+
+            if (_overlayWindow != null)
+            {
+                await _overlayWindow.ApplyMarkerSearchAsync(escapedSearch);
+                await _overlayWindow.ApplyQuestFiltersAsync(questFilterJson);
+            }
+        }
+
+        private async void MarkerSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_isInitializing)
+                return;
+
+            await RunSafeAsync(ApplySearchAndQuestFiltersAsync, "Marker search");
+        }
+
+        private async void QuestFilter_Changed(object sender, RoutedEventArgs e)
+        {
+            if (_isInitializing || _suppressQuestFilterRefresh)
+                return;
+
+            await RunSafeAsync(ApplySearchAndQuestFiltersAsync, "Quest filters");
+        }
+
+        private void AutoSelectFloorCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (_isInitializing || AutoSelectFloorCheckBox == null)
+                return;
+
+            try
+            {
+                _userSettings.AutoSelectFloorFromPlayerHeight = AutoSelectFloorCheckBox.IsChecked == true;
+                SaveUserSettings();
+
+                if (_lastGameY.HasValue)
+                    ApplyAutoFloorFromPlayerHeight(_lastGameY.Value);
+            }
+            catch (Exception ex)
+            {
+                SetParserStatus($"FLOOR AUTO-SELECT FAILED: {ex.Message}", isError: true);
+            }
+        }
+
+        private async void ClearSearchFilters_Click(object sender, RoutedEventArgs e)
+        {
+            await RunSafeAsync(async () =>
+            {
+                _suppressQuestFilterRefresh = true;
+
+                if (MarkerSearchTextBox != null)
+                    MarkerSearchTextBox.Text = string.Empty;
+
+                if (QuestNameFilterComboBox != null)
+                {
+                    QuestNameFilterComboBox.Text = string.Empty;
+                    QuestNameFilterComboBox.SelectedIndex = -1;
+                }
+
+                if (QuestTraderFilterComboBox != null)
+                    QuestTraderFilterComboBox.SelectedIndex = 0;
+
+                _suppressQuestFilterRefresh = false;
+                await ApplySearchAndQuestFiltersAsync();
+            }, "Clear search filters");
         }
 
         private static bool IsLandmineHazard(string hazardName, string? hazardType)
@@ -1935,19 +2217,19 @@ namespace TarkovTracker
                     _mapData,
                     parseResult.RawOcrText);
 
-                if (matchResult.ExtractNames.Count == 0 && matchResult.TransitNames.Count == 0)
+                if (matchResult.ExtractMatches.Count == 0 && matchResult.TransitNames.Count == 0)
                 {
                     SetParserStatus("EXFIL PANEL FOUND - NO MATCHES", isError: true);
                     UpdateRaidExfilUi();
                     return;
                 }
 
-                _raidExfilHighlights.Activate(matchResult.ExtractNames, matchResult.TransitNames);
+                _raidExfilHighlights.Activate(matchResult.ExtractMatches, matchResult.TransitNames);
                 UpdateRaidExfilUi();
                 await ApplyRaidExfilHighlightsAsync();
 
                 SetParserStatus(
-                    $"RAID EXFILS: {matchResult.ExtractNames.Count} EXT / {matchResult.TransitNames.Count} TRANSIT " +
+                    $"RAID EXFILS: {matchResult.ExtractMatches.Count} EXT / {matchResult.TransitNames.Count} TRANSIT " +
                     $"(OCR {parseResult.ExfilNames.Count}/{parseResult.TransitNames.Count})");
             }
             catch (Exception ex)
@@ -1963,7 +2245,7 @@ namespace TarkovTracker
         {
             if (parseResult.ImageWidth <= 0 || parseResult.ImageHeight <= 0)
             {
-                DetectedResolutionText.Text = "—";
+                DetectedResolutionText.Text = "\u2014";
                 return;
             }
 
@@ -1990,18 +2272,18 @@ namespace TarkovTracker
             {
                 RaidExfilStatusText.Text = "NONE DETECTED";
                 RaidExfilStatusText.Foreground = (Brush)FindResource("TacticalTextMutedBrush");
-                RaidExfilExtractsText.Text = "—";
-                RaidExfilTransitsText.Text = "—";
+                RaidExfilExtractsText.Text = "\u2014";
+                RaidExfilTransitsText.Text = "\u2014";
                 return;
             }
 
             RaidExfilStatusText.Text = "ACTIVE FOR THIS MAP";
             RaidExfilStatusText.Foreground = (Brush)FindResource("TacticalTerminalGreenBrush");
-            RaidExfilExtractsText.Text = _raidExfilHighlights.ExtractNames.Count == 0
-                ? "—"
-                : string.Join(Environment.NewLine, _raidExfilHighlights.ExtractNames);
+            RaidExfilExtractsText.Text = _raidExfilHighlights.ExtractMatches.Count == 0
+                ? "\u2014"
+                : string.Join(Environment.NewLine, _raidExfilHighlights.ExtractDisplayNames);
             RaidExfilTransitsText.Text = _raidExfilHighlights.TransitNames.Count == 0
-                ? "—"
+                ? "\u2014"
                 : string.Join(Environment.NewLine, _raidExfilHighlights.TransitNames);
         }
 
@@ -2048,19 +2330,21 @@ namespace TarkovTracker
             direction = ApplyMapDirectionOffset(direction);
 
             _lastGameX = gameX;
+            _lastGameY = gameY;
             _lastGameZ = gameZ;
             _lastDirection = direction;
 
             GameXText.Text = gameX.ToString("0.00", CultureInfo.InvariantCulture);
             GameYText.Text = gameY.ToString("0.00", CultureInfo.InvariantCulture);
             GameZText.Text = gameZ.ToString("0.00", CultureInfo.InvariantCulture);
-            DirectionText.Text = direction.ToString("0.00", CultureInfo.InvariantCulture) + "°";
+            DirectionText.Text = direction.ToString("0.00", CultureInfo.InvariantCulture) + "\u00B0";
 
             SetParserStatus($"TRACKING {DateTime.Now:T}");
 
             StatusText.Text = $"X={gameX:0.00} Y={gameY:0.00} Z={gameZ:0.00} DIR={direction:0.00}";
 
             DrawPlayerMarkerFromGameCoordinates(gameX, gameZ, direction, _userSettings.OverlayCenterOnPlayer);
+            ApplyAutoFloorFromPlayerHeight(gameY);
         }
 
         private double GetYawFromQuaternion(double x, double y, double z, double w)
@@ -2096,14 +2380,14 @@ namespace TarkovTracker
         {
             var converted = ConvertGameToNormalizedMap(gameX, gameZ);
 
-            SetPlayerMarkerInWebView(
+            _ = SetPlayerMarkerInWebViewAsync(
                 converted.normalizedX,
                 converted.normalizedY,
                 directionDegrees,
                 centerOverlayOnPlayer);
         }
 
-        private async void SetPlayerMarkerInWebView(
+        private async Task SetPlayerMarkerInWebViewAsync(
             double normalizedX,
             double normalizedY,
             double directionDegrees,
@@ -2142,18 +2426,21 @@ namespace TarkovTracker
 
         private async void OpenOverlayButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_overlayWindow == null)
+            await RunSafeAsync(async () =>
             {
-                _overlayWindow = new OverlayWindow(_userSettings.OverlayDefaultOpacityPercent);
-                _overlayWindow.Closed += (_, _) => _overlayWindow = null;
-                _overlayWindow.Show();
-            }
-            else
-            {
-                _overlayWindow.Activate();
-            }
+                if (_overlayWindow == null)
+                {
+                    _overlayWindow = new OverlayWindow(_userSettings.OverlayDefaultOpacityPercent);
+                    _overlayWindow.Closed += (_, _) => _overlayWindow = null;
+                    _overlayWindow.Show();
+                }
+                else
+                {
+                    _overlayWindow.Activate();
+                }
 
-            await SyncOverlayToCurrentMapAsync();
+                await SyncOverlayToCurrentMapAsync();
+            }, "Open overlay");
         }
 
         private async System.Threading.Tasks.Task SyncOverlayToCurrentMapAsync()
@@ -2183,6 +2470,74 @@ namespace TarkovTracker
 
             await SyncOverlayLayersAndFiltersAsync();
             await SyncCustomPinsToOverlayAsync();
+        }
+
+        private static string ResolveQuestSlug(QuestMarker questMarker)
+        {
+            if (!string.IsNullOrWhiteSpace(questMarker.QuestSlug))
+                return questMarker.QuestSlug;
+
+            return TarkovDevLinks.ToTaskSlug(questMarker.Quest);
+        }
+
+        private async Task HighlightLinkedSwitchesAsync(IReadOnlyList<string> switchIds)
+        {
+            if (switchIds == null || switchIds.Count == 0)
+                return;
+
+            string idsJson = JsonSerializer.Serialize(switchIds);
+
+            if (_webViewReady)
+                await MapWebView.ExecuteScriptAsync($"highlightLinkedSwitches({idsJson});");
+
+            if (_overlayWindow != null)
+                await _overlayWindow.HighlightLinkedSwitchesAsync(idsJson);
+        }
+
+        private async Task ClearLinkedSwitchHighlightsAsync()
+        {
+            if (_webViewReady)
+                await MapWebView.ExecuteScriptAsync("clearLinkedSwitchHighlights();");
+
+            if (_overlayWindow != null)
+                await _overlayWindow.ClearLinkedSwitchHighlightsAsync();
+        }
+
+        private static async Task RunSafeAsync(Func<Task> action, string operationName)
+        {
+            try
+            {
+                await action();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{operationName} failed:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void OpenQuestTarkovDevButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenUrlInBrowser(_lastQuestTarkovDevUrl);
+        }
+
+        private void OpenQuestWikiButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenUrlInBrowser(_lastQuestWikiUrl);
+        }
+
+        private static void OpenUrlInBrowser(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            try
+            {
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open link:\n{ex.Message}", "Open Link Failed");
+            }
         }
 
         private async System.Threading.Tasks.Task SyncOverlayLayersAndFiltersAsync()

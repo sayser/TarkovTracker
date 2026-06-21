@@ -54,7 +54,7 @@ public static class RaidExfilMatcher
             if (!NamesMatch(ocrName, extract.Name))
                 continue;
 
-            AddUnique(result.ExtractNames, extract.Name);
+            AddExtractMatch(result, extract);
         }
     }
 
@@ -89,11 +89,11 @@ public static class RaidExfilMatcher
             if (string.IsNullOrWhiteSpace(extract.Name))
                 continue;
 
-            if (result.ExtractNames.Contains(extract.Name, StringComparer.OrdinalIgnoreCase))
+            if (HasExtractMatch(result, extract))
                 continue;
 
             if (AppearsInOcrText(extract.Name, normalizedExtractSection, normalizedFullText))
-                AddUnique(result.ExtractNames, extract.Name);
+                AddExtractMatch(result, extract);
         }
     }
 
@@ -120,6 +120,32 @@ public static class RaidExfilMatcher
             if (AppearsInOcrText(transit.Description, normalizedTransitSection, normalizedFullText))
                 AddUnique(result.TransitNames, transit.Description);
         }
+    }
+
+    private static bool HasExtractMatch(RaidExfilMatchResult result, ExtractInfo extract)
+    {
+        if (!string.IsNullOrWhiteSpace(extract.Id))
+        {
+            return result.ExtractMatches.Any(match =>
+                string.Equals(match.Id, extract.Id, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return result.ExtractMatches.Any(match =>
+            string.Equals(match.Name, extract.Name, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(match.Faction, extract.Faction, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static void AddExtractMatch(RaidExfilMatchResult result, ExtractInfo extract)
+    {
+        if (HasExtractMatch(result, extract))
+            return;
+
+        result.ExtractMatches.Add(new RaidExtractMatch
+        {
+            Id = extract.Id ?? string.Empty,
+            Name = extract.Name,
+            Faction = extract.Faction ?? string.Empty
+        });
     }
 
     private static bool AppearsInOcrText(string dataName, string normalizedSection, string normalizedFullText)

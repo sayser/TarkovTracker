@@ -26,6 +26,9 @@ public class TarkovExtractMap
 
 public class ExtractInfo
 {
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = "";
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
 
@@ -36,6 +39,7 @@ public class ExtractInfo
     public string? Conditions { get; set; }
 
     [JsonPropertyName("requirements")]
+    [JsonConverter(typeof(StringOrStringListJsonConverter))]
     public List<string> Requirements { get; set; } = new();
 
     [JsonPropertyName("switches")]
@@ -236,6 +240,9 @@ public class QuestMarker
     [JsonPropertyName("quest")]
     public string Quest { get; set; } = "";
 
+    [JsonPropertyName("questSlug")]
+    public string QuestSlug { get; set; } = "";
+
     [JsonPropertyName("objectiveType")]
     public string ObjectiveType { get; set; } = "";
 
@@ -319,4 +326,31 @@ public class MapPosition
 
     [JsonPropertyName("z")]
     public double Z { get; set; }
+}
+
+public sealed class StringOrStringListJsonConverter : JsonConverter<List<string>>
+{
+    public override List<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+            return new List<string>();
+
+        using JsonDocument document = JsonDocument.ParseValue(ref reader);
+        JsonElement element = document.RootElement;
+
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => new List<string> { element.GetString() ?? string.Empty },
+            JsonValueKind.Array => element.EnumerateArray()
+                .Select(item => item.GetString() ?? string.Empty)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .ToList(),
+            _ => new List<string>()
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, List<string> value, JsonSerializerOptions options)
+    {
+        JsonSerializer.Serialize(writer, value, options);
+    }
 }

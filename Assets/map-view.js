@@ -112,6 +112,43 @@ function clearMapMarkers() {
     }
 }
 
+function buildMarkerSearchText(m) {
+    return [
+        m.name,
+        m.markerType,
+        m.faction,
+        m.questCategory,
+        m.questTrader,
+        m.questItem,
+        m.questItemShortName,
+        m.categories,
+        m.zoneName,
+        m.conditions
+    ].filter(Boolean).join(' ').toLowerCase();
+}
+
+function addHazardZonePolygon(outline, hazardType, hazardName) {
+    if (!hazardOutlineLayer || !outline || outline.length < 3) return;
+
+    let vb = getViewBox();
+    let points = outline
+        .map(function(p) { return (p.normalizedX * vb.w) + ',' + (p.normalizedY * vb.h); })
+        .join(' ');
+
+    let polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    polygon.setAttribute('points', points);
+    polygon.classList.add('hazardOutline');
+    if (hazardType === 'minefield') {
+        polygon.classList.add('hazardOutline-minefield');
+    } else if (hazardType === 'sniper') {
+        polygon.classList.add('hazardOutline-sniper');
+    }
+    polygon.dataset.markerType = 'hazard-zone';
+    polygon.dataset.markerName = hazardName || '';
+    polygon.dataset.searchText = (hazardName + ' hazard ' + (hazardType || '')).toLowerCase();
+    hazardOutlineLayer.appendChild(polygon);
+}
+
 function addMapMarkers(markers) {
     clearMapMarkers();
 
@@ -125,6 +162,22 @@ function addMapMarkers(markers) {
         marker.dataset.markerName = m.name || '';
         marker.dataset.faction = m.faction || '';
         marker.dataset.questCategory = m.questCategory || '';
+        if (m.markerType === 'quest') {
+            marker.dataset.questName = m.name || '';
+            marker.dataset.questTrader = m.questTrader || '';
+        }
+        if (m.markerType === 'switch' && m.switchId) {
+            marker.dataset.switchId = m.switchId;
+        }
+        if (m.markerType === 'extract') {
+            if (m.extractId) {
+                marker.dataset.extractId = m.extractId;
+            }
+            if (m.linkedSwitchIds && m.linkedSwitchIds.length) {
+                marker.dataset.linkedSwitchIds = m.linkedSwitchIds.join(',');
+            }
+        }
+        marker.dataset.searchText = buildMarkerSearchText(m);
         if (m.gameY != null && !Number.isNaN(m.gameY)) {
             marker.dataset.gameY = String(m.gameY);
         }
@@ -169,6 +222,14 @@ function addMapMarkers(markers) {
         marker.addEventListener('click', function(e) {
             e.stopPropagation();
 
+            if (m.markerType === 'extract') {
+                if (m.linkedSwitchIds && m.linkedSwitchIds.length) {
+                    highlightLinkedSwitches(m.linkedSwitchIds);
+                } else {
+                    clearLinkedSwitchHighlights();
+                }
+            }
+
             if (window.chrome && window.chrome.webview) {
                 window.chrome.webview.postMessage({
                     messageType: 'markerClicked',
@@ -178,17 +239,25 @@ function addMapMarkers(markers) {
                     zoneName: m.zoneName || '',
                     categories: m.categories || '',
                     conditions: m.conditions || '',
-                    position: m.position || ''
+                    position: m.position || '',
+                    questSlug: m.questSlug || '',
+                    linkedSwitchIds: m.linkedSwitchIds || []
                 });
             }
         });
 
         markerLayer.appendChild(marker);
+
+        if (m.outline && m.outline.length >= 3) {
+            addHazardZonePolygon(m.outline, m.categories || '', m.name || '');
+        }
     }
 
     updateMapMarkerVisuals();
     refreshMarkerLevelVisibility();
     refreshRaidExfilHighlights();
+    refreshMarkerSearchHighlight();
+    refreshQuestFilterVisibility();
 }
 
 function updateMapMarkerVisuals() {
@@ -375,12 +444,14 @@ function setHazardVisibility(visible) {
     document.querySelectorAll('.mapMarker[data-marker-type="hazard"]').forEach(function(marker) {
         marker.style.display = visible ? 'block' : 'none';
     });
+}
 
-    if (hazardOutlineLayer) {
-        hazardOutlineLayer.querySelectorAll('polygon[data-marker-type="hazard"]').forEach(function(polygon) {
-            polygon.style.display = visible ? '' : 'none';
-        });
-    }
+function setHazardZoneVisibility(visible) {
+    if (!hazardOutlineLayer) return;
+
+    hazardOutlineLayer.querySelectorAll('polygon[data-marker-type="hazard-zone"]').forEach(function(polygon) {
+        polygon.style.display = visible ? '' : 'none';
+    });
 }
 
 function setSwitchVisibility(visible) {
@@ -392,6 +463,66 @@ function setSwitchVisibility(visible) {
 function setBtrStopVisibility(visible) {
     document.querySelectorAll('.mapMarker[data-marker-type="btr-stop"]').forEach(function(marker) {
         marker.style.display = visible ? 'block' : 'none';
+    });
+}
+
+let markerSearchQuery = '';
+let questFilterState = { questName: '', trader: '' };
+
+function applyMarkerSearch(query) {
+    markerSearchQuery = (query || '').trim();
+    refreshMarkerSearchHighlight();
+}
+
+function refreshMarkerSearchHighlight() {
+    let terms = markerSearchQuery
+        ? markerSearchQuery.toLowerCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean)
+        : [];
+
+    document.querySelectorAll('.mapMarker').forEach(function(marker) {
+        marker.classList.remove('search-dimmed', 'search-match');
+        if (terms.length === 0) return;
+
+        let haystack = marker.dataset.searchText || '';
+        let matched = terms.some(function(term) { return haystack.indexOf(term) >= 0; });
+        marker.classList.toggle('search-match', matched);
+        marker.classList.toggle('search-dimmed', !matched);
+    });
+
+    if (hazardOutlineLayer) {
+        hazardOutlineLayer.querySelectorAll('polygon[data-marker-type="hazard-zone"]').forEach(function(polygon) {
+            polygon.classList.remove('search-dimmed', 'search-match');
+            if (terms.length === 0) return;
+
+            let haystack = polygon.dataset.searchText || '';
+            let matched = terms.some(function(term) { return haystack.indexOf(term) >= 0; });
+            polygon.classList.toggle('search-match', matched);
+            polygon.classList.toggle('search-dimmed', !matched);
+        });
+    }
+}
+
+function applyQuestFilters(filters) {
+    questFilterState = {
+        questName: (filters && filters.questName) ? String(filters.questName) : '',
+        trader: (filters && filters.trader) ? String(filters.trader) : ''
+    };
+    refreshQuestFilterVisibility();
+}
+
+function refreshQuestFilterVisibility() {
+    let questName = (questFilterState.questName || '').trim().toLowerCase();
+    let trader = (questFilterState.trader || '').trim().toLowerCase();
+    let hasFilter = questName.length > 0 || (trader.length > 0 && trader !== 'all');
+
+    document.querySelectorAll('.mapMarker[data-marker-type="quest"]').forEach(function(marker) {
+        marker.classList.remove('quest-filter-hidden');
+        if (!hasFilter) return;
+
+        let nameMatch = !questName || (marker.dataset.questName || '').toLowerCase().indexOf(questName) >= 0;
+        let traderMatch = !trader || trader === 'all' ||
+            (marker.dataset.questTrader || '').toLowerCase() === trader;
+        marker.classList.toggle('quest-filter-hidden', !(nameMatch && traderMatch));
     });
 }
 
@@ -410,14 +541,18 @@ function applyMarkerFilters(filters) {
     setQuestCategoryVisibility('item', !!filters.questItems);
     setQuestCategoryVisibility('objective', !!filters.questObjectives);
     setHazardVisibility(!!filters.hazards);
+    setHazardZoneVisibility(!!filters.hazardZones);
     setSwitchVisibility(!!filters.switches);
     setBtrStopVisibility(!!filters.btrStops);
     setCustomPinsMode(!!filters.customPins);
     refreshRaidExfilHighlights();
+    refreshMarkerSearchHighlight();
+    refreshQuestFilterVisibility();
 }
 
 let raidExfilState = {
     active: false,
+    extractMatches: [],
     extractNames: [],
     transitNames: []
 };
@@ -426,12 +561,21 @@ function normalizeRaidName(name) {
     return (name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+function normalizeRaidFaction(faction) {
+    return (faction || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function buildExtractMatchKey(name, faction) {
+    return normalizeRaidName(name) + '|' + normalizeRaidFaction(faction);
+}
+
 function setRaidExfilHighlights(state) {
     if (!state) {
-        raidExfilState = { active: false, extractNames: [], transitNames: [] };
+        raidExfilState = { active: false, extractMatches: [], extractNames: [], transitNames: [] };
     } else {
         raidExfilState = {
             active: state.active === true,
+            extractMatches: state.extractMatches || [],
             extractNames: state.extractNames || [],
             transitNames: state.transitNames || []
         };
@@ -441,9 +585,15 @@ function setRaidExfilHighlights(state) {
 }
 
 function refreshRaidExfilHighlights() {
-    let extractSet = new Set((raidExfilState.extractNames || []).map(normalizeRaidName));
+    let extractMatches = raidExfilState.extractMatches || [];
+    let extractIdSet = new Set(extractMatches.map(function(m) { return m.id; }).filter(Boolean));
+    let extractKeySet = new Set(extractMatches.map(function(m) {
+        return buildExtractMatchKey(m.name, m.faction);
+    }));
+    let legacyExtractSet = new Set((raidExfilState.extractNames || []).map(normalizeRaidName));
     let transitSet = new Set((raidExfilState.transitNames || []).map(normalizeRaidName));
     let active = raidExfilState.active === true;
+    let useLegacyExtractNames = extractMatches.length === 0 && legacyExtractSet.size > 0;
 
     document.querySelectorAll('.mapMarker').forEach(function(marker) {
         marker.classList.remove('raid-available', 'raid-dimmed');
@@ -454,13 +604,24 @@ function refreshRaidExfilHighlights() {
         let markerType = marker.dataset.markerType;
         let markerName = normalizeRaidName(marker.dataset.markerName);
 
-        if (markerType === 'extract' && extractSet.has(markerName)) {
-            marker.classList.add('raid-available');
-            marker.style.display = 'block';
+        if (markerType === 'extract') {
+            let matched = false;
+            let extractId = marker.dataset.extractId;
+            let extractKey = buildExtractMatchKey(marker.dataset.markerName, marker.dataset.faction);
+
+            if (extractId && extractIdSet.has(extractId)) {
+                matched = true;
+            } else if (extractKeySet.has(extractKey)) {
+                matched = true;
+            } else if (useLegacyExtractNames && legacyExtractSet.has(markerName)) {
+                matched = true;
+            }
+
+            marker.classList.toggle('raid-available', matched);
+            marker.classList.toggle('raid-dimmed', !matched);
         } else if (markerType === 'transit' && transitSet.has(markerName)) {
             marker.classList.add('raid-available');
-            marker.style.display = 'block';
-        } else if (markerType === 'extract' || markerType === 'transit') {
+        } else if (markerType === 'transit') {
             marker.classList.add('raid-dimmed');
         }
     });
@@ -579,6 +740,27 @@ function applyMapLevelState(state) {
 
     refreshMapLevelDisplay();
     refreshMarkerLevelVisibility();
+}
+
+function highlightLinkedSwitches(switchIds) {
+    document.querySelectorAll('.mapMarker[data-marker-type="switch"]').forEach(function(marker) {
+        marker.classList.remove('switch-linked');
+    });
+
+    if (!switchIds || switchIds.length === 0) return;
+
+    let idSet = new Set(switchIds);
+    document.querySelectorAll('.mapMarker[data-marker-type="switch"]').forEach(function(marker) {
+        if (idSet.has(marker.dataset.switchId)) {
+            marker.classList.add('switch-linked');
+        }
+    });
+}
+
+function clearLinkedSwitchHighlights() {
+    document.querySelectorAll('.mapMarker.switch-linked').forEach(function(marker) {
+        marker.classList.remove('switch-linked');
+    });
 }
 
 stage.addEventListener('wheel', function(e) {

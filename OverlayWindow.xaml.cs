@@ -156,10 +156,10 @@ namespace TarkovTracker
                             svg.style.opacity = value;
                         }
 
-                        // Keep labels/markers/player full-strength so they stay readable.
                         const markerLayer = document.getElementById('markerLayer');
                         if (markerLayer) {
                             markerLayer.style.opacity = '1';
+                            markerLayer.style.pointerEvents = 'none';
                         }
 
                         const customMarkerLayer = document.getElementById('customMarkerLayer');
@@ -172,6 +172,11 @@ namespace TarkovTracker
                             playerMarker.style.opacity = '1';
                         }
                     };
+
+                    const overlayMarkerLayer = document.getElementById('markerLayer');
+                    if (overlayMarkerLayer) {
+                        overlayMarkerLayer.style.pointerEvents = 'none';
+                    }
                 })();
             ");
         }
@@ -262,6 +267,25 @@ namespace TarkovTracker
             await OverlayMapView.ExecuteScriptAsync($"applyMarkerFilters({filtersJson});");
         }
 
+        public async Task ApplyMarkerSearchAsync(string escapedSearchQuery)
+        {
+            if (!_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync($"applyMarkerSearch('{escapedSearchQuery}');");
+        }
+
+        public async Task ApplyQuestFiltersAsync(string questFilterJson)
+        {
+            if (string.IsNullOrWhiteSpace(questFilterJson))
+                return;
+
+            if (!_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync($"applyQuestFilters({questFilterJson});");
+        }
+
         public async Task SetCustomPinsAsync(string pinsJson)
         {
             if (string.IsNullOrWhiteSpace(pinsJson))
@@ -283,13 +307,36 @@ namespace TarkovTracker
             await OverlayMapView.ExecuteScriptAsync("resetView();");
         }
 
+        public async Task HighlightLinkedSwitchesAsync(string switchIdsJson)
+        {
+            if (string.IsNullOrWhiteSpace(switchIdsJson) || !_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync($"highlightLinkedSwitches({switchIdsJson});");
+        }
+
+        public async Task ClearLinkedSwitchHighlightsAsync()
+        {
+            if (!_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync("clearLinkedSwitchHighlights();");
+        }
+
         private async void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (_suppressOpacitySliderRefresh)
                 return;
 
-            _overlayOpacity = Math.Max(0.05, Math.Min(1.0, e.NewValue / 100.0));
-            await ApplyOverlayOpacityAsync();
+            try
+            {
+                _overlayOpacity = Math.Max(0.05, Math.Min(1.0, e.NewValue / 100.0));
+                await ApplyOverlayOpacityAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Overlay opacity update failed:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

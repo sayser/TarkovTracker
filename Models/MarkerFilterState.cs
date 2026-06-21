@@ -40,6 +40,9 @@ public class MarkerFilterState
     [JsonPropertyName("hazards")]
     public bool Hazards { get; set; }
 
+    [JsonPropertyName("hazardZones")]
+    public bool HazardZones { get; set; }
+
     [JsonPropertyName("switches")]
     public bool Switches { get; set; }
 

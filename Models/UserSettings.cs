@@ -45,4 +45,9 @@ public class UserAppSettings
     /// Last selected map SVG filename without extension (e.g. "factory").
     /// </summary>
     public string LastSelectedMap { get; set; } = "";
+
+    /// <summary>
+    /// When true, screenshot player height (Y) auto-selects the matching floor in LEVELS.
+    /// </summary>
+    public bool AutoSelectFloorFromPlayerHeight { get; set; } = true;
 }
