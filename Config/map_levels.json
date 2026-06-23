@@ -2,49 +2,49 @@
   "streetsoftarkov": {
     "defaultSvgLayer": "Ground_Level",
     "levels": [
-      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -10000, "maxHeight": -6 },
-      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 10, "maxHeight": 15 },
-      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 15, "maxHeight": 20 },
+      { "name": "5th Floor", "svgLayer": "Fifth_Floor", "defaultVisible": false, "minHeight": 25, "maxHeight": 10000 },
       { "name": "4th Floor", "svgLayer": "Fourth_Floor", "defaultVisible": false, "minHeight": 20, "maxHeight": 25 },
-      { "name": "5th Floor", "svgLayer": "Fifth_Floor", "defaultVisible": false, "minHeight": 25, "maxHeight": 10000 }
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 15, "maxHeight": 20 },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 10, "maxHeight": 15 },
+      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -10000, "maxHeight": -6 }
     ]
   },
   "groundzero": {
     "defaultSvgLayer": "Ground_Level",
     "levels": [
-      { "name": "Garage", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": 22.3 },
-      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 22.3, "maxHeight": 32.3 },
-      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 32.3, "maxHeight": 1000 }
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 32.3, "maxHeight": 1000 },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 28, "maxHeight": 32.3 },
+      { "name": "Garage", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": 14 }
     ]
   },
   "customs": {
     "defaultSvgLayer": "Ground_Level",
     "levels": [
-      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": 0.5 },
-      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 2.7, "maxHeight": 1000 },
-      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 5.7, "maxHeight": 1000 }
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 5.7, "maxHeight": 1000 },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 2.7, "maxHeight": 5.7 },
+      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": 0.5 }
     ]
   },
   "factory": {
     "defaultSvgLayer": "Ground_Floor",
     "levels": [
-      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 4.2, "maxHeight": 1000 },
-      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 8.2, "maxHeight": 1000 },
-      { "name": "Tunnels", "svgLayer": "Basement", "defaultVisible": false, "minHeight": -1000, "maxHeight": -2.5 }
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 9, "maxHeight": 1000 },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 3, "maxHeight": 9 },
+      { "name": "Tunnels", "svgLayer": "Basement", "defaultVisible": false, "minHeight": -1000, "maxHeight": -1 }
     ]
   },
   "interchange": {
     "defaultSvgLayer": "Ground_Level",
     "levels": [
-      { "name": "2nd Floor", "svgLayer": "First_Floor", "defaultVisible": true, "minHeight": 22, "maxHeight": 1000 },
-      { "name": "3rd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 30, "maxHeight": 1000 }
+      { "name": "3rd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 34, "maxHeight": 1000 },
+      { "name": "2nd Floor", "svgLayer": "First_Floor", "defaultVisible": true, "minHeight": 25, "maxHeight": 34 }
     ]
   },
   "lab": {
     "defaultSvgLayer": "First_Level",
     "levels": [
-      { "name": "Second Level", "svgLayer": "Second_Level", "defaultVisible": false, "minHeight": 3.5, "maxHeight": 1000 },
-      { "name": "Technical", "svgLayer": "Technical_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": -10 }
+      { "name": "Second Level", "svgLayer": "Second_Level", "defaultVisible": false, "minHeight": 3, "maxHeight": 1000 },
+      { "name": "Technical", "svgLayer": "Technical_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": -0.9 }
     ]
   },
   "labyrinth": {
@@ -58,15 +58,15 @@
   "reserve": {
     "defaultSvgLayer": "Ground_Level",
     "levels": [
-      { "name": "Bunkers", "svgLayer": "Bunkers", "defaultVisible": false, "minHeight": -1000, "maxHeight": -10 }
+      { "name": "Bunkers", "svgLayer": "Bunkers", "defaultVisible": false, "minHeight": -1000, "maxHeight": -7.27 }
     ]
   },
   "shoreline": {
     "defaultSvgLayer": "Ground_Level",
     "levels": [
-      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -1000, "maxHeight": -3 },
-      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": 2, "maxHeight": 1000 },
-      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 5, "maxHeight": 1000 }
+      { "name": "3rd Floor", "svgLayer": "Third_Floor", "defaultVisible": false, "minHeight": 2, "maxHeight": 1000 },
+      { "name": "2nd Floor", "svgLayer": "Second_Floor", "defaultVisible": false, "minHeight": -1, "maxHeight": 2 },
+      { "name": "Underground", "svgLayer": "Underground_Level", "defaultVisible": false, "minHeight": -8, "maxHeight": -5 }
     ]
   },
   "terminal": {

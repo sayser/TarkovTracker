@@ -6,7 +6,7 @@ namespace TarkovTracker.Models;
 public static class AppInfo
 {
     public const string ProductName = "SayserTarkovTracker";
-    public const string InterfaceVersion = "2.7.2";
+    public const string InterfaceVersion = "2.7.3";
 
     public static string VersionLabel
     {

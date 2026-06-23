@@ -1513,15 +1513,17 @@ namespace TarkovTracker
 
             string? matchingLayer = null;
 
-            foreach (var level in _currentMapLevelsConfig.Levels)
+            // Prefer upper floors (higher minHeight) when bands are adjacent; underground layers use low maxHeight.
+            var orderedLevels = _currentMapLevelsConfig.Levels
+                .Where(level => !string.IsNullOrWhiteSpace(level.SvgLayer)
+                                && level.MinHeight.HasValue
+                                && level.MaxHeight.HasValue)
+                .OrderByDescending(level => level.MinHeight!.Value)
+                .ThenBy(level => level.MaxHeight!.Value);
+
+            foreach (var level in orderedLevels)
             {
-                if (string.IsNullOrWhiteSpace(level.SvgLayer))
-                    continue;
-
-                if (!level.MinHeight.HasValue || !level.MaxHeight.HasValue)
-                    continue;
-
-                if (gameY >= level.MinHeight.Value && gameY < level.MaxHeight.Value)
+                if (gameY >= level.MinHeight!.Value && gameY < level.MaxHeight!.Value)
                 {
                     matchingLayer = level.SvgLayer;
                     break;

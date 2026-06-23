@@ -43,7 +43,7 @@
                                    Foreground="{StaticResource TacticalTextPrimaryBrush}"
                                    FontSize="13"
                                    FontWeight="Bold"/>
-                        <TextBlock Text="TACTICAL MAP INTERFACE v2.7.2"
+                        <TextBlock Text="TACTICAL MAP INTERFACE v2.7.3"
                                    Foreground="{StaticResource TacticalTextMutedBrush}"
                                    FontSize="9"
                                    FontWeight="SemiBold"/>
