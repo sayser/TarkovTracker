@@ -263,15 +263,60 @@ public partial class SettingsWindow : Window
             UpdateStatusText.Text = result.Message;
             UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalAmberBrightBrush");
 
-            MessageBoxResult open = MessageBox.Show(
+            MessageBoxResult install = MessageBox.Show(
                 this,
-                $"{result.Message}\n\nOpen the GitHub release page to download {result.LatestVersion}?",
+                $"{result.Message}\n\nDownload and install {result.LatestVersion} now?\nThe app will restart when the update finishes.",
                 "Update Available",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Information);
 
-            if (open == MessageBoxResult.Yes)
-                AppUpdateService.OpenReleasePage(result.ReleaseUrl);
+            if (install != MessageBoxResult.Yes)
+                return;
+
+            if (string.IsNullOrWhiteSpace(result.DownloadUrl))
+            {
+                MessageBoxResult openPage = MessageBox.Show(
+                    this,
+                    "No downloadable release file was found.\n\nOpen the GitHub release page instead?",
+                    "Update Download",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                if (openPage == MessageBoxResult.Yes)
+                    AppUpdateService.OpenReleasePage(result.ReleaseUrl);
+                return;
+            }
+
+            UpdateStatusText.Text = "DOWNLOADING…";
+            var progress = new Progress<string>(status => UpdateStatusText.Text = status.ToUpperInvariant());
+            AppUpdateDownloadResult download = await AppUpdateService.DownloadAndInstallAsync(result, progress);
+
+            if (!download.Succeeded)
+            {
+                UpdateStatusText.Text = download.Message;
+                UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalTerminalRedBrush");
+
+                MessageBoxResult openPage = MessageBox.Show(
+                    this,
+                    $"{download.Message}\n\nOpen the GitHub release page instead?",
+                    "Update Download Failed",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                if (openPage == MessageBoxResult.Yes)
+                    AppUpdateService.OpenReleasePage(result.ReleaseUrl);
+                return;
+            }
+
+            UpdateStatusText.Text = "INSTALLING…";
+            UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalTerminalGreenBrush");
+            MessageBox.Show(
+                this,
+                download.Message,
+                "Update Ready",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            if (download.RestartScheduled)
+                Application.Current.Shutdown();
         }
         catch (Exception ex)
         {
