@@ -632,6 +632,7 @@ let mapLevelState = {
     overlayLayerIds: [],
     showBaseLayer: true,
     dimBase: false,
+    exclusiveLayers: false,
     activeLevelIds: [],
     levelExtents: []
 };
@@ -701,7 +702,8 @@ function refreshMapLevelDisplay() {
         if (child.tagName !== 'g' || !child.id) continue;
 
         if (child.classList.contains('base-layer')) {
-            if (!mapLevelState.showBaseLayer) {
+            if (!mapLevelState.showBaseLayer ||
+                (mapLevelState.exclusiveLayers && hasActiveOverlay)) {
                 child.classList.add('force-hidden');
             } else {
                 child.classList.remove('force-hidden');
@@ -735,6 +737,7 @@ function applyMapLevelState(state) {
     mapLevelState.overlayLayerIds = overlayLayerIds;
     mapLevelState.showBaseLayer = state.showBaseLayer !== false;
     mapLevelState.dimBase = state.dimBase === true;
+    mapLevelState.exclusiveLayers = state.exclusiveLayers === true;
     mapLevelState.activeLevelIds = state.activeLevelIds || [];
     mapLevelState.levelExtents = state.levelExtents || [];
 

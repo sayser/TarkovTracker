@@ -1,6 +1,6 @@
 # SayserTarkovTracker
 
-A Windows desktop map companion for **Escape from Tarkov**. It displays interactive tactical maps with live player tracking from in-game screenshots, raid exfil highlighting from the **O** key panel, plus extracts, quests, spawns, bosses, cultists, custom pins, hazards, and more — styled with a tactical HUD interface (**v2.7.3**).
+A Windows desktop map companion for **Escape from Tarkov**. It displays interactive tactical maps with live player tracking from in-game screenshots, raid exfil highlighting from the **O** key panel, plus extracts, quests, spawns, bosses, cultists, custom pins, hazards, and more — styled with a tactical HUD interface (**v2.7.5**).
 
 Built with **WPF** (.NET 10) and **WebView2**.
 
@@ -10,7 +10,7 @@ Built with **WPF** (.NET 10) and **WebView2**.
 
 | Main window (Factory) | Settings |
 |-----------------------|----------|
-| ![Main window — map, MARKERS panel, SETTINGS in top bar](docs/screenshots/main-window.png) | ![Settings — screenshot folder, resolution, overlay opacity, About v2.7.3](docs/screenshots/settings.png) |
+| ![Main window — map, MARKERS panel, SETTINGS in top bar](docs/screenshots/main-window.png) | ![Settings — screenshot folder, resolution, overlay opacity, About v2.7.5](docs/screenshots/settings.png) |
 
 | Custom pins | Raid exfil highlights |
 |-------------|------------------------|
@@ -67,6 +67,9 @@ The **Save marker selection** setting itself is always stored in `settings.json`
 - Pins are saved **per map** and restored when you reopen the app or switch back to that map.
 - Custom pins sync to the **Overlay** window when it is open.
 
+#### Icebreaker floors
+- **Icebreaker** uses tarkov.dev-style multi-floor tile layers (Control Room through Bridge Roof). Enable **Auto-select floor from player height (Y)** to switch decks as you move.
+
 #### Boss and cultist spawns
 - **Boss** markers show where named bosses can spawn, using tarkov.dev zone and floor rules (only valid boss spawn points for the selected map level).
 - **Cultists** are a **separate layer** with their own icon and MARKERS toggle — they are not mixed into the boss skull markers.
@@ -88,7 +91,7 @@ Open **SETTINGS** from the top bar (replaces the old screenshot-folder buttons o
 | **Overlay follow player** | When enabled, each new screenshot recenters the overlay on your position without changing zoom |
 | **Map actions** | **Clear raid exfil highlights** for the current map |
 | **Screenshot maintenance** | **Delete all screenshots** in the configured folder (with confirmation) |
-| **About** | App name and version (**2.7.3**) |
+| **About** | App name and version (**2.7.5**), **Check for updates** (GitHub Releases) |
 
 User preferences are stored in **`settings.json`** next to the executable (not in `%AppData%`). This includes screenshot folder, game resolution, overlay options, last selected map, custom pins per map, and the **Save marker selection** flag. Marker toggle states are saved only when that option is enabled in the **MARKERS** panel.
 

@@ -16,6 +16,9 @@ public class MapLevelStatePayload
     [JsonPropertyName("dimBase")]
     public bool DimBase { get; set; }
 
+    [JsonPropertyName("exclusiveLayers")]
+    public bool ExclusiveLayers { get; set; }
+
     [JsonPropertyName("activeLevelIds")]
     public List<string> ActiveLevelIds { get; set; } = new();
 
@@ -39,6 +42,13 @@ public class MapLevelsConfig
 {
     [JsonPropertyName("defaultSvgLayer")]
     public string? DefaultSvgLayer { get; set; }
+
+    /// <summary>
+    /// When true, only one floor is shown at a time (hide base while an overlay floor is active).
+    /// Used for maps like Icebreaker where each floor is a full replacement tile layer.
+    /// </summary>
+    [JsonPropertyName("exclusiveLayers")]
+    public bool ExclusiveLayers { get; set; }
 
     [JsonPropertyName("levels")]
     public List<MapLevelEntry> Levels { get; set; } = new();

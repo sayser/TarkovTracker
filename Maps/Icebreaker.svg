@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" id="svg1" viewBox="0 0 4096 4096">
+  <g id="Control_Room">
+    <image href="icebreaker/00_control_room.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Engine_Room">
+    <image href="icebreaker/01_engine_room.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Engine_Room_Upper">
+    <image href="icebreaker/02_engine_room_upper.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Fuel_Pumps_Lower">
+    <image href="icebreaker/03_fuel_pumps_lower.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Fuel_Pumps">
+    <image href="icebreaker/04_fuel_pumps.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Storage_Security">
+    <image href="icebreaker/05_storage_ecurity.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Infirmary">
+    <image href="icebreaker/06_infirmary.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Helipad">
+    <image href="icebreaker/07_helipad.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Gym_Canteen">
+    <image href="icebreaker/08_gym-canteen.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Accommodation_Lower">
+    <image href="icebreaker/09_accommodation_lower.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Accommodation_Mid">
+    <image href="icebreaker/10_accommodation_mid.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Accommodation_Upper">
+    <image href="icebreaker/11_accommodation_upper.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Officers_Deck">
+    <image href="icebreaker/12_officers_deck.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Stairs_Blocked">
+    <image href="icebreaker/13_stairs_blocked.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Bridge">
+    <image href="icebreaker/14_bridge.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+  <g id="Bridge_Roof">
+    <image href="icebreaker/15_bridge_roof.png" x="0" y="0" width="4096" height="4096" preserveAspectRatio="none"/>
+  </g>
+</svg>

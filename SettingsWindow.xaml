@@ -192,6 +192,20 @@
                     </StackPanel>
                 </Border>
 
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <Button x:Name="CheckForUpdatesButton"
+                            Content="CHECK FOR UPDATES"
+                            Style="{StaticResource TacticalButton}"
+                            Click="CheckForUpdates_Click"/>
+                    <TextBlock x:Name="UpdateStatusText"
+                               VerticalAlignment="Center"
+                               Margin="12,0,0,0"
+                               FontFamily="{StaticResource TacticalMonoFont}"
+                               FontSize="10"
+                               Foreground="{StaticResource TacticalTextMutedBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
                 <Button Content="CLOSE"
                         Style="{StaticResource TacticalButton}"
                         HorizontalAlignment="Right"

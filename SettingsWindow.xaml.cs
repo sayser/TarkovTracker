@@ -72,6 +72,7 @@ public partial class SettingsWindow : Window
         AboutDescriptionText.Text = AppInfo.AboutDescription;
         AboutDataCreditText.Text = AppInfo.DataCredit;
         AboutDisclaimerText.Text = AppInfo.Disclaimer;
+        UpdateStatusText.Text = "";
     }
 
     private void UpdateResolutionTextBoxesFromPreset(string preset)
@@ -231,6 +232,57 @@ public partial class SettingsWindow : Window
             "Delete Screenshots",
             MessageBoxButton.OK,
             MessageBoxImage.Information);
+    }
+
+    private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        CheckForUpdatesButton.IsEnabled = false;
+        UpdateStatusText.Text = "CHECKING…";
+        UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalTextMutedBrush");
+
+        try
+        {
+            AppUpdateCheckResult result = await AppUpdateService.CheckForUpdatesAsync();
+
+            if (!result.Succeeded)
+            {
+                UpdateStatusText.Text = result.Message;
+                UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalTerminalRedBrush");
+                MessageBox.Show(this, result.Message, "Update Check", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!result.UpdateAvailable)
+            {
+                UpdateStatusText.Text = result.Message;
+                UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalTerminalGreenBrush");
+                MessageBox.Show(this, result.Message, "Up to Date", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            UpdateStatusText.Text = result.Message;
+            UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalAmberBrightBrush");
+
+            MessageBoxResult open = MessageBox.Show(
+                this,
+                $"{result.Message}\n\nOpen the GitHub release page to download {result.LatestVersion}?",
+                "Update Available",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+
+            if (open == MessageBoxResult.Yes)
+                AppUpdateService.OpenReleasePage(result.ReleaseUrl);
+        }
+        catch (Exception ex)
+        {
+            UpdateStatusText.Text = "CHECK FAILED";
+            UpdateStatusText.Foreground = (System.Windows.Media.Brush)FindResource("TacticalTerminalRedBrush");
+            MessageBox.Show(this, ex.Message, "Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            CheckForUpdatesButton.IsEnabled = true;
+        }
     }
 
     private void Close_Click(object sender, RoutedEventArgs e)

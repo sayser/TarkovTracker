@@ -93,6 +93,9 @@ namespace TarkovTracker
 
             InitializeComponent();
 
+            AppVersionSubtitleText.Text = $"TACTICAL MAP INTERFACE v{AppInfo.VersionLabel}";
+            Title = $"{AppInfo.ProductName} v{AppInfo.VersionLabel}";
+
             TryMigrateLegacySettingsFile();
             _userSettings = LoadUserSettings();
             _screenshotFolder = _userSettings.ScreenshotFolder;
@@ -466,6 +469,7 @@ namespace TarkovTracker
             PopulateQuestFilterOptions();
             await ApplySearchAndQuestFiltersAsync();
             await ApplyCustomPinsToMapAsync();
+            await ApplyMarkerVisibility();
             RedrawLastMarker();
             await SyncOverlayToCurrentMapAsync();
 
@@ -491,11 +495,18 @@ namespace TarkovTracker
 
         private async System.Threading.Tasks.Task LoadSvgMapInWebView(string mapPath)
         {
+            _currentMapPath = mapPath;
+            await LoadSvgContentInWebView(
+                File.ReadAllText(mapPath),
+                Path.GetDirectoryName(mapPath) ?? _mapsFolder);
+        }
+
+        private async System.Threading.Tasks.Task LoadSvgContentInWebView(string svg, string assetBaseDirectory)
+        {
             _webViewReady = false;
 
-            string svg = PrepareSvgForWebView(File.ReadAllText(mapPath), mapPath);
-            string html = MapHtmlBuilder.Build(svg, MapAssetHostName);
-            _currentMapPath = mapPath;
+            string preparedSvg = PrepareSvgForWebView(svg, assetBaseDirectory);
+            string html = MapHtmlBuilder.Build(preparedSvg, MapAssetHostName);
             _currentMapHtml = html;
 
             await EnsureMapWebViewHostMappingAsync();
@@ -624,9 +635,11 @@ namespace TarkovTracker
             }
         }
 
-        private string PrepareSvgForWebView(string svg, string mapPath)
+        private string PrepareSvgForWebView(string svg, string assetBaseDirectory)
         {
-            string mapDir = Path.GetDirectoryName(mapPath)!;
+            string baseDir = Directory.Exists(assetBaseDirectory)
+                ? assetBaseDirectory
+                : (Path.GetDirectoryName(assetBaseDirectory) ?? _mapsFolder);
 
             return Regex.Replace(
                 svg,
@@ -634,12 +647,13 @@ namespace TarkovTracker
                 match =>
                 {
                     string relativePath = match.Groups["path"].Value;
-                    string fullPath = Path.GetFullPath(Path.Combine(mapDir, relativePath));
+                    string fullPath = Path.GetFullPath(Path.Combine(baseDir, relativePath));
 
                     if (!File.Exists(fullPath))
                         return match.Value;
 
-                    string assetUrl = $"https://{MapAssetHostName}/{Path.GetFileName(fullPath)}";
+                    string relativeFromMaps = Path.GetRelativePath(_mapsFolder, fullPath).Replace('\\', '/');
+                    string assetUrl = $"https://{MapAssetHostName}/{relativeFromMaps}";
                     return $"{match.Groups["attr"].Value}=\"{assetUrl}\"";
                 },
                 RegexOptions.IgnoreCase);
@@ -675,8 +689,22 @@ namespace TarkovTracker
 
                 baseCheckBox.Checked += async (_, _) =>
                 {
-                    if (!_suppressMapLevelRefresh)
-                        await ApplyMapLevelStateAsync();
+                    if (_suppressMapLevelRefresh)
+                        return;
+
+                    if (_currentMapLevelsConfig?.ExclusiveLayers == true)
+                    {
+                        _suppressMapLevelRefresh = true;
+                        foreach (var other in LayersPanel.Children)
+                        {
+                            if (other is CheckBox otherBox && !IsBaseLayerCheckbox(otherBox))
+                                otherBox.IsChecked = false;
+                        }
+
+                        _suppressMapLevelRefresh = false;
+                    }
+
+                    await ApplyMapLevelStateAsync();
                 };
                 baseCheckBox.Unchecked += async (_, _) =>
                 {
@@ -703,8 +731,29 @@ namespace TarkovTracker
 
                 checkBox.Checked += async (_, _) =>
                 {
-                    if (!_suppressMapLevelRefresh)
-                        await ApplyMapLevelStateAsync();
+                    if (_suppressMapLevelRefresh)
+                        return;
+
+                    if (_currentMapLevelsConfig?.ExclusiveLayers == true)
+                    {
+                        _suppressMapLevelRefresh = true;
+                        foreach (var other in LayersPanel.Children)
+                        {
+                            if (other is not CheckBox otherBox || ReferenceEquals(otherBox, checkBox))
+                                continue;
+                            if (IsBaseLayerCheckbox(otherBox))
+                            {
+                                otherBox.IsChecked = false;
+                                continue;
+                            }
+
+                            otherBox.IsChecked = false;
+                        }
+
+                        _suppressMapLevelRefresh = false;
+                    }
+
+                    await ApplyMapLevelStateAsync();
                 };
                 checkBox.Unchecked += async (_, _) =>
                 {
@@ -753,6 +802,12 @@ namespace TarkovTracker
                 config.Levels.Any(level =>
                     string.Equals(level.SvgLayer, id, StringComparison.OrdinalIgnoreCase) && !level.DefaultVisible));
 
+            if (config.ExclusiveLayers && activeLevelIds.Count > 0)
+            {
+                showBaseLayer = false;
+                dimBase = false;
+            }
+
             return new MapLevelStatePayload
             {
                 DefaultLayerId = config.DefaultSvgLayer,
@@ -763,6 +818,7 @@ namespace TarkovTracker
                     .ToList(),
                 ShowBaseLayer = showBaseLayer,
                 DimBase = dimBase,
+                ExclusiveLayers = config.ExclusiveLayers,
                 ActiveLevelIds = activeLevelIds,
                 LevelExtents = config.Levels
                     .Where(level => !string.IsNullOrWhiteSpace(level.SvgLayer) &&
@@ -1530,12 +1586,23 @@ namespace TarkovTracker
                 }
             }
 
+            bool exclusive = _currentMapLevelsConfig.ExclusiveLayers;
+            bool showBase = matchingLayer == null;
+
             _suppressMapLevelRefresh = true;
 
             foreach (var child in LayersPanel.Children)
             {
-                if (child is not CheckBox checkBox || IsBaseLayerCheckbox(checkBox))
+                if (child is not CheckBox checkBox)
                     continue;
+
+                if (IsBaseLayerCheckbox(checkBox))
+                {
+                    // Exclusive floor maps (Icebreaker): show base only when no overlay height matches.
+                    // Other maps keep the base layer visible while auto-toggling overlays.
+                    checkBox.IsChecked = exclusive ? showBase : true;
+                    continue;
+                }
 
                 checkBox.IsChecked = checkBox.Tag is string svgLayer &&
                                      !string.IsNullOrWhiteSpace(matchingLayer) &&

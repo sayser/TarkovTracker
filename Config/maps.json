@@ -109,5 +109,16 @@
       "mapPixelSize": 4096,
       "bounds": [[-52, -37], [53, 76]]
     }
+  },
+  "icebreaker": {
+    "locale": { "en": "Icebreaker" },
+    "svg": {
+      "file": "Icebreaker.svg",
+      "coordinateRotation": 180,
+      "transform": [2.0, 125.0, 3.5, 91.0],
+      "nativeZoom": 4,
+      "mapPixelSize": 4096,
+      "bounds": [[77, -64.5], [-65.5, 67.4]]
+    }
   }
 }

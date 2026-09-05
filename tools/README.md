@@ -14,6 +14,7 @@ Scripts in this folder refresh map data from tarkov.dev. They are **not** used a
 | Refresh quest markers (recommended) | `build_quest_markers_from_api.ps1` |
 | Refresh boss spawn markers | `build_boss_spawn_markers.ps1` |
 | Refresh map level toggles | `build_map_levels.ps1` |
+| Build Icebreaker floor layers from tarkov.dev tiles | `build_icebreaker_layers.ps1` |
 | Compare quest markers vs API | `compare_quest_markers.ps1` |
 | Update Terminal map assets | `update_terminal_map.ps1` |
 

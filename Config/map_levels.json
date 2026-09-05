@@ -76,5 +76,26 @@
   "woods": {
     "defaultSvgLayer": "Ground_Level",
     "levels": []
+  },
+  "icebreaker": {
+    "defaultSvgLayer": "Infirmary",
+    "exclusiveLayers": true,
+    "levels": [
+      { "name": "Bridge Roof", "svgLayer": "Bridge_Roof", "defaultVisible": false, "minHeight": 43.8, "maxHeight": 10000 },
+      { "name": "Bridge", "svgLayer": "Bridge", "defaultVisible": false, "minHeight": 40.7, "maxHeight": 43.8 },
+      { "name": "Stairs Blocked", "svgLayer": "Stairs_Blocked", "defaultVisible": false, "minHeight": 37.6, "maxHeight": 40.7 },
+      { "name": "Officers Deck", "svgLayer": "Officers_Deck", "defaultVisible": false, "minHeight": 34.5, "maxHeight": 37.6 },
+      { "name": "Accom Upper", "svgLayer": "Accommodation_Upper", "defaultVisible": false, "minHeight": 31.4, "maxHeight": 34.5 },
+      { "name": "Accom Mid", "svgLayer": "Accommodation_Mid", "defaultVisible": false, "minHeight": 28.3, "maxHeight": 31.4 },
+      { "name": "Accom Lower", "svgLayer": "Accommodation_Lower", "defaultVisible": false, "minHeight": 25.3, "maxHeight": 28.3 },
+      { "name": "Gym Canteen", "svgLayer": "Gym_Canteen", "defaultVisible": false, "minHeight": 22.2, "maxHeight": 25.3 },
+      { "name": "Helipad", "svgLayer": "Helipad", "defaultVisible": false, "minHeight": 19.57, "maxHeight": 22.2 },
+      { "name": "Storage", "svgLayer": "Storage_Security", "defaultVisible": false, "minHeight": 15.0, "maxHeight": 18.92 },
+      { "name": "Fuel Pumps", "svgLayer": "Fuel_Pumps", "defaultVisible": false, "minHeight": 11.9, "maxHeight": 15.0 },
+      { "name": "Fuel Lower", "svgLayer": "Fuel_Pumps_Lower", "defaultVisible": false, "minHeight": 8.8, "maxHeight": 11.9 },
+      { "name": "Engine Upper", "svgLayer": "Engine_Room_Upper", "defaultVisible": false, "minHeight": 5.7, "maxHeight": 8.8 },
+      { "name": "Engine Room", "svgLayer": "Engine_Room", "defaultVisible": false, "minHeight": 3.6, "maxHeight": 5.7 },
+      { "name": "Control Room", "svgLayer": "Control_Room", "defaultVisible": false, "minHeight": -10000, "maxHeight": 3.6 }
+    ]
   }
 }
