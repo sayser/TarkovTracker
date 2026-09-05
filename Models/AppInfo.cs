@@ -6,7 +6,7 @@ namespace TarkovTracker.Models;
 public static class AppInfo
 {
     public const string ProductName = "SayserTarkovTracker";
-    public const string InterfaceVersion = "2.7.7";
+    public const string InterfaceVersion = "2.7.8";
 
     public const string GitHubOwner = "sayser";
     public const string GitHubRepo = "TarkovTracker";
