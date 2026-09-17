@@ -50,8 +50,18 @@ public class MapLevelsConfig
     [JsonPropertyName("exclusiveLayers")]
     public bool ExclusiveLayers { get; set; }
 
+    private List<MapLevelEntry> _levels = new();
+
     [JsonPropertyName("levels")]
-    public List<MapLevelEntry> Levels { get; set; } = new();
+    public List<MapLevelEntry> Levels
+    {
+        get => _levels;
+        set
+        {
+            _levels = value ?? new List<MapLevelEntry>();
+            _levels.Sort((a, b) => Nullable.Compare(a.MinHeight, b.MinHeight));
+        }
+    }
 }
 
 public class MapLevelEntry

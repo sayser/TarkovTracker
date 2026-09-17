@@ -11,7 +11,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+using TarkovTracker.Helpers;
 using TarkovTracker.Models;
 using TarkovTracker.Services;
 
@@ -65,6 +67,8 @@ namespace TarkovTracker
         private readonly object _mapDataRefreshLock = new();
         private string? _lastQuestTarkovDevUrl;
         private string? _lastQuestWikiUrl;
+
+        private GlobalHotKeyManager? _globalHotKeyManager = null;
 
         private static readonly JsonSerializerOptions WebMessageJsonOptions = new()
         {
@@ -146,6 +150,12 @@ namespace TarkovTracker
 
             Closing += (_, _) => SaveUserSettings();
             Loaded += MainWindow_Loaded;
+            SourceInitialized += MainWindow_SourceInitialized;
+        }
+
+        private void MainWindow_SourceInitialized(object? sender, EventArgs e)
+        {
+            _globalHotKeyManager = new GlobalHotKeyManager(this);
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -809,6 +819,7 @@ namespace TarkovTracker
         private void LoadLayersPanel(string mapPath)
         {
             LayersPanel.Children.Clear();
+            _globalHotKeyManager?.UnregisterAll();
 
             string mapFileName = Path.GetFileNameWithoutExtension(mapPath);
             _currentMapLevelsConfig = _mapData.GetMapLevelsForMap(mapFileName);
@@ -861,8 +872,11 @@ namespace TarkovTracker
                 LayersPanel.Children.Add(baseCheckBox);
             }
 
-            foreach (var level in levels)
+            for (int i = 0; i < levels.Count; i++)
             {
+                var level = levels[i];
+                var hotkey = Hotkeys.NumpadKeys.ElementAt(i+1);
+
                 if (string.IsNullOrWhiteSpace(level.SvgLayer))
                     continue;
 
@@ -874,6 +888,13 @@ namespace TarkovTracker
                     IsChecked = level.DefaultVisible,
                     Style = levelChipStyle
                 };
+                _globalHotKeyManager?.Register(ModifierKeys.None, hotkey, () =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {                        
+                        checkBox.IsChecked = !(checkBox.IsChecked ?? false);
+                    });
+                });
 
                 checkBox.Checked += async (_, _) =>
                 {
@@ -929,11 +950,8 @@ namespace TarkovTracker
             var activeLevelIds = new List<string>();
             bool showBaseLayer = true;
 
-            foreach (var child in LayersPanel.Children)
+            foreach (var checkBox in LayersPanel.Children.OfType<CheckBox>())
             {
-                if (child is not CheckBox checkBox)
-                    continue;
-
                 if (IsBaseLayerCheckbox(checkBox))
                 {
                     showBaseLayer = checkBox.IsChecked == true;
@@ -3137,6 +3155,10 @@ namespace TarkovTracker
         {
             _overlayWindow?.Close();
             _overlayWindow = null;
+
+            _globalHotKeyManager?.Dispose();
+            _globalHotKeyManager = null;
+
             base.OnClosed(e);
         }
     }
