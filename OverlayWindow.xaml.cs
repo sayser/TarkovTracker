@@ -27,6 +27,7 @@ namespace TarkovTracker
         private bool? _pendingShowQuestNames;
         private (double NormalizedX, double NormalizedY, double DirectionDegrees)? _pendingPlayerMarker;
         private bool _suppressOpacitySliderRefresh;
+        private bool _overlayBackgroundHidden;
         private readonly OverlaySettings _overlaySettings;
 
         public OverlayWindow(OverlaySettings overlaySettings)
@@ -396,6 +397,20 @@ namespace TarkovTracker
             catch (Exception ex)
             {
                 MessageBox.Show($"Overlay opacity update failed:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private async void HideButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_overlayBackgroundHidden)
+            {
+                _overlayBackgroundHidden = false;
+                OverlayRootBorder.Opacity = 1.0;
+            }
+            else
+            {
+                _overlayBackgroundHidden = true;
+                OverlayRootBorder.Opacity = 0.2;
             }
         }
 
