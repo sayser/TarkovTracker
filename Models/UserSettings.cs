@@ -76,4 +76,14 @@ public class UserAppSettings
     /// When true, quest names are displayed on the maps
     /// </summary>
     public bool ShowQuestNames { get; set; } = true;
+
+    /// <summary>
+    /// When true, numpad map navigation hotkeys are enabled.
+    /// </summary>
+    public bool EnableNumpadMapHotkeys { get; set; } = false;
+
+    /// <summary>
+    /// Number of pixels the map pans on each numpad direction hotkey press.
+    /// </summary>
+    public int NumpadMapPanStepPixels { get; set; } = 30;
 }

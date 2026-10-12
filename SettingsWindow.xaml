@@ -164,6 +164,54 @@
 
                 <!-- Map actions -->
                 <TextBlock Text="MAP ACTIONS" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <CheckBox x:Name="EnableNumpadMapHotkeysCheckBox"
+                          Style="{StaticResource TacticalSettingsCheckBox}"
+                          Content="Enable numpad map navigation hotkeys"
+                          Margin="0,0,0,4"
+                          Checked="EnableNumpadMapHotkeysCheckBox_Changed"
+                          Unchecked="EnableNumpadMapHotkeysCheckBox_Changed"/>
+
+                <TextBlock Text="Numpad 8/6/2/4 pans, 9/3 zooms, and 5 centers the map."
+                           Style="{StaticResource TacticalBody}"
+                           FontSize="10"
+                           Foreground="{StaticResource TacticalTextMutedBrush}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,8"/>
+
+                <TextBlock Text="HOTKEY PAN STEP" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Slider x:Name="NumpadPanStepSlider"
+                            Grid.Column="0"
+                            Minimum="10"
+                            Maximum="50"
+                            TickFrequency="1"
+                            IsSnapToTickEnabled="True"
+                            VerticalAlignment="Center"
+                            ValueChanged="NumpadPanStepSlider_ValueChanged"/>
+
+                    <TextBlock x:Name="NumpadPanStepValueText"
+                               Grid.Column="1"
+                               Width="56"
+                               Text="30 px"
+                               FontFamily="{StaticResource TacticalMonoFont}"
+                               FontSize="12"
+                               Foreground="{StaticResource TacticalAmberBrightBrush}"
+                               VerticalAlignment="Center"
+                               TextAlignment="Right"/>
+                </Grid>
+
+                <TextBlock Text="Sets how far the map moves per numpad direction key press."
+                           Style="{StaticResource TacticalBody}"
+                           FontSize="10"
+                           Foreground="{StaticResource TacticalTextMutedBrush}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,8"/>
+
                 <Button Content="CLEAR RAID EXFIL HIGHLIGHTS"
                         Style="{StaticResource TacticalButton}"
                         HorizontalAlignment="Stretch"

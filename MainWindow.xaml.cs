@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using TarkovTracker.Models;
 using TarkovTracker.Services;
@@ -65,6 +66,11 @@ namespace TarkovTracker
         private readonly object _mapDataRefreshLock = new();
         private string? _lastQuestTarkovDevUrl;
         private string? _lastQuestWikiUrl;
+        private GlobalHotKeyManager? _globalHotKeyManager;
+        private readonly List<int> _numpadHotkeyIds = new();
+
+        private const int MinNumpadPanStepPixels = 10;
+        private const int MaxNumpadPanStepPixels = 50;
 
         private static readonly JsonSerializerOptions WebMessageJsonOptions = new()
         {
@@ -102,6 +108,11 @@ namespace TarkovTracker
         internal bool OverlayCenterOnPlayer => _userSettings.OverlayCenterOnPlayer;
 
         internal bool CheckForUpdatesOnStartup => _userSettings.CheckForUpdatesOnStartup;
+
+        internal bool NumpadMapHotkeysEnabled => _userSettings.EnableNumpadMapHotkeys;
+
+        internal int NumpadMapPanStepPixels =>
+            Math.Clamp(_userSettings.NumpadMapPanStepPixels, MinNumpadPanStepPixels, MaxNumpadPanStepPixels);
 
         public MainWindow()
         {
@@ -146,6 +157,13 @@ namespace TarkovTracker
 
             Closing += (_, _) => SaveUserSettings();
             Loaded += MainWindow_Loaded;
+            SourceInitialized += MainWindow_SourceInitialized;
+        }
+
+        private void MainWindow_SourceInitialized(object? sender, EventArgs e)
+        {
+            _globalHotKeyManager = new GlobalHotKeyManager(this);
+            UpdateMapNavigationHotkeys();
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -403,6 +421,19 @@ namespace TarkovTracker
             if (enabled)
                 _userSettings.SkippedUpdateVersion = "";
 
+            SaveUserSettings();
+        }
+
+        internal void ApplyNumpadMapHotkeysEnabled(bool enabled)
+        {
+            _userSettings.EnableNumpadMapHotkeys = enabled;
+            SaveUserSettings();
+            UpdateMapNavigationHotkeys();
+        }
+
+        internal void ApplyNumpadMapPanStepPixels(double panStepPixels)
+        {
+            _userSettings.NumpadMapPanStepPixels = Math.Clamp((int)Math.Round(panStepPixels), MinNumpadPanStepPixels, MaxNumpadPanStepPixels);
             SaveUserSettings();
         }
 
@@ -3081,6 +3112,87 @@ namespace TarkovTracker
                 await _overlayWindow.ClearLinkedSwitchHighlightsAsync();
         }
 
+        private void UpdateMapNavigationHotkeys()
+        {
+            UnregisterMapNavigationHotkeys();
+
+            if (_globalHotKeyManager == null)
+                return;
+
+            if (!_userSettings.EnableNumpadMapHotkeys)
+                return;
+
+            RegisterMapHotkey(Key.NumPad8, () => PanMapAsync(0, NumpadMapPanStepPixels));
+            RegisterMapHotkey(Key.NumPad2, () => PanMapAsync(0, -NumpadMapPanStepPixels));
+            RegisterMapHotkey(Key.NumPad4, () => PanMapAsync(NumpadMapPanStepPixels, 0));
+            RegisterMapHotkey(Key.NumPad6, () => PanMapAsync(-NumpadMapPanStepPixels, 0));
+            RegisterMapHotkey(Key.NumPad9, () => ZoomMapAsync(zoomIn: true));
+            RegisterMapHotkey(Key.NumPad3, () => ZoomMapAsync(zoomIn: false));
+            RegisterMapHotkey(Key.NumPad5, CenterMapAsync);
+        }
+
+        private void UnregisterMapNavigationHotkeys()
+        {
+            if (_globalHotKeyManager == null)
+            {
+                _numpadHotkeyIds.Clear();
+                return;
+            }
+
+            foreach (int hotkeyId in _numpadHotkeyIds)
+                _globalHotKeyManager.Unregister(hotkeyId);
+
+            _numpadHotkeyIds.Clear();
+        }
+
+        private void RegisterMapHotkey(Key key, Func<Task> action)
+        {
+            int hotkeyId = _globalHotKeyManager?.Register(ModifierKeys.None, key, () =>
+            {
+                Dispatcher.InvokeAsync(() => RunSafeAsync(action, $"Map hotkey {key}"));
+            }) ?? -1;
+
+            if (hotkeyId < 0)
+            {
+                StatusText.Text = $"Could not register map hotkey: {key}";
+                return;
+            }
+
+            _numpadHotkeyIds.Add(hotkeyId);
+        }
+
+        private async Task PanMapAsync(double deltaX, double deltaY)
+        {
+            if (_webViewReady)
+            {
+                await MapWebView.ExecuteScriptAsync(
+                    $"panMapBy({deltaX.ToString(CultureInfo.InvariantCulture)}, {deltaY.ToString(CultureInfo.InvariantCulture)});");
+            }
+
+            if (_overlayWindow != null)
+                await _overlayWindow.PanMapAsync(deltaX, deltaY);
+        }
+
+        private async Task ZoomMapAsync(bool zoomIn)
+        {
+            string factor = zoomIn ? "1.15" : (1d / 1.15d).ToString(CultureInfo.InvariantCulture);
+
+            if (_webViewReady)
+                await MapWebView.ExecuteScriptAsync($"zoomMapByFactor({factor});");
+
+            if (_overlayWindow != null)
+                await _overlayWindow.ZoomMapAsync(zoomIn);
+        }
+
+        private async Task CenterMapAsync()
+        {
+            if (_webViewReady)
+                await MapWebView.ExecuteScriptAsync("resetView();");
+
+            if (_overlayWindow != null)
+                await _overlayWindow.CenterMapAsync();
+        }
+
         private static async Task RunSafeAsync(Func<Task> action, string operationName)
         {
             try
@@ -3137,6 +3249,9 @@ namespace TarkovTracker
         {
             _overlayWindow?.Close();
             _overlayWindow = null;
+            UnregisterMapNavigationHotkeys();
+            _globalHotKeyManager?.Dispose();
+            _globalHotKeyManager = null;
             base.OnClosed(e);
         }
     }

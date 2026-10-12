@@ -367,6 +367,29 @@ namespace TarkovTracker
             await OverlayMapView.ExecuteScriptAsync("resetView();");
         }
 
+        public async Task PanMapAsync(double deltaX, double deltaY)
+        {
+            if (!_webViewReady)
+                return;
+
+            await OverlayMapView.ExecuteScriptAsync(
+                $"panMapBy({deltaX.ToString(CultureInfo.InvariantCulture)}, {deltaY.ToString(CultureInfo.InvariantCulture)});");
+        }
+
+        public async Task ZoomMapAsync(bool zoomIn)
+        {
+            if (!_webViewReady)
+                return;
+
+            string factor = zoomIn ? "1.15" : (1d / 1.15d).ToString(CultureInfo.InvariantCulture);
+            await OverlayMapView.ExecuteScriptAsync($"zoomMapByFactor({factor});");
+        }
+
+        public Task CenterMapAsync()
+        {
+            return ResetViewAsync();
+        }
+
         public async Task HighlightLinkedSwitchesAsync(string switchIdsJson)
         {
             if (string.IsNullOrWhiteSpace(switchIdsJson) || !_webViewReady)

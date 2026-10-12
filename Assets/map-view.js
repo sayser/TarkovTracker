@@ -856,17 +856,20 @@ function clearLinkedSwitchHighlights() {
     highlightLinkedSwitches([]);
 }
 
-stage.addEventListener('wheel', function(e) {
-    e.preventDefault();
+function panMapBy(deltaX, deltaY) {
+    panX += deltaX;
+    panY += deltaY;
+    applyTransform();
+    refreshCounterScales();
+}
 
+function zoomMapByFactor(zoomFactor, focusX, focusY) {
     let oldScale = scale;
-    let zoomFactor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
     let newScale = Math.max(0.2, Math.min(oldScale * zoomFactor, 12));
+    if (newScale === oldScale) return;
 
-    let rect = stage.getBoundingClientRect();
-    let mx = e.clientX - rect.left;
-    let my = e.clientY - rect.top;
-
+    let mx = focusX != null ? focusX : stage.clientWidth / 2;
+    let my = focusY != null ? focusY : stage.clientHeight / 2;
     let ratio = newScale / oldScale;
 
     panX = mx - (mx - panX) * ratio;
@@ -875,6 +878,15 @@ stage.addEventListener('wheel', function(e) {
     scale = newScale;
     applyTransform();
     refreshCounterScales();
+}
+
+stage.addEventListener('wheel', function(e) {
+    e.preventDefault();
+
+    let rect = stage.getBoundingClientRect();
+    let mx = e.clientX - rect.left;
+    let my = e.clientY - rect.top;
+    zoomMapByFactor(e.deltaY < 0 ? 1.15 : 1 / 1.15, mx, my);
 });
 
 stage.addEventListener('mousedown', function(e) {
