@@ -18,6 +18,7 @@ let customPins = [];
 let customPinCounter = 0;
 let cachedMapMarkers = [];
 let cachedCustomPins = [];
+let mapRotationDegrees = 0;
 
 function getViewBox() {
     let raw = svg.getAttribute('viewBox');
@@ -45,8 +46,23 @@ function initialize() {
     resetView();
 }
 
+function getVisualCounterRotation() {
+    const rotation = mapRotationDegrees % 360;
+    return (rotation === 180 || rotation === -180) ? -180 : 0;
+}
+
 function applyTransform() {
-    content.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    const rotation = ((mapRotationDegrees % 360) + 360) % 360;
+    const vb = getViewBox();
+    const contentWidth = vb.w * scale;
+    const contentHeight = vb.h * scale;
+
+    const centerX = (stage.clientWidth - contentWidth) / 2 + contentWidth / 2;
+    const centerY = (stage.clientHeight - contentHeight) / 2 + contentHeight / 2;
+
+    const transformValue = `translate(${panX}px, ${panY}px) rotate(${rotation}deg) scale(${scale})`;
+    content.style.transformOrigin = `${centerX}px ${centerY}px`;
+    content.style.transform = transformValue;
 }
 
 function refreshCounterScales() {
@@ -65,6 +81,16 @@ function resetView() {
 
     panX = (stage.clientWidth - vb.w * scale) / 2;
     panY = (stage.clientHeight - vb.h * scale) / 2;
+
+    applyTransform();
+    refreshCounterScales();
+}
+
+function setMapRotationDegrees(degrees) {
+    mapRotationDegrees = Number(degrees) || 0;
+
+    panX = (stage.clientWidth - (getViewBox().w * scale)) / 2;
+    panY = (stage.clientHeight - (getViewBox().h * scale)) / 2;
 
     applyTransform();
     refreshCounterScales();
@@ -102,13 +128,14 @@ function updatePlayerMarkerVisual() {
     if (!playerMarkerData) return;
 
     let inverseScale = 1 / scale;
+    const counterRotation = getVisualCounterRotation();
 
     playerMarker.style.left = playerMarkerData.x + 'px';
     playerMarker.style.top = playerMarkerData.y + 'px';
     playerMarker.style.display = 'block';
 
     playerMarker.style.transform =
-        `rotate(${playerMarkerData.direction + 180}deg) scale(${inverseScale})`;
+        `rotate(${playerMarkerData.direction + 180 + counterRotation}deg) scale(${inverseScale})`;
 }
 
 function clearMapMarkers() {
@@ -299,8 +326,9 @@ function cacheCustomPins() {
 
 function updateMapMarkerVisuals() {
     let inverseScale = 1 / scale;
+    const counterRotation = getVisualCounterRotation();
     for (let i = 0; i < cachedMapMarkers.length; i++) {
-        cachedMapMarkers[i].style.transform = `scale(${inverseScale})`;
+        cachedMapMarkers[i].style.transform = `rotate(${counterRotation}deg) scale(${inverseScale})`;
     }
 }
 
@@ -308,8 +336,9 @@ function updateCustomMarkerVisuals() {
     if (!customMarkerLayer) return;
 
     let inverseScale = 1 / scale;
+    const counterRotation = getVisualCounterRotation();
     for (let i = 0; i < cachedCustomPins.length; i++) {
-        cachedCustomPins[i].style.transform = `scale(${inverseScale})`;
+        cachedCustomPins[i].style.transform = `rotate(${counterRotation}deg) scale(${inverseScale})`;
     }
 }
 

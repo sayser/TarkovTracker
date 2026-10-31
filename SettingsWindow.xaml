@@ -139,7 +139,7 @@
                            FontSize="10"
                            Foreground="{StaticResource TacticalTextMutedBrush}"
                            TextWrapping="Wrap"
-                           Margin="0,0,0,16"/>
+                           Margin="0,0,0,12"/>
 
                 <!-- Map data -->
                 <TextBlock Text="MAP DATA" Style="{StaticResource TacticalLabel}" Margin="0,0,0,4"/>

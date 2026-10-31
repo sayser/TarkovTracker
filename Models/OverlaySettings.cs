@@ -20,4 +20,10 @@ public class OverlaySettings
     /// Default overlay map opacity (20-100). Applied when the overlay window opens.
     /// </summary>
     public double OverlayDefaultOpacityPercent { get; set; } = 80;
+
+    /// <summary>
+    /// When true, the map is rotated 180 degrees so it matches the orientation used by MapGenie.
+    /// Applies to both the main map view and the overlay.
+    /// </summary>
+    public bool RotateMap180Degrees { get; set; }
 }

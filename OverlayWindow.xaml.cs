@@ -367,6 +367,15 @@ namespace TarkovTracker
             await OverlayMapView.ExecuteScriptAsync("resetView();");
         }
 
+        public async Task ApplyMapRotationAsync(double degrees)
+        {
+            if (!_webViewReady)
+                return;
+
+            string value = degrees.ToString(CultureInfo.InvariantCulture);
+            await OverlayMapView.ExecuteScriptAsync($"setMapRotationDegrees({value});");
+        }
+
         public async Task HighlightLinkedSwitchesAsync(string switchIdsJson)
         {
             if (string.IsNullOrWhiteSpace(switchIdsJson) || !_webViewReady)

@@ -101,6 +101,8 @@ namespace TarkovTracker
 
         internal bool OverlayCenterOnPlayer => _userSettings.OverlayCenterOnPlayer;
 
+        internal bool RotateMap180Degrees => GetCurrentMapRotateSetting();
+
         internal bool CheckForUpdatesOnStartup => _userSettings.CheckForUpdatesOnStartup;
 
         public MainWindow()
@@ -135,6 +137,7 @@ namespace TarkovTracker
             ApplySaveMarkerFiltersSettingToUi();
             ApplyAutoSelectFloorSettingToUi();
             ApplyShowQuestNamesSettingToUi();
+            ApplyMapRotationSettingToUi();
             ApplyMarkerFiltersForSession();
 
             _suppressMarkerFilterRefresh = false;
@@ -386,6 +389,47 @@ namespace TarkovTracker
         {
             _userSettings.OverlayCenterOnPlayer = enabled;
             SaveUserSettings();
+        }
+
+        internal void ApplyRotateMap180Degrees(bool enabled)
+        {
+            string? mapKey = GetCurrentMapStorageKey();
+            if (string.IsNullOrWhiteSpace(mapKey))
+            {
+                ApplyMapRotationSettingToUi();
+                return;
+            }
+
+            _userSettings.MapRotationByMap[mapKey] = enabled;
+            SaveUserSettings();
+            _ = RefreshMapRotationAsync();
+            ApplyMapRotationSettingToUi();
+        }
+
+        private bool GetCurrentMapRotateSetting()
+        {
+            string? mapKey = GetCurrentMapStorageKey();
+            if (!string.IsNullOrWhiteSpace(mapKey) &&
+                _userSettings.MapRotationByMap.TryGetValue(mapKey, out bool enabled))
+            {
+                return enabled;
+            }
+
+            return false;
+        }
+
+        private async Task RefreshMapRotationAsync()
+        {
+            double degrees = GetCurrentMapRotateSetting() ? 180d : 0d;
+
+            if (_webViewReady)
+            {
+                await MapWebView.ExecuteScriptAsync(
+                    $"setMapRotationDegrees({degrees.ToString(CultureInfo.InvariantCulture)});");
+            }
+
+            if (_overlayWindow != null)
+                await _overlayWindow.ApplyMapRotationAsync(degrees);
         }
 
         internal void ApplyScreenshotParsingEnabled(bool enabled)
@@ -642,6 +686,8 @@ namespace TarkovTracker
             await ApplyMarkerVisibility();
             RedrawLastMarker();
             await SyncOverlayToCurrentMapAsync();
+            await RefreshMapRotationAsync();
+            ApplyMapRotationSettingToUi();
 
             StatusText.Text = _currentMapConfig == null
                 ? $"Loaded map: {mapFileName}. No config found."
@@ -1110,6 +1156,14 @@ namespace TarkovTracker
                 return;
 
             ShowQuestNamesCheckBox.IsChecked = _userSettings.ShowQuestNames;
+        }
+
+        private void ApplyMapRotationSettingToUi()
+        {
+            if (MapRotationCheckBox == null)
+                return;
+
+            MapRotationCheckBox.IsChecked = GetCurrentMapRotateSetting();
         }
 
         private void ApplyMarkerFiltersForSession()
@@ -2040,6 +2094,14 @@ namespace TarkovTracker
 
             if (_overlayWindow != null)
                 await _overlayWindow.ApplyShowQuestNamesAsync(showQuestNames);
+        }
+
+        private void MapRotationCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (_isInitializing || MapRotationCheckBox == null)
+                return;
+
+            ApplyRotateMap180Degrees(MapRotationCheckBox.IsChecked == true);
         }
 
         private async void MarkerSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -3030,6 +3092,7 @@ namespace TarkovTracker
 
             _overlayWindow.ConfigureMapAssetHost(_mapsFolder);
             await _overlayWindow.LoadMapHtmlAsync(_currentMapHtml);
+            await _overlayWindow.ApplyMapRotationAsync(GetCurrentMapRotateSetting() ? 180d : 0d);
 
             if (!string.IsNullOrWhiteSpace(_lastMapMarkersJson))
                 await _overlayWindow.SetMapMarkersAsync(_lastMapMarkersJson);

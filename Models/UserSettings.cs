@@ -47,6 +47,12 @@ public class UserAppSettings
     public Dictionary<string, List<CustomPinEntry>> CustomPinsByMap { get; set; } = new();
 
     /// <summary>
+    /// Per-map map orientation override keyed by normalized map name.
+    /// When true, the map is rotated 180 degrees for that specific map only.
+    /// </summary>
+    public Dictionary<string, bool> MapRotationByMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
     /// When true, each screenshot update recenters the overlay map on the player (keeps current zoom).
     /// </summary>
     public bool OverlayCenterOnPlayer { get; set; }
