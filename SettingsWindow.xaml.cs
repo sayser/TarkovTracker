@@ -14,6 +14,8 @@ public partial class SettingsWindow : Window
     private bool _suppressResolutionRefresh;
     private bool _suppressOverlayOpacityRefresh;
     private bool _suppressOverlayCenterRefresh;
+    private bool _suppressNumpadMapHotkeysRefresh;
+    private bool _suppressNumpadPanStepRefresh;
     private bool _isLoadingSettings;
 
     public SettingsWindow(MainWindow owner)
@@ -24,6 +26,8 @@ public partial class SettingsWindow : Window
         _suppressOverlayOpacityRefresh = true;
         _suppressOverlayCenterRefresh = true;
         _suppressResolutionRefresh = true;
+        _suppressNumpadMapHotkeysRefresh = true;
+        _suppressNumpadPanStepRefresh = true;
         InitializeComponent();
         LoadCurrentValues();
         _isLoadingSettings = false;
@@ -66,6 +70,15 @@ public partial class SettingsWindow : Window
         _suppressOverlayCenterRefresh = true;
         OverlayCenterOnPlayerCheckBox.IsChecked = _owner.OverlayCenterOnPlayer;
         _suppressOverlayCenterRefresh = false;
+
+        _suppressNumpadMapHotkeysRefresh = true;
+        EnableNumpadMapHotkeysCheckBox.IsChecked = _owner.NumpadMapHotkeysEnabled;
+        _suppressNumpadMapHotkeysRefresh = false;
+
+        _suppressNumpadPanStepRefresh = true;
+        NumpadPanStepSlider.Value = _owner.NumpadMapPanStepPixels;
+        NumpadPanStepValueText.Text = $"{_owner.NumpadMapPanStepPixels} px";
+        _suppressNumpadPanStepRefresh = false;
 
         CheckForUpdatesOnStartupCheckBox.IsChecked = _owner.CheckForUpdatesOnStartup;
 
@@ -199,6 +212,24 @@ public partial class SettingsWindow : Window
             return;
 
         _owner.ApplyCheckForUpdatesOnStartup(CheckForUpdatesOnStartupCheckBox.IsChecked == true);
+    }
+
+    private void EnableNumpadMapHotkeysCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isLoadingSettings || _suppressNumpadMapHotkeysRefresh)
+            return;
+
+        _owner.ApplyNumpadMapHotkeysEnabled(EnableNumpadMapHotkeysCheckBox.IsChecked == true);
+    }
+
+    private void NumpadPanStepSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (_isLoadingSettings || _suppressNumpadPanStepRefresh || NumpadPanStepValueText == null)
+            return;
+
+        int panStep = (int)Math.Round(e.NewValue);
+        NumpadPanStepValueText.Text = $"{panStep} px";
+        _owner.ApplyNumpadMapPanStepPixels(panStep);
     }
 
     private async void RefreshMapData_Click(object sender, RoutedEventArgs e)
